@@ -242,12 +242,18 @@
            revision="main"/>
   
   <!-- ============================================= -->
-  <!-- 10. 远程定义（占位，待替换为实际仓库地址） -->
+  <!-- 10. 远程定义 -->
   <!-- ============================================= -->
-  
+  <!-- 注意：本 manifest 仍按**多仓库**布局编写（下方 30 个 project 各自视为
+       独立仓库）。当前开源发布的是**单仓库（monorepo）**：overlay/、patches/、
+       tools/、vendor/genton/ 都在 forrestsong/Genton-AI-OS 之内。
+       因此本文件**不能直接用于 `repo sync`**，需先把这些 project 重指向
+       各层仓库（或改用 manifests/genton.xml 的 monorepo 布局）。
+       -->
+
   <remote name="genton"
-          fetch="https://github.com/genton-os"
-          review="https://github.com/genton-os"/>
+          fetch="https://github.com/forrestsong"
+          review="https://github.com/forrestsong/Genton-AI-OS"/>
   
   <remote name="aosp"
           fetch="https://android.googlesource.com"

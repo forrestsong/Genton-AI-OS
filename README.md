@@ -308,16 +308,21 @@ chmod a+x ~/bin/repo
 export PATH=~/bin:$PATH
 
 # 初始化仓库
-mkdir genton-os && cd genton-os
-repo init -u https://github.com/forrestsong/Genton -b main -m manifests/genton.xml
+mkdir genton-ai-os && cd genton-ai-os
+repo init -u https://github.com/forrestsong/Genton-AI-OS -b main -m manifests/genton.xml
 repo sync -c -j$(nproc --all)
 ```
 
-#### 2. 应用 Genton AI OS 补丁
+#### 2. 应用 Genton AI OS 定制层
+
+定制层是单一仓库（monorepo），由 manifest 检出到 `genton-layer/`：
 
 ```bash
-# 补丁已包含在 overlay/ 和 patches/ 中
-./patches/apply-patches.sh
+# 查看部署计划（默认 dry-run，不写入）
+./genton-layer/patches/apply-patches.sh
+
+# 实际写入到当前源码树
+./genton-layer/patches/apply-patches.sh --apply --target .
 ```
 
 #### 3. 配置环境与构建

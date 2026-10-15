@@ -290,16 +290,21 @@ chmod a+x ~/bin/repo
 export PATH=~/bin:$PATH
 
 # Initialize repository
-mkdir genton-os && cd genton-os
-repo init -u https://github.com/forrestsong/Genton -b main -m manifests/genton.xml
+mkdir genton-ai-os && cd genton-ai-os
+repo init -u https://github.com/forrestsong/Genton-AI-OS -b main -m manifests/genton.xml
 repo sync -c -j$(nproc --all)
 ```
 
-#### 2. Apply Genton AI OS patches
+#### 2. Apply the Genton AI OS layer
+
+The customization layer is a single repository (monorepo) checked out to `genton-layer/`:
 
 ```bash
-# Patches are included in overlay/ and patches/
-./patches/apply-patches.sh
+# Show the deployment plan (dry-run by default, writes nothing)
+./genton-layer/patches/apply-patches.sh
+
+# Write into the current source tree
+./genton-layer/patches/apply-patches.sh --apply --target .
 ```
 
 #### 3. Configure environment and build

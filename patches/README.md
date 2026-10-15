@@ -37,8 +37,13 @@ NNNN-short-description.patch
 ### 应用所有补丁
 
 ```bash
-cd genton-os
-./patches/apply-patches.sh
+cd genton-ai-os
+
+# 查看部署计划（默认 dry-run）
+./genton-layer/patches/apply-patches.sh
+
+# 实际写入到源码树
+./genton-layer/patches/apply-patches.sh --apply --target .
 ```
 
 ### 手动应用单个补丁

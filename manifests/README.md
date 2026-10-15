@@ -1,10 +1,10 @@
-# AI Native OS Manifests
+# Genton AI OS Manifests
 
-此目录包含 repo 工具所需的 manifest 文件，用于同步 AOSP 和 AI Native OS 定制代码。
+此目录包含 repo 工具所需的 manifest 文件，用于同步 AOSP 基座与 Genton AI OS 定制层。
 
 ## 使用方法
 
-### 初始化仓库
+### 初始化代码树
 
 ```bash
 # 安装 repo 工具（如果尚未安装）
@@ -13,52 +13,64 @@ curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
 chmod a+x ~/bin/repo
 export PATH=~/bin:$PATH
 
-# 初始化 AI Native OS 代码树
-mkdir genton-os
-cd genton-os
-repo init -u https://github.com/genton-os/manifests -b main -m genton.xml
+# 初始化代码树
+mkdir genton-ai-os
+cd genton-ai-os
+repo init -u https://github.com/forrestsong/Genton-AI-OS -b main -m manifests/genton.xml
 
-# 同步代码（首次约 100GB）
+# 同步代码（AOSP 基座体积较大，首次较慢）
 repo sync -c -j$(nproc --all)
 ```
 
-### 应用补丁
+### 应用定制层
+
+Genton AI OS 定制层是**单一仓库（monorepo）**，由 manifest 检出到 `genton-layer/`，
+其中包含 `overlay/`、`patches/`、`tools/`、`vendor/genton/` 等。
 
 ```bash
-# 应用 AI Native OS 补丁到 AOSP 上游
-cd genton-os
-./patches/apply-patches.sh
+cd genton-ai-os
+
+# 查看部署计划（默认 dry-run，不写入）
+./genton-layer/patches/apply-patches.sh
+
+# 实际写入到当前源码树
+./genton-layer/patches/apply-patches.sh --apply --target .
 ```
+
+> `patches/apply_patches.py` 由载荷自身推导目标路径（代码文件读 `package` 声明，
+> 非代码载荷按显式映射表），**任何无法推导的载荷都会非零退出**，不会静默跳过。
+> 部署基线见 [patches/deploy_baseline.json](../patches/deploy_baseline.json)，
+> 其条目只允许减少。
 
 ## Manifest 文件
 
 | 文件 | 用途 |
 |------|------|
-| `genton.xml` | 主 manifest，基于 AOSP 15.0.0_r1 |
+| `genton.xml` | 主 manifest（Android 15.0.0_r1 基座 + monorepo 定制层），**推荐使用** |
+| `genton-android16.xml` | Android 16 变体；仍按多仓库布局编写，**尚不能直接用于 `repo sync`**（见文件内说明） |
+| `genton-build.xml` | 使用清华 AOSP 镜像加速同步的辅助说明 |
 
 ## 目录结构（同步后）
 
 ```
-genton-os/
+genton-ai-os/
 ├── build/                    # AOSP 构建系统
 ├── frameworks/               # Android 框架层
 ├── system/                   # 系统核心
 ├── packages/                 # 系统应用
-├── overlay/                  # AI Native OS 覆盖层
-│   ├── frameworks/base/      # 框架层修改
-│   ├── packages/apps/        # 应用修改
-│   └── vendor/genton/      # 平台配置
-├── vendor/genton/          # AI Native OS 专有代码
-│   ├── services/             # 19 个系统服务
-│   ├── policy/               # 策略引擎
-│   └── config/               # 配置文件
-├── patches/                  # 补丁集合
-├── tools/                    # 工具脚本
-└── docs/                     # 文档
+└── genton-layer/             # Genton AI OS 定制层（单一仓库）
+    ├── overlay/              # 覆盖 AOSP 源码的修改（已按目标路径组织）
+    ├── patches/              # 可部署补丁载荷 + 部署器
+    ├── tools/                # 构建/测试/部署工具
+    ├── vendor/genton/        # 平台配置与策略 DSL 基线
+    ├── manifests/            # 本目录
+    ├── registry/             # 动作注册表
+    ├── verification/         # 静态验证门禁
+    └── sepolicy/             # SELinux 策略参考
 ```
 
 ## 相关链接
 
-- [构建指南](../docs/BUILD.md)
-- [开发指南](../docs/DEVELOPMENT.md)
-- [A1 里程碑实施计划](../A1里程碑实施计划.md)
+- [项目主页 README](../README.md)
+- [验证体系说明](../verification/README.md)
+- [补丁系统说明](../patches/README.md)

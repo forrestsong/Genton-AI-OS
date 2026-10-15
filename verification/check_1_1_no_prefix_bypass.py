@@ -62,10 +62,12 @@ def find_function_body(text, names):
 prefix_pat = re.compile(r'startsWith\s*\(\s*(?:"(?:sys|cmd)\.|PREFIX_(?:SYS|CMD))')
 
 # ---------- 0. 检测器自检（teeth）----------
-# 一个从未报出过问题的检测器不可信。这里用仓库中**留存的原始脆弱实现**
-# （reports/A3.6_完成报告.md 内嵌的代码块）作为负样本，证明检测器确实能识别前缀判定。
-print("[0] 检测器自检（负样本：报告中留存的原始前缀判定实现）")
-FIXTURE = ROOT / "reports" / "A3.6_完成报告.md"
+# 一个从未报出过问题的检测器不可信。这里用仓库内**自包含的负样本 fixture**
+# （verification/fixtures/prefix_bypass_negative_sample.md 中留存的原始脆弱实现，
+# 与 reports/A3.6_完成报告.md 记载的历史写法一致）验证检测器确实能识别前缀判定。
+# fixture 必须随仓库分发，不得依赖未发布的内部报告。
+print("[0] 检测器自检（负样本：fixture 中留存的原始前缀判定实现）")
+FIXTURE = ROOT / "verification" / "fixtures" / "prefix_bypass_negative_sample.md"
 if not FIXTURE.exists():
     fail("缺少负样本 fixture，无法证明检测器有效")
 else:

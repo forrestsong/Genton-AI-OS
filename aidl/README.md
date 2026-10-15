@@ -6,21 +6,21 @@
 
 | 模块 | 包名 | 功能 | 依赖层级 |
 |------|------|------|----------|
-| [perception](perception/) | `com.genton.perception` | 感知服务 (UI树/屏幕/通知) | L0 |
-| [audit](audit/) | `com.genton.audit` | 审计服务 (哈希链/活性流) | L0 |
-| [agent](agent/) | `com.genton.agent` | Agent 运行时 (ACB/会话) | L1 |
-| [policy](policy/) | `com.genton.policy` | 策略引擎 (令牌/确认) | L1 |
-| [memory](memory/) | `com.genton.memory` | 记忆服务 (三层分区) | L1 |
-| [events](events/) | `com.genton.events` | 事件流 (9组事件源) | L2 |
-| [action](action/) | `com.genton.action` | 动作执行 (执行中介) | L2 |
-| [semantics](semantics/) | `com.genton.semantics` | 语义服务 (本体图) | L2 |
-| [context](context/) | `com.genton.context` | 上下文服务 (ContextFrame) | L2 |
-| [assets](assets/) | `com.genton.assets` | 资产目录 (Skill/DMI) | L3 |
-| [inference](inference/) | `com.genton.inference` | 推理路由 (端云决策) | L3 |
-| [sandbox](sandbox/) | `com.genton.sandbox` | 沙箱执行 (Isolate) | L3 |
-| [ui](ui/) | `com.genton.ui` | UI 契约 (会话桥/确认宿主) | L4 |
-| [call](call/) | `com.genton.call` | 通话门控 (CallGate) | L4 |
-| [motion](motion/) | `com.genton.motion` | 姿态交互 (MotionHub) | L5 |
+| [perception](../overlay/frameworks/base/core/java/com/genton/perception/) | `com.genton.perception` | 感知服务 (UI树/屏幕/通知) | L0 |
+| [audit](../overlay/frameworks/base/core/java/com/genton/audit/) | `com.genton.audit` | 审计服务 (哈希链/活性流) | L0 |
+| [agent](../overlay/frameworks/base/core/java/com/genton/agent/) | `com.genton.agent` | Agent 运行时 (ACB/会话) | L1 |
+| [policy](../overlay/frameworks/base/core/java/com/genton/policy/) | `com.genton.policy` | 策略引擎 (令牌/确认) | L1 |
+| [memory](com/genton/memory/) | `com.genton.memory` | 记忆服务 (三层分区) | L1 |
+| [events](../overlay/frameworks/base/core/java/com/genton/events/) | `com.genton.events` | 事件流 (9组事件源) | L2 |
+| [action](../overlay/frameworks/base/core/java/com/genton/action/) | `com.genton.action` | 动作执行 (执行中介) | L2 |
+| [semantics](com/genton/semantics/) | `com.genton.semantics` | 语义服务 (本体图) | L2 |
+| [context](com/genton/context/) | `com.genton.context` | 上下文服务 (ContextFrame) | L2 |
+| [assets](com/genton/assets/) | `com.genton.assets` | 资产目录 (Skill/DMI) | L3 |
+| [inference](../overlay/frameworks/base/core/java/com/genton/inference/) | `com.genton.inference` | 推理路由 (端云决策) | L3 |
+| [sandbox](com/genton/sandbox/) | `com.genton.sandbox` | 沙箱执行 (Isolate) | L3 |
+| [ui](../overlay/frameworks/base/core/java/com/genton/ui/) | `com.genton.ui` | UI 契约 (会话桥/确认宿主) | L4 |
+| [call](com/genton/call/) | `com.genton.call` | 通话门控 (CallGate) | L4 |
+| [motion](../overlay/frameworks/base/core/java/com/genton/motion/) | `com.genton.motion` | 姿态交互 (MotionHub) | L5 |
 
 ## 目录结构
 

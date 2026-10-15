@@ -1353,9 +1353,9 @@
 /second_stage_resources/overlay_remounter                         overlay_remounter_exec
 
 # AI Native OS 扩展（主线2）
-/data/system/ainative                                              ainative_data_file
-/data/system/ainative/audit                                        ainative_data_file
-/data/system/ainative/memory                                       ainative_data_file
-/data/system/ainative/checkpoints                                  ainative_data_file
-/data/system/ainative/policy                                       ainative_data_file
-/data/data/com.ainative.brain                                      ainative_data_file
+/data/system/genton                                              genton_data_file
+/data/system/genton/audit                                        genton_data_file
+/data/system/genton/memory                                       genton_data_file
+/data/system/genton/checkpoints                                  genton_data_file
+/data/system/genton/policy                                       genton_data_file
+/data/data/com.genton.brain                                      genton_data_file

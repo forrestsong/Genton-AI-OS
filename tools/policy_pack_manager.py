@@ -132,7 +132,7 @@ class RolloutStatus:
 class PolicyPackBuilder:
     """PolicyPack 打包器"""
     
-    def __init__(self, config_dir: str = "vendor/ainative/config"):
+    def __init__(self, config_dir: str = "vendor/genton/config"):
         self.config_dir = Path(config_dir)
         # 平台签名密钥（简化版，实际应从 TEE 获取）
         self.platform_key = b"platform-signing-key-placeholder"
@@ -327,7 +327,7 @@ class PolicyPackBuilder:
 class RolloutManager:
     """灰度发布管理器"""
     
-    def __init__(self, state_dir: str = "vendor/ainative/rollout"):
+    def __init__(self, state_dir: str = "vendor/genton/rollout"):
         self.state_dir = Path(state_dir)
         self.state_dir.mkdir(parents=True, exist_ok=True)
         
@@ -532,7 +532,7 @@ class RolloutManager:
 class VersionManager:
     """版本管理器"""
     
-    def __init__(self, versions_dir: str = "vendor/ainative/policy_versions"):
+    def __init__(self, versions_dir: str = "vendor/genton/policy_versions"):
         self.versions_dir = Path(versions_dir)
         self.versions_dir.mkdir(parents=True, exist_ok=True)
         

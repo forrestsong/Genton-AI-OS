@@ -1,5 +1,5 @@
 // AI Native OS - Session View
-package com.android.systemui.ainative.session;
+package com.android.systemui.genton.session;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -19,10 +19,10 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.systemui.ainative.session.message.MessageBubble;
+import com.android.systemui.genton.session.message.MessageBubble;
 
-import com.ainative.agent.TaskCardData;
-import com.ainative.agent.ActionCardData;
+import com.genton.agent.TaskCardData;
+import com.genton.agent.ActionCardData;
 
 /**
  * 会话视图：Assistant Surface 的主界面（D2.1完整实现）
@@ -78,7 +78,7 @@ public class SessionView extends FrameLayout {
         mNavigateListener = listener;
     }
 
-    /** 导航分区常量（与 com.ainative.ui.IAgentAssistantUi 对齐） */
+    /** 导航分区常量（与 com.genton.ui.IAgentAssistantUi 对齐） */
     public static final int NAV_HOME = 0;
     public static final int NAV_TASKS = 1;
     public static final int NAV_PRIVACY = 2;

@@ -434,7 +434,7 @@
         />
 
         <!-- Genton P2: 助理常驻悬浮球（普通模式下最小化存在） -->
-        <service android:name=".ainative.entry.FloatingButtonService"
+        <service android:name=".genton.entry.FloatingButtonService"
             android:exported="false"
             android:permission="com.android.systemui.permission.SELF" />
         <service android:name=".wallet.controller.WalletContextualLocationsService"

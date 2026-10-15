@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AI Native OS Manifest
+  基于 AOSP 15.0.0_r1 (Vanilla Ice Cream)
+  
+  使用方法：
+  repo init -u https://github.com/genton-os/manifests -b main -m genton.xml
+  repo sync -c -j$(nproc --all)
+-->
+<manifest>
+  <!-- 上游 AOSP 基座 -->
+  <remote name="aosp"
+          fetch="https://android.googlesource.com"
+          review="https://android-review.googlesource.com/" />
+  
+  <!-- AI Native OS 自有仓库 -->
+  <remote name="genton"
+          fetch="https://github.com/genton-os"
+          revision="main" />
+
+  <!-- 默认 AOSP 15.0.0_r1 分支 -->
+  <default revision="refs/tags/android-15.0.0_r1"
+           remote="aosp"
+           sync-j="4" />
+
+  <!-- ==================== AOSP 核心仓库 ==================== -->
+  
+  <!-- 构建系统 -->
+  <project path="build/make" name="platform/build" groups="pdk" >
+    <linkfile src="CleanSpec.mk" dest="build/CleanSpec.mk" />
+    <linkfile src="buildspec.mk.default" dest="build/buildspec.mk.default" />
+    <linkfile src="core" dest="build/core" />
+    <linkfile src="envsetup.sh" dest="build/envsetup.sh" />
+    <linkfile src="target" dest="build/target" />
+    <linkfile src="tools" dest="build/tools" />
+  </project>
+  <project path="build/soong" name="platform/build/soong" groups="pdk,tradefed" />
+  <project path="build/bazel" name="platform/build/bazel" groups="pdk" />
+
+  <!-- 框架核心 -->
+  <project path="frameworks/base" name="platform/frameworks/base" groups="pdk-cw-fs,pdk-fs" />
+  <project path="frameworks/native" name="platform/frameworks/native" groups="pdk" />
+  <project path="frameworks/av" name="platform/frameworks/av" groups="pdk" />
+
+  <!-- 系统核心 -->
+  <project path="system/core" name="platform/system/core" groups="pdk" />
+  <project path="system/sepolicy" name="platform/system/sepolicy" groups="pdk" />
+  <project path="system/tools/aidl" name="platform/system/tools/aidl" groups="pdk" />
+
+  <!-- 基础包 -->
+  <project path="packages/apps/Settings" name="platform/packages/apps/Settings" groups="pdk-fs" />
+  <project path="packages/apps/SystemUI" name="platform/packages/modules/SystemUI" groups="pdk-fs" />
+
+  <!-- ==================== AI Native OS 定制层 ==================== -->
+  
+  <!-- Overlay：覆盖 AOSP 源码的修改 -->
+  <project path="overlay" name="overlay" remote="genton" />
+  
+  <!-- Vendor：AI Native OS 专有代码 -->
+  <project path="vendor/genton" name="vendor-genton" remote="genton" />
+  
+  <!-- 补丁集：应用到 AOSP 上游的 patch -->
+  <project path="patches" name="patches" remote="genton" />
+  
+  <!-- 工具链：构建/测试/部署脚本 -->
+  <project path="tools" name="tools" remote="genton" />
+  
+  <!-- 文档与规范 -->
+  <project path="docs" name="docs" remote="genton" />
+
+</manifest>

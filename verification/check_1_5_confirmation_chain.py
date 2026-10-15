@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SVC = ROOT / "overlay/frameworks/base/services/core/java/com/android/server/ainative"
+SVC = ROOT / "overlay/frameworks/base/services/core/java/com/android/server/genton"
 AES = SVC / "ActionExecutionService.java"
 PES = SVC / "PolicyEngineService.java"
 CHS = SVC / "ConfirmationHostService.java"

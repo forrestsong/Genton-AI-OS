@@ -1,0 +1,24 @@
+// Asset Library AIDL Interface
+// 资产库接口定义
+
+aidl_interface {
+    name: "genton.assets",
+    unstable: true,
+    
+    srcs: [
+        "*.aidl",
+    ],
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: false,
+        },
+        ndk: {
+            enabled: false,
+        },
+    },
+}

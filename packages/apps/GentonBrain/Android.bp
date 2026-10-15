@@ -1,0 +1,70 @@
+// AI Native Brain Application
+// Agent 大脑特权应用
+
+android_app {
+    name: "GentonBrain",
+    
+    srcs: [
+        "src/**/*.kt",
+        "src/**/*.java",
+    ],
+    
+    resource_dirs: ["res"],
+    
+    certificate: "platform",
+    privileged: true,
+    platform_apis: true,
+    
+    static_libs: [
+        "kotlin-stdlib",
+        "kotlinx-coroutines-android",
+        "androidx.core_core-ktx",
+        "androidx.appcompat_appcompat",
+        // AI Native OS AIDL 模块（com.genton.* 生成类）
+        "genton.core",
+        "genton.perception",
+        "genton.action",
+        "genton.agent",
+        "genton.audit",
+        "genton.memory",
+        "genton.policy",
+        "genton.events",
+        "genton.context",
+        "genton.execution",
+        "genton.inference",
+        "genton.assets",
+        "genton.macro",
+        "genton.decision",
+        "genton.ui",
+        "genton.call",
+        "genton.motion",
+        "genton.sandbox",
+    ],
+    
+    // 依赖 framework（包含 com.genton.* AIDL 接口）
+    libs: [
+        "framework",
+    ],
+    
+    optimize: {
+        enabled: false,
+    },
+    
+    dex_preopt: {
+        enabled: false,
+    },
+    
+    owner: "genton",
+    
+    required: [
+        "permissions_com.genton.brain.xml",
+    ],
+}
+
+// 权限配置
+prebuilt_etc {
+    name: "permissions_com.genton.brain.xml",
+    src: "permissions_com.genton.brain.xml",
+    sub_dir: "permissions",
+    filename_from_src: true,
+}

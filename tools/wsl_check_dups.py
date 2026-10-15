@@ -3,7 +3,7 @@ import os
 import re
 import sys
 
-AIDL_BASE = '/root/aosp/frameworks/base/core/java/com/ainative'
+AIDL_BASE = '/root/aosp/frameworks/base/core/java/com/genton'
 interfaces = [
     'execution/IActionExecutionService.aidl',
     'action/IAgentActionService.aidl',

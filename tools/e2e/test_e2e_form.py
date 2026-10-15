@@ -52,7 +52,7 @@ def schema_to_controls(schema: Dict[str, Any]) -> List[Dict[str, Any]]:
     for name, prop in props.items():
         ptype = prop.get("type")
         enum = prop.get("enum")
-        xa = prop.get("x-ainative") or {}
+        xa = prop.get("x-genton") or {}
         if ptype == "string":
             if xa.get("secret") or prop.get("format") == "password":
                 ctrl = CTRL_SECURE
@@ -184,7 +184,7 @@ FORM_SCHEMA: Dict[str, Any] = {
     "properties": {
         "username": {"type": "string", "maxLength": 32},
         "password": {"type": "string", "format": "password",
-                     "x-ainative": {"secret": True}},
+                     "x-genton": {"secret": True}},
         "remember": {"type": "boolean", "default": False},
         "role": {"type": "string", "enum": ["user", "admin"]},
     },

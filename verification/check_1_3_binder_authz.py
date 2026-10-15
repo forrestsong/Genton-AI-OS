@@ -27,13 +27,13 @@ ROOT = Path(__file__).resolve().parent.parent
 BASELINE = ROOT / "verification" / "authz_baseline.json"
 
 AIDL_DIRS = [
-    ROOT / "overlay" / "frameworks" / "base" / "core" / "java" / "com" / "ainative",
-    ROOT / "aidl" / "com" / "ainative",
+    ROOT / "overlay" / "frameworks" / "base" / "core" / "java" / "com" / "genton",
+    ROOT / "aidl" / "com" / "genton",
 ]
 IMPL_DIRS = [
-    ROOT / "overlay" / "frameworks" / "base" / "services" / "core" / "java" / "com" / "android" / "server" / "ainative",
-    ROOT / "frameworks" / "base" / "services" / "core" / "java" / "com" / "android" / "server" / "ainative",
-    ROOT / "overlay" / "frameworks" / "base" / "packages" / "SystemUI" / "src" / "com" / "android" / "systemui" / "ainative",
+    ROOT / "overlay" / "frameworks" / "base" / "services" / "core" / "java" / "com" / "android" / "server" / "genton",
+    ROOT / "frameworks" / "base" / "services" / "core" / "java" / "com" / "android" / "server" / "genton",
+    ROOT / "overlay" / "frameworks" / "base" / "packages" / "SystemUI" / "src" / "com" / "android" / "systemui" / "genton",
 ]
 
 # 强鉴权原语：任何一个出现在方法体内（或其直接调用的同文件助手内）即视为已鉴权
@@ -236,7 +236,7 @@ def main():
         print()
 
     # 不变量：鉴权助手本身不得被掏空（间接层必须仍含真实判定）
-    helper_file = ROOT / "overlay/frameworks/base/services/core/java/com/android/server/ainative/AgentCallerAuth.java"
+    helper_file = ROOT / "overlay/frameworks/base/services/core/java/com/android/server/genton/AgentCallerAuth.java"
     helper_users = [r for r in rows if "AgentCallerAuth" in r["detail"]] if rows else []
     if helper_file.exists():
         helper_text = strip_comments(read(helper_file))

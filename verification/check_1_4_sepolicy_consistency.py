@@ -20,7 +20,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-REGISTRY = ROOT / "overlay/frameworks/base/services/core/java/com/android/server/ainative/AinativeServiceRegistry.java"
+REGISTRY = ROOT / "overlay/frameworks/base/services/core/java/com/android/server/genton/GentonServiceRegistry.java"
 SERVICE_CONTEXTS = [
     ROOT / "overlay/system/sepolicy/private/service_contexts",
     ROOT / "sepolicy/service_contexts",
@@ -122,7 +122,7 @@ def main():
     syntax = syntax_issues()
 
     missing_ctx = sorted(s for s in services if s not in contexts)
-    used_types = {(v[2], v[0], v[1]) for v in contexts.values() if v[2].startswith("ainative")}
+    used_types = {(v[2], v[0], v[1]) for v in contexts.values() if v[2].startswith("genton")}
     missing_type = sorted((t, p, i) for (t, p, i) in used_types if t not in types_decl)
 
     # 基线：允许存在的已知缺口（只允许减少）。新增缺口即 FAIL。
@@ -135,7 +135,7 @@ def main():
     stale = [s for s in baseline if s not in missing_ctx]
 
     print(f"注册服务: {len(services)}    service_contexts 条目: {len(contexts)}"
-          f"    已声明 ainative_* 类型: {len([k for k in types_decl if k.startswith('ainative')])}")
+          f"    已声明 genton_* 类型: {len([k for k in types_decl if k.startswith('genton')])}")
 
     if report:
         print("\n--- 已注册服务与其 SELinux 上下文 ---")
@@ -145,7 +145,7 @@ def main():
                 print(f"  OK   {s:<46} -> {t}  ({p.relative_to(ROOT)}:{i})")
             else:
                 print(f"  MISS {s:<46} -> (无 service_contexts 条目)")
-        print("\n--- ainative_* 类型声明情况 ---")
+        print("\n--- genton_* 类型声明情况 ---")
         for t, p, i in sorted(used_types):
             mark = "OK  " if t in types_decl else "MISS"
             where = f"{types_decl[t][0].relative_to(ROOT)}:{types_decl[t][1]}" if t in types_decl else "(未声明)"

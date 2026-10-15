@@ -71,7 +71,7 @@ for root_dir, _, files in os.walk(base):
                 all_manifests.append(p)
 all_manifests = sorted(set(all_manifests))
 
-declared_ainative = set()
+declared_genton = set()
 if os.path.exists(manifest):
     out("[security-gate] B. 权限清单静态审计 ...")
     content = open(manifest, encoding="utf-8").read()
@@ -84,45 +84,45 @@ if os.path.exists(manifest):
             r'<permission[^>]*android:protectionLevel="([^"]*)"[^>]*android:name="([^"]*)"',
             content)
         perms = [(n, p) for p, n in perms]
-    ainative_perms = [(n, p) for n, p in perms if "com.ainative." in n]
+    genton_perms = [(n, p) for n, p in perms if "com.genton." in n]
     check("R1.2", "HIGH",
-          len(ainative_perms) > 0,
-          f"权限唯一事实源存在（{len(ainative_perms)} 个 com.ainative.* 定义）",
-          "AndroidManifest_permissions.xml 未定义任何 com.ainative.* 权限", [manifest])
-    for name, prot in ainative_perms:
+          len(genton_perms) > 0,
+          f"权限唯一事实源存在（{len(genton_perms)} 个 com.genton.* 定义）",
+          "AndroidManifest_permissions.xml 未定义任何 com.genton.* 权限", [manifest])
+    for name, prot in genton_perms:
         if "signature" not in prot:
             add("R1.1", "HIGH", f"权限 {name} 保护级别 {prot} 缺少 signature", [name])
         if "dangerous" in prot or "normal" in prot:
             add("R1.1", "CRITICAL", f"权限 {name} 使用了 {prot}（红线禁止 dangerous/normal）", [name])
-        if not re.match(r"^com\.ainative\.permission\.[A-Z0-9_]+$", name):
-            add("R1.5", "MEDIUM", f"权限命名不符合 com.ainative.permission.* 模式: {name}", [name])
+        if not re.match(r"^com\.genton\.permission\.[A-Z0-9_]+$", name):
+            add("R1.5", "MEDIUM", f"权限命名不符合 com.genton.permission.* 模式: {name}", [name])
     # R1.3 描述完整性
-    no_desc = [n for n, _ in ainative_perms
+    no_desc = [n for n, _ in genton_perms
                if not re.search(r'<permission[^>]*android:name="' + re.escape(n) +
                                 r'"[^>]*android:description="[^"]+"', content)]
     check("R1.3", "MEDIUM", not no_desc,
-          "所有 com.ainative.* 权限都有 description",
+          "所有 com.genton.* 权限都有 description",
           f"{len(no_desc)} 个权限缺少 description（用途说明含糊）", no_desc[:5])
-    declared_ainative = {n for n, _ in ainative_perms}
+    declared_genton = {n for n, _ in genton_perms}
 else:
     out("[security-gate] B. 跳过：权限 manifest 缺失（INFO）")
 
-# B2. 全仓 manifest 中 uses-permission com.ainative.* 必须已声明（R1.9 一致性）
+# B2. 全仓 manifest 中 uses-permission com.genton.* 必须已声明（R1.9 一致性）
 out("[security-gate] B2. 全仓 manifest 引用检查 ...")
 undeclared_used = []
 for mp in all_manifests:
     if os.path.exists(mp):
         mc = open(mp, encoding="utf-8").read()
-        for used in re.findall(r'<uses-permission[^>]*android:name="(com\.ainative\.[^"]*)"', mc):
-            if used not in declared_ainative:
+        for used in re.findall(r'<uses-permission[^>]*android:name="(com\.genton\.[^"]*)"', mc):
+            if used not in declared_genton:
                 undeclared_used.append(f"{used} @ {os.path.relpath(mp, base)}")
 check("R1.9", "HIGH", not undeclared_used,
-      "全仓 uses-permission 的 com.ainative.* 均已声明",
+      "全仓 uses-permission 的 com.genton.* 均已声明",
       f"引用了未声明权限: {undeclared_used[:5]}",
       [os.path.relpath(mp, base) for mp in all_manifests])
 
 # ---------- C. privapp 白名单审计（R1.9） ----------
-privapp = os.path.join(base, "permissions/privapp-permissions-ainative.xml")
+privapp = os.path.join(base, "permissions/privapp-permissions-genton.xml")
 if os.path.exists(privapp):
     out("[security-gate] C. privapp 白名单审计 ...")
     root = ET.parse(privapp).getroot()
@@ -134,45 +134,45 @@ if os.path.exists(privapp):
           "privapp 授予项无重复",
           f"重复授予权限: {sorted(dup)}", [privapp])
     bad = [n for n in all_names
-           if not (n.startswith("android.permission.") or n.startswith("com.ainative.permission."))]
+           if not (n.startswith("android.permission.") or n.startswith("com.genton.permission."))]
     check("R1.9", "HIGH", not bad,
-          "privapp 授予项均属 android.* / com.ainative.* 命名空间",
+          "privapp 授予项均属 android.* / com.genton.* 命名空间",
           f"非规范权限名: {bad}", [privapp])
     undeclared = [n for n in all_names
-                  if n.startswith("com.ainative.") and n not in declared_ainative]
+                  if n.startswith("com.genton.") and n not in declared_genton]
     check("R1.9", "HIGH", not undeclared,
-          "privapp 授予的 com.ainative 权限均已在权限清单声明",
-          f"未在权限清单声明的 com.ainative 权限: {undeclared}", [privapp])
+          "privapp 授予的 com.genton 权限均已在权限清单声明",
+          f"未在权限清单声明的 com.genton 权限: {undeclared}", [privapp])
 else:
     out("[security-gate] C. 跳过：privapp-permissions 缺失（INFO）")
 
 # ---------- D. sepolicy 审计（R2.8 / R2.9 / R10.7 / R1.10） ----------
-te = os.path.join(base, "sepolicy/ainative.te")
+te = os.path.join(base, "sepolicy/genton.te")
 declared_types = set()
 if os.path.exists(te):
     out("[security-gate] D. sepolicy 审计 ...")
     content = open(te, encoding="utf-8").read()
     has_neverallow = ("neverallow" in content and
-                      "ainative_service_type" in content and
+                      "genton_service_type" in content and
                       "appdomain" in content)
     check("R1.10", "CRITICAL", has_neverallow,
-          "存在 appdomain 禁访 ainative 服务的 neverallow",
-          "缺少 appdomain 对 ainative_service_type 的 neverallow（第三方可访问核心服务）", [te])
-    broad = re.findall(r'^allow\s+(\S*ainative\S*)\s+[^ ]*\s+(?:\*|(?:\{[^}]*\}))\s+\*', content, re.M)
-    broad2 = re.findall(r'^allow\s+(\S*ainative\S*)\s+[^ ]*\s+[^ ]*\s+\*', content, re.M)
+          "存在 appdomain 禁访 genton 服务的 neverallow",
+          "缺少 appdomain 对 genton_service_type 的 neverallow（第三方可访问核心服务）", [te])
+    broad = re.findall(r'^allow\s+(\S*genton\S*)\s+[^ ]*\s+(?:\*|(?:\{[^}]*\}))\s+\*', content, re.M)
+    broad2 = re.findall(r'^allow\s+(\S*genton\S*)\s+[^ ]*\s+[^ ]*\s+\*', content, re.M)
     check("R2.8", "HIGH", not broad and not broad2,
-          "ainative 域未见 class/perm 通配全放行",
+          "genton 域未见 class/perm 通配全放行",
           f"发现全放行 allow（应白名单化）: {sorted(set(broad + broad2))[:5]}", [te])
     has_audit_guard = re.search(
-        r'neverallow\s+\{\s*domain\s*-\s*ainative_audit\s*-\s*system_server\s*\}\s+'
-        r'ainative_audit_data_file:file read', content)
+        r'neverallow\s+\{\s*domain\s*-\s*genton_audit\s*-\s*system_server\s*\}\s+'
+        r'genton_audit_data_file:file read', content)
     check("R2.9", "HIGH", bool(has_audit_guard),
           "审计数据文件 read 受 neverallow 保护",
           "审计数据文件缺少只读保护 neverallow", [te])
     declared_types = set(re.findall(
-        r'^type\s+(ainative_\w+_service)\s*,\s*ainative_service_type', content, re.M))
+        r'^type\s+(genton_\w+_service)\s*,\s*genton_service_type', content, re.M))
 else:
-    out("[security-gate] D. 跳过：ainative.te 缺失（INFO）")
+    out("[security-gate] D. 跳过：genton.te 缺失（INFO）")
 
 # ---------- E. service_contexts 对账（R2.8） ----------
 ctx = os.path.join(base, "sepolicy/service_contexts")
@@ -180,17 +180,17 @@ if os.path.exists(ctx):
     out("[security-gate] E. service_contexts 对账 ...")
     content = open(ctx, encoding="utf-8").read()
     mapped = set(re.findall(
-        r'^(\S+)\s+u:object_r:(ainative_\w+_service):s0', content, re.M))
+        r'^(\S+)\s+u:object_r:(genton_\w+_service):s0', content, re.M))
     mapped_types = {t for _, t in mapped}
     if declared_types:
         unmapped = declared_types - mapped_types
         check("R2.8", "HIGH", not unmapped,
-              "ainative.te 中声明域均在 service_contexts 有映射",
+              "genton.te 中声明域均在 service_contexts 有映射",
               f"未映射到 service_contexts 的域类型: {sorted(unmapped)}", [te, ctx])
-    bad_names = [s for s, _ in mapped if not re.match(r'^ainative_[a-z_]+$', s)]
+    bad_names = [s for s, _ in mapped if not re.match(r'^genton_[a-z_]+$', s)]
     check("R2.8", "LOW", not bad_names,
           "服务名命名规范",
-          f"服务名不符合 ainative_* 模式: {bad_names}", [ctx])
+          f"服务名不符合 genton_* 模式: {bad_names}", [ctx])
 else:
     out("[security-gate] E. 跳过：service_contexts 缺失（INFO）")
 

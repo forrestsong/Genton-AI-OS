@@ -8,7 +8,7 @@
 
 | 文件 | 功能 | 行数 |
 |------|------|------|
-| [ainative.te](ainative.te) | 核心域定义（6 个服务域 + 15 个服务类型） | 220 |
+| [genton.te](genton.te) | 核心域定义（6 个服务域 + 15 个服务类型） | 220 |
 | [system_server.te](system_server.te) | SystemServer 扩展策略 | 45 |
 | [init.te](init.te) | Init 进程启动策略 | 30 |
 | [attributes](attributes) | 安全属性定义 | 15 |
@@ -22,45 +22,45 @@
 ### 服务域层级
 
 ```
-ainative_domain (抽象属性)
-├── ainative_service        # 通用服务域
-├── ainative_audit          # 审计服务域
-├── ainative_policy         # 策略引擎域
-├── ainative_inference      # 推理路由域
-├── ainative_call           # 通话门控域
-└── ainative_motion         # 姿态交互域
+genton_domain (抽象属性)
+├── genton_service        # 通用服务域
+├── genton_audit          # 审计服务域
+├── genton_policy         # 策略引擎域
+├── genton_inference      # 推理路由域
+├── genton_call           # 通话门控域
+└── genton_motion         # 姿态交互域
 
-ainative_brain_app          # 大脑特权应用域
+genton_brain_app          # 大脑特权应用域
 ```
 
 ### 数据文件类型
 
 ```
-ainative_data_file_type (抽象属性)
-├── ainative_audit_data_file        # 审计日志（哈希链）
-├── ainative_policy_data_file       # 策略缓存
-└── ainative_brain_app_data_file    # 大脑 App 数据
+genton_data_file_type (抽象属性)
+├── genton_audit_data_file        # 审计日志（哈希链）
+├── genton_policy_data_file       # 策略缓存
+└── genton_brain_app_data_file    # 大脑 App 数据
 ```
 
 ### 服务类型（15 个）
 
 ```
-ainative_service_type (抽象属性)
-├── ainative_perception_service     # 感知服务
-├── ainative_action_service         # 动作执行
-├── ainative_agent_service          # Agent 运行时
-├── ainative_memory_service         # 记忆服务
-├── ainative_audit_service          # 审计服务
-├── ainative_semantics_service      # 语义服务
-├── ainative_events_service         # 事件流
-├── ainative_context_service        # 上下文服务
-├── ainative_policy_service         # 策略引擎
-├── ainative_assets_service         # 资产目录
-├── ainative_ui_service             # UI 契约
-├── ainative_inference_service      # 推理路由
-├── ainative_sandbox_service        # 沙箱执行
-├── ainative_call_service           # 通话门控
-└── ainative_motion_service         # 姿态交互
+genton_service_type (抽象属性)
+├── genton_perception_service     # 感知服务
+├── genton_action_service         # 动作执行
+├── genton_agent_service          # Agent 运行时
+├── genton_memory_service         # 记忆服务
+├── genton_audit_service          # 审计服务
+├── genton_semantics_service      # 语义服务
+├── genton_events_service         # 事件流
+├── genton_context_service        # 上下文服务
+├── genton_policy_service         # 策略引擎
+├── genton_assets_service         # 资产目录
+├── genton_ui_service             # UI 契约
+├── genton_inference_service      # 推理路由
+├── genton_sandbox_service        # 沙箱执行
+├── genton_call_service           # 通话门控
+└── genton_motion_service         # 姿态交互
 ```
 
 ## 🔒 安全策略
@@ -70,9 +70,9 @@ ainative_service_type (抽象属性)
 每个服务运行在独立的 SELinux 域中：
 
 ```
-ainative_audit    ← 审计服务（独立域）
-ainative_policy   ← 策略引擎（独立域）
-ainative_inference← 推理路由（独立域）
+genton_audit    ← 审计服务（独立域）
+genton_policy   ← 策略引擎（独立域）
+genton_inference← 推理路由（独立域）
 ...
 ```
 
@@ -82,22 +82,22 @@ ainative_inference← 推理路由（独立域）
 
 | 域 | 关键权限 | 限制 |
 |------|----------|------|
-| **ainative_audit** | 写审计日志 | 仅自己读取 |
-| **ainative_policy** | 读 DSL 规则 | 禁止写入 |
-| **ainative_inference** | NPU 设备访问 | 仅推理使用 |
-| **ainative_call** | Telephony 集成 | 紧急号码白名单 |
-| **ainative_motion** | 传感器访问 | 唯一消费者 |
+| **genton_audit** | 写审计日志 | 仅自己读取 |
+| **genton_policy** | 读 DSL 规则 | 禁止写入 |
+| **genton_inference** | NPU 设备访问 | 仅推理使用 |
+| **genton_call** | Telephony 集成 | 紧急号码白名单 |
+| **genton_motion** | 传感器访问 | 唯一消费者 |
 
 ### 3. 第三方应用隔离
 
 ```te
 # 禁止第三方应用访问 AI Native OS 服务
-neverallow { appdomain -ainative_brain_app -system_app -priv_app } 
-           ainative_service_type:service_manager find;
+neverallow { appdomain -genton_brain_app -system_app -priv_app } 
+           genton_service_type:service_manager find;
 ```
 
 **允许访问的域**:
-- `ainative_brain_app` - 大脑特权 App
+- `genton_brain_app` - 大脑特权 App
 - `system_app` - 系统应用
 - `priv_app` - 特权应用
 
@@ -109,12 +109,12 @@ neverallow { appdomain -ainative_brain_app -system_app -priv_app }
 
 ```te
 # 禁止非特权域读取审计日志
-neverallow { domain -ainative_audit -system_server } 
-           ainative_audit_data_file:file read;
+neverallow { domain -genton_audit -system_server } 
+           genton_audit_data_file:file read;
 
 # 禁止非策略引擎修改 DSL 规则
-neverallow { domain -ainative_policy -init } 
-           ainative_policy_data_file:file write;
+neverallow { domain -genton_policy -init } 
+           genton_policy_data_file:file write;
 ```
 
 ## 🔧 集成步骤
@@ -123,7 +123,7 @@ neverallow { domain -ainative_policy -init }
 
 ```bash
 # 进入 AOSP 根目录
-cd ~/ainative-aosp
+cd ~/genton-aosp
 
 # 复制 SELinux 策略
 cp -r /path/to/sepolicy/* system/sepolicy/private/
@@ -131,9 +131,9 @@ cp -r /path/to/sepolicy/* system/sepolicy/private/
 # 更新 Android.bp
 cat >> system/sepolicy/private/Android.bp <<EOF
 se_policy_conf {
-    name: "ainative_sepolicy",
+    name: "genton_sepolicy",
     srcs: [
-        "ainative.te",
+        "genton.te",
         "system_server.te",
         "init.te",
         "attributes",
@@ -149,10 +149,10 @@ EOF
 ```makefile
 # AI Native OS 策略
 BOARD_SEPOLICY_DIRS += \
-    system/sepolicy/private/ainative
+    system/sepolicy/private/genton
 
 BOARD_SEPOLICY_UNION += \
-    ainative.te \
+    genton.te \
     system_server.te \
     init.te \
     attributes \
@@ -164,15 +164,15 @@ BOARD_SEPOLICY_UNION += \
 
 ```bash
 # 复制权限清单
-cp permissions/privapp-permissions-ainative.xml \
+cp permissions/privapp-permissions-genton.xml \
    frameworks/base/data/etc/
 
 # 更新 Android.bp
 cat >> frameworks/base/data/etc/Android.bp <<EOF
 prebuilt_etc {
-    name: "privapp-permissions-ainative.xml",
+    name: "privapp-permissions-genton.xml",
     sub_dir: "permissions",
-    src: "privapp-permissions-ainative.xml",
+    src: "privapp-permissions-genton.xml",
     filename_from_src: true,
 }
 EOF
@@ -188,7 +188,7 @@ m selinux_policy
 sepolicy-analyze -p out/target/product/generic/sepolicy
 
 # 查看域转换
-sesearch --allow -s init -t ainative_service
+sesearch --allow -s init -t genton_service
 ```
 
 ## 🧪 测试验证
@@ -197,12 +197,12 @@ sesearch --allow -s init -t ainative_service
 
 ```bash
 # 启动服务，验证域转换
-adb shell ps -Z | grep ainative
+adb shell ps -Z | grep genton
 
 # 预期输出:
-# u:r:ainative_service:s0  ... /system/bin/ainative_service
-# u:r:ainative_audit:s0    ... /system/bin/ainative_audit
-# u:r:ainative_policy:s0   ... /system/bin/ainative_policy
+# u:r:genton_service:s0  ... /system/bin/genton_service
+# u:r:genton_audit:s0    ... /system/bin/genton_audit
+# u:r:genton_policy:s0   ... /system/bin/genton_policy
 ```
 
 ### 2. 服务访问测试
@@ -210,25 +210,25 @@ adb shell ps -Z | grep ainative
 ```bash
 # 大脑 App 可以访问（应成功）
 adb shell cmd activity start-service \
-  -n com.ainative.brain/.service.AgentService
+  -n com.genton.brain/.service.AgentService
 
 # 第三方 App 禁止访问（应被拒绝）
 adb shell cmd activity start-service \
   -n com.example.thirdparty/.BadService
 
 # 检查 AVC 拒绝日志
-adb shell dmesg | grep avc | grep ainative
+adb shell dmesg | grep avc | grep genton
 ```
 
 ### 3. 数据保护测试
 
 ```bash
 # 审计日志保护
-adb shell ls -Z /data/ainative/audit/
-# 预期: u:object_r:ainative_audit_data_file:s0
+adb shell ls -Z /data/genton/audit/
+# 预期: u:object_r:genton_audit_data_file:s0
 
 # 非特权进程无法读取
-adb shell cat /data/ainative/audit/hash_chain.bin
+adb shell cat /data/genton/audit/hash_chain.bin
 # 预期: Permission denied
 ```
 
@@ -236,7 +236,7 @@ adb shell cat /data/ainative/audit/hash_chain.bin
 
 ```bash
 # 检查大脑 App 权限
-adb shell dumpsys package com.ainative.brain | grep permission
+adb shell dumpsys package com.genton.brain | grep permission
 
 # 预期包含:
 # android.permission.DUMP: granted=true
@@ -246,7 +246,7 @@ adb shell dumpsys package com.ainative.brain | grep permission
 
 ## 📊 权限清单详情
 
-[privapp-permissions-ainative.xml](../permissions/privapp-permissions-ainative.xml) 定义了 **49 项**系统权限：
+[privapp-permissions-genton.xml](../permissions/privapp-permissions-genton.xml) 定义了 **49 项**系统权限：
 
 | 分类 | 权限数 | 关键权限 |
 |------|--------|----------|
@@ -268,11 +268,11 @@ adb shell dumpsys package com.ainative.brain | grep permission
 ```te
 # 调试构建允许 shell 访问（仅用于开发）
 userdebug_or_eng(`
-  allow shell ainative_service_type:service_manager find;
+  allow shell genton_service_type:service_manager find;
 ')
 
 # 生产构建严格禁止
-# neverallow shell ainative_service_type:service_manager find;
+# neverallow shell genton_service_type:service_manager find;
 ```
 
 ### 2. Neverallow 规则
@@ -290,10 +290,10 @@ userdebug_or_eng(`
 
 ```bash
 # 审计日志中的权限检查
-adb shell cat /data/ainative/audit/permission_checks.log
+adb shell cat /data/genton/audit/permission_checks.log
 
 # 统计最常用权限
-adb shell cat /data/ainative/audit/permission_checks.log | \
+adb shell cat /data/genton/audit/permission_checks.log | \
   grep PERMISSION_CHECK | awk '{print $4}' | sort | uniq -c | sort -rn
 ```
 
@@ -307,7 +307,7 @@ adb shell dmesg | grep "avc.*denied"
 
 # 示例输出:
 # avc: denied { call } for scontext=u:r:untrusted_app:s0 
-#      tcontext=u:r:ainative_service:s0 tclass=binder
+#      tcontext=u:r:genton_service:s0 tclass=binder
 
 # 解决: 这是预期行为，第三方应用被正确拒绝
 ```
@@ -316,7 +316,7 @@ adb shell dmesg | grep "avc.*denied"
 
 ```bash
 # 检查域转换
-adb shell ps -Z | grep ainative
+adb shell ps -Z | grep genton
 
 # 如果域为 init 或 system_server，说明转换失败
 # 检查 init.te 和 file_contexts
@@ -326,9 +326,9 @@ adb shell ps -Z | grep ainative
 
 ```bash
 # 检查权限清单是否安装
-adb shell ls -l /system/etc/permissions/ | grep ainative
+adb shell ls -l /system/etc/permissions/ | grep genton
 
-# 预期: privapp-permissions-ainative.xml
+# 预期: privapp-permissions-genton.xml
 
 # 重启后生效
 adb reboot

@@ -3,8 +3,8 @@ import os
 import shutil
 import sys
 
-SRC_ROOT = '/mnt/d/AI Native OS/aidl/com/ainative'
-DST_ROOT = '/root/aosp/frameworks/base/core/java/com/ainative'
+SRC_ROOT = '/mnt/d/AI Native OS/aidl/com/genton'
+DST_ROOT = '/root/aosp/frameworks/base/core/java/com/genton'
 
 copied = []
 skipped = []

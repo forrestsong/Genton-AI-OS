@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 
-AIDL_BASE = '/root/aosp/frameworks/base/core/java/com/ainative'
+AIDL_BASE = '/root/aosp/frameworks/base/core/java/com/genton'
 
 # iface -> (aidl file path rel, constants block to add right after "interface X {")
 consts = {

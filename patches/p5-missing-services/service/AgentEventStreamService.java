@@ -1,4 +1,4 @@
-package com.android.server.ainative;
+package com.android.server.genton;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,12 +14,12 @@ import android.os.SystemClock;
 import android.util.ArrayMap;
 import android.util.Slog;
 
-import com.ainative.events.EventSubscription;
-import com.ainative.events.IAgentEventSink;
-import com.ainative.events.IAgentEventStreamService;
-import com.ainative.events.SubscriptionHandle;
-import com.ainative.events.SubscriptionInfo;
-import com.ainative.events.SystemEvent;
+import com.genton.events.EventSubscription;
+import com.genton.events.IAgentEventSink;
+import com.genton.events.IAgentEventStreamService;
+import com.genton.events.SubscriptionHandle;
+import com.genton.events.SubscriptionInfo;
+import com.genton.events.SystemEvent;
 import com.android.server.SystemService;
 
 import java.util.ArrayList;
@@ -58,10 +58,10 @@ import java.util.concurrent.atomic.AtomicLong;
 public class AgentEventStreamService extends SystemService {
 
     /** 按事件类型订阅（供同进程服务调用） */
-    public void subscribeByType(String eventType, com.ainative.events.IEventStreamListener listener) {
-        if (mBinder instanceof com.ainative.events.IAgentEventStreamService) {
+    public void subscribeByType(String eventType, com.genton.events.IEventStreamListener listener) {
+        if (mBinder instanceof com.genton.events.IAgentEventStreamService) {
             try {
-                ((com.ainative.events.IAgentEventStreamService) mBinder).subscribeByType(eventType, listener);
+                ((com.genton.events.IAgentEventStreamService) mBinder).subscribeByType(eventType, listener);
             } catch (android.os.RemoteException e) {
                 android.util.Slog.w("AgentEventStream", "subscribeByType failed", e);
             }
@@ -71,7 +71,7 @@ public class AgentEventStreamService extends SystemService {
     private static final boolean DEBUG = false;
 
     // 权限
-    private static final String SUBSCRIBE_EVENTS = "com.ainative.permission.SUBSCRIBE_EVENTS";
+    private static final String SUBSCRIBE_EVENTS = "com.genton.permission.SUBSCRIBE_EVENTS";
 
     // 事件类型白名单（9 组）
     private static final Set<String> EVENT_TYPE_WHITELIST = new HashSet<>(Arrays.asList(
@@ -121,14 +121,14 @@ public class AgentEventStreamService extends SystemService {
         mContext = context;
     }
 
-    /** [P5] 暴露 binder，供 AinativeServiceRegistry 以规范服务名注册 */
+    /** [P5] 暴露 binder，供 GentonServiceRegistry 以规范服务名注册 */
     public android.os.IBinder getBinder() {
         return mBinder;
     }
 
     @Override
     public void onStart() {
-        publishBinderService("ainative_event_stream", mBinder);
+        publishBinderService("genton_event_stream", mBinder);
 
         mHandlerThread = new HandlerThread("AgentEventStreamService");
         mHandlerThread.start();
@@ -142,7 +142,7 @@ public class AgentEventStreamService extends SystemService {
 
     private final IAgentEventStreamService.Stub mBinder = new IAgentEventStreamService.Stub() {
         @Override
-        public void subscribeByType(String eventType, com.ainative.events.IEventStreamListener listener) {
+        public void subscribeByType(String eventType, com.genton.events.IEventStreamListener listener) {
             // 按类型订阅（当前实现不推送，占位满足契约）
         }
 

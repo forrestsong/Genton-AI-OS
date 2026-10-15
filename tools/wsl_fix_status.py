@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 
-BASE = '/root/aosp/frameworks/base/core/java/com/ainative'
+BASE = '/root/aosp/frameworks/base/core/java/com/genton'
 
 # 1. Add STATUS_* constants to IAgentMacroRecorderService.aidl
 p = BASE + '/macro/IAgentMacroRecorderService.aidl'
@@ -25,7 +25,7 @@ with open(p, 'w') as f:
 print("PATCHED IAgentMacroRecorderService STATUS constants OK")
 
 # 2. Fix AgentMemoryService getCallingAgentId (remove getAgentIdByUid call)
-p2 = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative/AgentMemoryService.java'
+p2 = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton/AgentMemoryService.java'
 with open(p2) as f:
     c2 = f.read()
 old2 = '''    private String getCallingAgentId() {
@@ -67,7 +67,7 @@ with open(p2, 'w') as f:
 print("PATCHED AgentMemoryService getCallingAgentId OK")
 
 # 3. Check if EntityQueryService has similar getCallingAgentId with getAgentIdByUid
-p3 = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative/EntityQueryService.java'
+p3 = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton/EntityQueryService.java'
 with open(p3) as f:
     c3 = f.read()
 if 'getAgentIdByUid' in c3:

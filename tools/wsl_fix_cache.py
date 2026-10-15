@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 
-p = '/root/aosp/frameworks/base/core/java/com/ainative/semantics/packing/ContextPackingService.kt'
+p = '/root/aosp/frameworks/base/core/java/com/genton/semantics/packing/ContextPackingService.kt'
 with open(p) as f:
     lines = f.readlines()
 

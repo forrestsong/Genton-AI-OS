@@ -12,7 +12,7 @@ echo ""
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TOOLS_DIR="$PROJECT_ROOT/tools"
-CALIBRATION_DIR="$PROJECT_ROOT/vendor/ainative/config/calibration"
+CALIBRATION_DIR="$PROJECT_ROOT/vendor/genton/config/calibration"
 REPORTS_DIR="$PROJECT_ROOT/reports/ci"
 
 # 创建目录

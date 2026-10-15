@@ -180,7 +180,7 @@
     {
       "id": "RT-19",
       "title": "修复未进入构建树（归档 ≠ 镜像）",
-      "attack": "在归档（com.ainative）中修复安全缺陷，但真正被编译的是 WSL 构建树 /root/aosp（已改名为 com.genton）：缺陷在镜像里原样存在，而报告显示『已修复』",
+      "attack": "在归档（com.genton）中修复安全缺陷，但真正被编译的是 WSL 构建树 /root/aosp（已改名为 com.genton）：缺陷在镜像里原样存在，而报告显示『已修复』",
       "expect": "构建树中的安全不变量必须与归档一致；不一致即 FAIL",
       "status": "open-gap",
       "runtime": false,

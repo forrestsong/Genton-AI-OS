@@ -6,15 +6,15 @@
 //
 // 说明：本实现负责**清单校验与句柄生命周期管理**（可独立验证的部分）；
 //       真实进程拉起依赖 isolatedProcess 与 netd 白名单，属后续接入项。
-package com.android.server.ainative;
+package com.android.server.genton;
 
 import android.content.Context;
 import android.util.Slog;
 
-import com.ainative.sandbox.IAgentSandboxManager;
-import com.ainative.sandbox.SandboxHandle;
-import com.ainative.sandbox.SandboxManifest;
-import com.ainative.sandbox.SandboxStatus;
+import com.genton.sandbox.IAgentSandboxManager;
+import com.genton.sandbox.SandboxHandle;
+import com.genton.sandbox.SandboxManifest;
+import com.genton.sandbox.SandboxStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,13 +39,13 @@ public class AgentSandboxManagerService extends IAgentSandboxManager.Stub {
 
     /**
      * 单点鉴权（WBS 1.3/1.8）：沙箱管理属高危面（可拉起三方 Agent），
-     * 要求调用方持有 com.ainative.permission.MANAGE_SANDBOX（signature|privileged）。
+     * 要求调用方持有 com.genton.permission.MANAGE_SANDBOX（signature|privileged）。
      */
     @Override
     public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags)
             throws android.os.RemoteException {
         if (code != android.os.IBinder.INTERFACE_TRANSACTION) {
-            mContext.enforceCallingPermission("com.ainative.permission.MANAGE_SANDBOX",
+            mContext.enforceCallingPermission("com.genton.permission.MANAGE_SANDBOX",
                     "AgentSandboxManagerService requires MANAGE_SANDBOX");
         }
         return super.onTransact(code, data, reply, flags);

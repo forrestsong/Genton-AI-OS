@@ -1,6 +1,6 @@
 // AI Native OS - SystemUI Module
 android_app {
-    name: "AINativeSystemUI",
+    name: "GentonSystemUI",
     
     srcs: [
         "src/**/*.java",
@@ -37,14 +37,14 @@ android_app {
     },
     
     required: [
-        "privapp_whitelist_com.android.systemui.ainative.xml",
+        "privapp_whitelist_com.android.systemui.genton.xml",
     ],
 }
 
 // Privileged permissions whitelist
 prebuilt_etc {
-    name: "privapp_whitelist_com.android.systemui.ainative.xml",
+    name: "privapp_whitelist_com.android.systemui.genton.xml",
     sub_dir: "permissions",
-    src: "privapp-permissions-ainative-systemui.xml",
+    src: "privapp-permissions-genton-systemui.xml",
     filename_from_src: true,
 }

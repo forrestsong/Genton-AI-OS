@@ -4,34 +4,34 @@
 # ============================================
 # 14 个系统服务
 # ============================================
-ainative_uitree                u:object_r:ainative_perception_service:s0
-ainative_screen                u:object_r:ainative_perception_service:s0
-ainative_notification          u:object_r:ainative_perception_service:s0
+genton_uitree                u:object_r:genton_perception_service:s0
+genton_screen                u:object_r:genton_perception_service:s0
+genton_notification          u:object_r:genton_perception_service:s0
 
-ainative_action                u:object_r:ainative_action_service:s0
+genton_action                u:object_r:genton_action_service:s0
 
-ainative_runtime               u:object_r:ainative_agent_service:s0
+genton_runtime               u:object_r:genton_agent_service:s0
 
-ainative_memory                u:object_r:ainative_memory_service:s0
+genton_memory                u:object_r:genton_memory_service:s0
 
-ainative_audit                 u:object_r:ainative_audit_service:s0
+genton_audit                 u:object_r:genton_audit_service:s0
 
-ainative_semantics             u:object_r:ainative_semantics_service:s0
+genton_semantics             u:object_r:genton_semantics_service:s0
 
-ainative_events                u:object_r:ainative_events_service:s0
+genton_events                u:object_r:genton_events_service:s0
 
-ainative_context               u:object_r:ainative_context_service:s0
+genton_context               u:object_r:genton_context_service:s0
 
-ainative_policy                u:object_r:ainative_policy_service:s0
+genton_policy                u:object_r:genton_policy_service:s0
 
-ainative_assets                u:object_r:ainative_assets_service:s0
+genton_assets                u:object_r:genton_assets_service:s0
 
-ainative_ui                    u:object_r:ainative_ui_service:s0
+genton_ui                    u:object_r:genton_ui_service:s0
 
-ainative_inference             u:object_r:ainative_inference_service:s0
+genton_inference             u:object_r:genton_inference_service:s0
 
-ainative_sandbox               u:object_r:ainative_sandbox_service:s0
+genton_sandbox               u:object_r:genton_sandbox_service:s0
 
-ainative_call                  u:object_r:ainative_call_service:s0
+genton_call                  u:object_r:genton_call_service:s0
 
-ainative_motion                u:object_r:ainative_motion_service:s0
+genton_motion                u:object_r:genton_motion_service:s0

@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.agent",
+    name: "com.genton.agent",
     
     srcs: [
-        "com/ainative/agent/*.aidl",
+        "com/genton/agent/*.aidl",
     ],
     
     stability: "vintf",
@@ -35,13 +35,13 @@ aidl_interface {
     ],
     
     imports: [
-        "com.ainative.policy",  // CapabilityToken
-        "com.ainative.action",  // ActionRequest
+        "com.genton.policy",  // CapabilityToken
+        "com.genton.action",  // ActionRequest
     ],
     
     visibility: [
         "//frameworks/base/services/core",
         "//frameworks/base/core/java",
-        "//packages/apps/AINativeBrain",
+        "//packages/apps/GentonBrain",
     ],
 }

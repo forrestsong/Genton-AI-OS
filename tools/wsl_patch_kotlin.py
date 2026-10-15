@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 
-BASE = '/root/aosp/frameworks/base/core/java/com/ainative'
+BASE = '/root/aosp/frameworks/base/core/java/com/genton'
 ok = True
 
 def patch(path, old, new, label):
@@ -20,7 +20,7 @@ def patch(path, old, new, label):
 
 # 1. IntentLearningGenerator.kt: remove bad PolicyRule import
 patch('/learn/IntentLearningGenerator.kt',
-      'import com.ainative.policy.PolicyRule\n',
+      'import com.genton.policy.PolicyRule\n',
       '',
       '1. remove PolicyRule import')
 

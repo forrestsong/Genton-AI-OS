@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SVC = ROOT / "overlay/frameworks/base/services/core/java/com/android/server/ainative"
+SVC = ROOT / "overlay/frameworks/base/services/core/java/com/android/server/genton"
 AAS = SVC / "AgentAuditService.java"
 TAM = SVC / "TeeAnchorManager.java"
 
@@ -80,7 +80,7 @@ if not AAS.exists():
 else:
     text = strip_comments(read(AAS))
     checks = [
-        (r'AUDIT_DIR|/data/system/ainative/audit', "有落盘目录常量"),
+        (r'AUDIT_DIR|/data/system/genton/audit', "有落盘目录常量"),
         (r'\.jsonl', "使用 JSONL 追加日志"),
         (r'getFD\(\)\.sync\(\)', "写入后 fsync（掉电不丢尾部）"),
         (r'private void restoreChainFromDisk\s*\(', "存在启动恢复方法"),

@@ -2,8 +2,8 @@
 import os
 import re
 
-JAVA_DIR = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative'
-AIDL_BASE = '/root/aosp/frameworks/base/core/java/com/ainative'
+JAVA_DIR = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton'
+AIDL_BASE = '/root/aosp/frameworks/base/core/java/com/genton'
 
 services = {
     'ActionExecutionService.java': ('execution', 'IActionExecutionService'),

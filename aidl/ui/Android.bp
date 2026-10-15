@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.ui",
+    name: "com.genton.ui",
     
     srcs: [
-        "com/ainative/ui/*.aidl",
+        "com/genton/ui/*.aidl",
     ],
     
     stability: "vintf",
@@ -35,15 +35,15 @@ aidl_interface {
     ],
     
     imports: [
-        "com.ainative.action",    // ActionRequest
-        "com.ainative.agent",     // AgentHandle
-        "com.ainative.context",   // ContextFrame
+        "com.genton.action",    // ActionRequest
+        "com.genton.agent",     // AgentHandle
+        "com.genton.context",   // ContextFrame
     ],
     
     visibility: [
         "//frameworks/base/services/core",
         "//frameworks/base/core/java",
-        "//packages/apps/AINativeBrain",
+        "//packages/apps/GentonBrain",
         "//packages/apps/SystemUI",  // 会话桥宿主
     ],
 }

@@ -12,7 +12,7 @@ echo
 echo "=== D. system modules jimage still has Binder (fix intact)? ==="
 strings /root/aosp/out/soong/.intermediates/build/soong/java/core-libraries/stable-core-platform-api-stubs-system-modules/android_common/system/lib/modules 2>/dev/null | grep -c "android/os/Binder"
 echo
-echo "=== E. frameworks/base git status (our ainative changes + any others) ==="
+echo "=== E. frameworks/base git status (our genton changes + any others) ==="
 git -C /root/aosp/frameworks/base status --short 2>/dev/null | head -20
 echo
 echo "=== F. build/soong git status ==="

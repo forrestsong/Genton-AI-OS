@@ -12,7 +12,7 @@ AI Native OS - 感知→策略→执行→审计 端到端 v1（H3.1）
   5. 审计哈希链完整（A5.2 语义）
 
 实现方式：桩服务（PerceptionStub / ExecutorStub / AuditStub）+ 真实策略
-引擎（vendor/ainative/services/policy_engine.py，yaml 桩注入），以
+引擎（vendor/genton/services/policy_engine.py，yaml 桩注入），以
 进程内模拟器串联完整链路。
 
 可独立运行：python3 tools/e2e/test_e2e_v1.py
@@ -35,7 +35,7 @@ except Exception:  # pragma: no cover
 
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(TOOLS_DIR)
-ENGINE_PATH = os.path.join(PROJECT_ROOT, "vendor", "ainative", "services",
+ENGINE_PATH = os.path.join(PROJECT_ROOT, "vendor", "genton", "services",
                            "policy_engine.py")
 
 
@@ -217,7 +217,7 @@ def load_engine() -> Any:
         RuntimeError("yaml stub"))
     sys.modules.setdefault("yaml", yaml_stub)
     spec = importlib.util.spec_from_file_location(
-        "ainative_policy_engine_e2e", ENGINE_PATH)
+        "genton_policy_engine_e2e", ENGINE_PATH)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
 

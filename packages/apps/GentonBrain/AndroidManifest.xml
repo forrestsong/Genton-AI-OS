@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.genton.brain">
+
+    <!-- 平台签名权限 -->
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+    <uses-permission android:name="android.permission.MANAGE_USERS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="com.genton.permission.BIND_AGENT_RUNTIME" />
+    <uses-permission android:name="com.genton.permission.SUBSCRIBE_EVENTS" />
+    
+    <!-- F3.2 首批 Skill 资产依赖的系统能力桥运行时权限 -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    
+    <!-- 会话桥权限 -->
+    <permission
+        android:name="com.genton.permission.BIND_AGENT_UI"
+        android:protectionLevel="signature|privileged"
+        android:label="@string/perm_bind_agent_ui_label"
+        android:description="@string/perm_bind_agent_ui_desc" />
+
+    <application
+        android:name=".BrainApplication"
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_brain"
+        android:allowBackup="false"
+        android:persistent="true"
+        android:process=":main">
+
+        <!-- B1.1 启动自检服务 -->
+        <service
+            android:name=".lifecycle.BrainBootstrapService"
+            android:exported="false"
+            android:enabled="true" />
+
+        <!-- B1.1 崩溃恢复服务 -->
+        <service
+            android:name=".lifecycle.CrashRecoveryService"
+            android:exported="false"
+            android:enabled="true" />
+
+        <!-- B3.1 会话服务（大脑侧实现） -->
+        <service
+            android:name=".session.AgentSessionService"
+            android:exported="true"
+            android:permission="com.genton.permission.BIND_AGENT_UI">
+            <intent-filter>
+                <action android:name="com.genton.agent.IAgentSessionService" />
+            </intent-filter>
+        </service>
+
+        <!-- B1.2 事件流监听器 -->
+        <receiver
+            android:name=".event.EventStreamListener"
+            android:exported="false"
+            android:enabled="true" />
+
+    </application>
+
+</manifest>

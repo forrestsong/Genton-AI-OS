@@ -2,7 +2,7 @@
 import os
 import re
 
-JAVA_DIR = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative'
+JAVA_DIR = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton'
 
 # service java -> its Stub interface simple name
 services = {

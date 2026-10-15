@@ -3,7 +3,7 @@
 // 方向：SystemUI -> system_server 侧 ConfirmationHostService
 // 用途：用户在选择面板上做出决策后，把决策交回服务端；
 //       服务端再回灌策略引擎（reportUserDecision）并路由回执行中介。
-package com.ainative.ui;
+package com.genton.ui;
 
 oneway interface IConfirmationDecisionCallback {
     /**

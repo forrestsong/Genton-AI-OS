@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import sys
 
-p = '/root/aosp/frameworks/base/core/java/com/ainative/Android.bp'
+p = '/root/aosp/frameworks/base/core/java/com/genton/Android.bp'
 with open(p) as f:
     c = f.read()
 
 old = '''java_library {
-    name: "ainative.core",
+    name: "genton.core",
     srcs: [
         "learn/**/*.kt",
         "semantics/**/*.kt",
@@ -22,7 +22,7 @@ old = '''java_library {
     ],
 }'''
 new = '''java_library {
-    name: "ainative.core",
+    name: "genton.core",
     srcs: [
         "learn/**/*.kt",
         "semantics/**/*.kt",
@@ -49,4 +49,4 @@ if old not in c:
 c = c.replace(old, new, 1)
 with open(p, 'w') as f:
     f.write(c)
-print("PATCHED ainative.core bp OK (aosp tree)")
+print("PATCHED genton.core bp OK (aosp tree)")

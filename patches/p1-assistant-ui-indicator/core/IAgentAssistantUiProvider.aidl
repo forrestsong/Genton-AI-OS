@@ -3,9 +3,9 @@
 // 实现方：SystemUI（应用 UID 无法注册系统服务，故经
 //         IAgentAssistantUi.registerUiProvider 反向交出本接口）
 // 调用方：system_server 侧 AgentAssistantUiService（代理转发）
-package com.ainative.ui;
+package com.genton.ui;
 
-import com.ainative.ui.SuggestionCapsuleData;
+import com.genton.ui.SuggestionCapsuleData;
 
 interface IAgentAssistantUiProvider {
     oneway void requestAssistantSurface(in String reason);

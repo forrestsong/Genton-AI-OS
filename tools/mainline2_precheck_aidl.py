@@ -11,7 +11,7 @@ import re
 import sys
 
 BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..",
-                    "overlay", "frameworks", "base", "core", "java", "com", "ainative")
+                    "overlay", "frameworks", "base", "core", "java", "com", "genton")
 BASE = os.path.normpath(BASE)
 
 def parse_bp_srcs(bp_path):
@@ -34,7 +34,7 @@ def main():
         if "Android.bp" not in files:
             continue
         bp = os.path.join(root, "Android.bp")
-        # 跳过顶层（ainative.core 是 java_library）
+        # 跳过顶层（genton.core 是 java_library）
         if root == BASE:
             continue
         srcs = parse_bp_srcs(bp)

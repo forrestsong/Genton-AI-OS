@@ -1,4 +1,4 @@
-package com.android.server.ainative;
+package com.android.server.genton;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -15,11 +15,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
 
-import com.ainative.perception.IAgentNotificationService;
-import com.ainative.perception.IAgentNotificationListener;
-import com.ainative.perception.NotificationEnvelope;
-import com.ainative.perception.NotificationQuery;
-import com.ainative.perception.NotificationAction;
+import com.genton.perception.IAgentNotificationService;
+import com.genton.perception.IAgentNotificationListener;
+import com.genton.perception.NotificationEnvelope;
+import com.genton.perception.NotificationQuery;
+import com.genton.perception.NotificationAction;
 import com.android.server.SystemService;
 
 import java.util.ArrayList;
@@ -60,9 +60,9 @@ public class AgentNotificationService extends SystemService {
     private static final boolean DEBUG = false;
 
     // 权限
-    private static final String READ_NOTIFICATIONS = "com.ainative.permission.READ_NOTIFICATIONS";
-    private static final String DISMISS_NOTIFICATIONS = "com.ainative.permission.DISMISS_NOTIFICATIONS";
-    private static final String PERFORM_NOTIFICATION_ACTIONS = "com.ainative.permission.PERFORM_NOTIFICATION_ACTIONS";
+    private static final String READ_NOTIFICATIONS = "com.genton.permission.READ_NOTIFICATIONS";
+    private static final String DISMISS_NOTIFICATIONS = "com.genton.permission.DISMISS_NOTIFICATIONS";
+    private static final String PERFORM_NOTIFICATION_ACTIONS = "com.genton.permission.PERFORM_NOTIFICATION_ACTIONS";
 
     // 受限应用包名前缀（银行/支付类）
     private static final String[] RESTRICTED_PACKAGE_PREFIXES = {
@@ -98,7 +98,7 @@ public class AgentNotificationService extends SystemService {
     private final Map<String, NotificationEnvelope> mNotificationCache = new ConcurrentHashMap<>();
     
     // 内部 NotificationListenerService 实现
-    private AiNativeNotificationListener mNotificationListener;
+    private GentonNotificationListener mNotificationListener;
 
     public AgentNotificationService(Context context) {
         super(context);
@@ -107,25 +107,25 @@ public class AgentNotificationService extends SystemService {
         mPackageManager = context.getPackageManager();
     }
 
-    /** [P5] 暴露 binder，供 AinativeServiceRegistry 以规范服务名注册 */
+    /** [P5] 暴露 binder，供 GentonServiceRegistry 以规范服务名注册 */
     public android.os.IBinder getBinder() {
         return mBinder;
     }
 
     @Override
     public void onStart() {
-        publishBinderService("ainative_notification", mBinder);
+        publishBinderService("genton_notification", mBinder);
         
         mHandlerThread = new HandlerThread("AgentNotificationService");
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
         
         // 注册内部 NotificationListener
-        mNotificationListener = new AiNativeNotificationListener();
+        mNotificationListener = new GentonNotificationListener();
         try {
             mNotificationListener.registerAsSystemService(
                 mContext,
-                new android.content.ComponentName(mContext, AiNativeNotificationListener.class),
+                new android.content.ComponentName(mContext, GentonNotificationListener.class),
                 android.os.UserHandle.USER_ALL
             );
         } catch (android.os.RemoteException e) {
@@ -137,7 +137,7 @@ public class AgentNotificationService extends SystemService {
 
     private final IAgentNotificationService.Stub mBinder = new IAgentNotificationService.Stub() {
         @Override
-        public void subscribeDigest(com.ainative.perception.INotificationDigestListener listener) {
+        public void subscribeDigest(com.genton.perception.INotificationDigestListener listener) {
             // 摘要订阅（当前实现不推送，占位满足契约）
         }
 
@@ -579,7 +579,7 @@ public class AgentNotificationService extends SystemService {
     /**
      * 内部 NotificationListenerService 实现
      */
-    private class AiNativeNotificationListener extends NotificationListenerService {
+    private class GentonNotificationListener extends NotificationListenerService {
         
         @Override
         public void onNotificationPosted(StatusBarNotification sbn, RankingMap rankingMap) {

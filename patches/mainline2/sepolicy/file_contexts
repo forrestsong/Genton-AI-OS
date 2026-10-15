@@ -963,9 +963,9 @@
 ############################################################
 # AI Native OS 扩展（主线2 重建）
 ############################################################
-/data/data/com\.ainative\.brain(/.*)?                   u:object_r:ainative_data_file:s0
-/data/system/ainative(/.*)?                             u:object_r:ainative_data_file:s0
-/data/system/ainative/audit(/.*)?                       u:object_r:ainative_data_file:s0
-/data/system/ainative/checkpoints(/.*)?                 u:object_r:ainative_data_file:s0
-/data/system/ainative/memory(/.*)?                      u:object_r:ainative_data_file:s0
-/data/system/ainative/policy(/.*)?                      u:object_r:ainative_data_file:s0
+/data/data/com\.genton\.brain(/.*)?                   u:object_r:genton_data_file:s0
+/data/system/genton(/.*)?                             u:object_r:genton_data_file:s0
+/data/system/genton/audit(/.*)?                       u:object_r:genton_data_file:s0
+/data/system/genton/checkpoints(/.*)?                 u:object_r:genton_data_file:s0
+/data/system/genton/memory(/.*)?                      u:object_r:genton_data_file:s0
+/data/system/genton/policy(/.*)?                      u:object_r:genton_data_file:s0

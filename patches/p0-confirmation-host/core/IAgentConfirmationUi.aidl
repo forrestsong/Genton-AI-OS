@@ -8,10 +8,10 @@
 //   - 面板由 SystemUI 独占绘制，全屏安全窗口（FLAG_SECURE）
 //   - 任何 Agent 不可发起、不可伪造、不可覆盖
 //   - 用户决策由 system_server 侧回灌策略引擎，本接口只负责呈现与收集
-package com.ainative.ui;
+package com.genton.ui;
 
-import com.ainative.ui.ConfirmationUiRequest;
-import com.ainative.ui.IConfirmationDecisionCallback;
+import com.genton.ui.ConfirmationUiRequest;
+import com.genton.ui.IConfirmationDecisionCallback;
 
 interface IAgentConfirmationUi {
     /**

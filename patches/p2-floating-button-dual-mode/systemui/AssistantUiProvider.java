@@ -7,7 +7,7 @@
 //   setActivityIndicator -> ActivityIndicatorManager -> 感知/操作指示器芯片
 //   requestAssistantSurface / showSuggestion / navigateTo -> P2/P3 的助理表面
 //     （当前仅记录并保留接口，P2 接入悬浮球与双模式，P3 接入认知壳）
-package com.android.systemui.ainative.assistantui;
+package com.android.systemui.genton.assistantui;
 
 import android.content.Context;
 import android.os.IBinder;
@@ -15,12 +15,12 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.Log;
 
-import com.ainative.audit.ActivityIndicator;
-import com.ainative.ui.IAgentAssistantUi;
-import com.ainative.ui.IAgentAssistantUiProvider;
-import com.ainative.ui.SuggestionCapsuleData;
-import com.android.systemui.ainative.indicator.ActivityIndicatorBootstrap;
-import com.android.systemui.ainative.indicator.ActivityIndicatorManager;
+import com.genton.audit.ActivityIndicator;
+import com.genton.ui.IAgentAssistantUi;
+import com.genton.ui.IAgentAssistantUiProvider;
+import com.genton.ui.SuggestionCapsuleData;
+import com.android.systemui.genton.indicator.ActivityIndicatorBootstrap;
+import com.android.systemui.genton.indicator.ActivityIndicatorManager;
 
 /** 助手 UI 提供方（SystemUI 侧） */
 public class AssistantUiProvider extends IAgentAssistantUiProvider.Stub {
@@ -28,7 +28,7 @@ public class AssistantUiProvider extends IAgentAssistantUiProvider.Stub {
     private static final String TAG = "GentonAssistantUiProv";
 
     /** 服务名（system_server 注册），与 service_contexts 一致 */
-    private static final String SERVICE_NAME = "com.ainative.ui.IAgentAssistantUi";
+    private static final String SERVICE_NAME = "com.genton.ui.IAgentAssistantUi";
 
     private final Context mContext;
     private static volatile AssistantUiProvider sInstance;

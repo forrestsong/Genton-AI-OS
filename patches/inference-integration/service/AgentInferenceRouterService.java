@@ -1,4 +1,4 @@
-package com.android.server.ainative;
+package com.android.server.genton;
 
 import android.content.Context;
 import java.security.MessageDigest;
@@ -10,14 +10,14 @@ import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.util.Slog;
 
-import com.ainative.inference.IAgentInferenceRouter;
-import com.ainative.inference.IInferenceCallback;
-import com.ainative.inference.InferenceCapabilities;
-import com.ainative.inference.InferenceChunk;
-import com.ainative.inference.InferenceRequest;
-import com.ainative.inference.InferenceStats;
-import com.ainative.inference.EgressPlan;
-import com.ainative.inference.AttestationReport;
+import com.genton.inference.IAgentInferenceRouter;
+import com.genton.inference.IInferenceCallback;
+import com.genton.inference.InferenceCapabilities;
+import com.genton.inference.InferenceChunk;
+import com.genton.inference.InferenceRequest;
+import com.genton.inference.InferenceStats;
+import com.genton.inference.EgressPlan;
+import com.genton.inference.AttestationReport;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -71,7 +71,7 @@ public class AgentInferenceRouterService extends IAgentInferenceRouter.Stub {
     private static final String TAG = "AgentInferenceRouter";
     
     // 模型路径
-    private static final String MODEL_DIR = "/system/ainative/models";
+    private static final String MODEL_DIR = "/system/genton/models";
     private static final String TINY_MODEL_NAME = "qwen2.5-0.5b-q4.gguf";      // 常驻小模型 ~300MB
     private static final String LARGE_MODEL_NAME = "qwen2.5-7b-q4.gguf";       // 大模型 ~4GB
     
@@ -196,13 +196,13 @@ public class AgentInferenceRouterService extends IAgentInferenceRouter.Stub {
         mContext = context;
         
         // 读取设备能力（从系统属性）
-        mNpuAvailable = SystemProperties.getBoolean("ro.ainative.npu.available", false);
-        mTotalMemoryMb = SystemProperties.getInt("ro.ainative.inference.memory_mb", 2048);
+        mNpuAvailable = SystemProperties.getBoolean("ro.genton.npu.available", false);
+        mTotalMemoryMb = SystemProperties.getInt("ro.genton.inference.memory_mb", 2048);
         
         // 初始化能力描述
         mCapabilities = new InferenceCapabilities();
         mCapabilities.npuAvailable = mNpuAvailable;
-        mCapabilities.npuTops = SystemProperties.getInt("ro.ainative.npu.tops", 0);
+        mCapabilities.npuTops = SystemProperties.getInt("ro.genton.npu.tops", 0);
         mCapabilities.totalMemoryMb = mTotalMemoryMb;
         mCapabilities.supportedTiers = TIER_LOCAL_TINY | TIER_LOCAL_LARGE;  // 云端暂不支持
         mCapabilities.supportsStreaming = true;
@@ -440,7 +440,7 @@ public class AgentInferenceRouterService extends IAgentInferenceRouter.Stub {
         
         try {
             // 检查 TEE 可用性
-            boolean teeAvailable = SystemProperties.getBoolean("ro.ainative.tee.available", false);
+            boolean teeAvailable = SystemProperties.getBoolean("ro.genton.tee.available", false);
             
             if (teeAvailable) {
                 // TODO: 实际实现应调用 TEE API（如 Android Keystore attestation）

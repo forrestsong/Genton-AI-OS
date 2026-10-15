@@ -158,7 +158,7 @@ Genton 不是又一个封闭的智能体 OS，而是一个**开放的契约层**
 | **Binder 单点鉴权** | `overlay/.../AgentCallerAuth.java` | ✅ 已实现 | 所有核心服务 onTransact 统一鉴权（WBS 1.3） |
 | **能力令牌链** | `overlay/.../policy/token/` | ✅ 已实现 | Token 签名 / 校验 / 撤销列表三件套 |
 | **PII 掩码引擎** | `overlay/.../PiiMaskingEngine.java` | ✅ 已实现 | 邮箱/手机/身份证/银行卡/凭据赋值检测，高风险场景「失败即拒绝」（fail-closed） |
-| **SELinux 策略** | `overlay/system/sepolicy/private/` | ✅ 5 个域 | ainative_brain / service / systemui / system_server / neverallow |
+| **SELinux 策略** | `overlay/system/sepolicy/private/` | ✅ 5 个域 | genton_brain / service / systemui / system_server / neverallow |
 
 #### 动作执行系统（确定性执行保障）
 
@@ -183,7 +183,7 @@ Genton 不是又一个封闭的智能体 OS，而是一个**开放的契约层**
 | **UI 树服务** | `AgentUiTreeService.java` + `UiTreeConsistencyValidator.java` | ✅ 中高 |
 | **安全窗口检测器** | `SecureWindowDetector.kt` | ✅ 已实现 |
 
-#### Agent 运行时（AINativeBrain 特权系统应用，以下简称「大脑」）
+#### Agent 运行时（GentonBrain 特权系统应用，以下简称「大脑」）
 
 | 模块 | 位置 | 状态 |
 |---|---|---|
@@ -235,16 +235,16 @@ Genton 不是又一个封闭的智能体 OS，而是一个**开放的契约层**
 Genton/
 ├── overlay/                          # Genton 覆盖层（AOSP 源码树补丁）
 │   ├── frameworks/base/
-│   │   ├── core/java/com/ainative/  # AIDL 接口与共享数据模型（17 个包，167 个 .aidl）
-│   │   ├── services/core/java/      # system_server 系统服务实现（60+ 服务）
+│   │   ├── core/java/com/genton/  # AIDL 接口与共享数据模型（21 个包，243 个 .aidl）
+│   │   ├── services/core/java/      # system_server 系统服务实现（61 个服务）
 │   │   ├── packages/SystemUI/       # SystemUI 深度定制（双模式/会话UI/确认面板...）
 │   │   └── data/etc/                # 权限声明 + sysconfig
 │   └── system/sepolicy/private/     # SELinux 策略（5 个 .te + file/service/seapp_contexts）
 ├── frameworks/base/                 # Koltin 版框架服务（早期版本，向 Java 版收敛中）
 ├── packages/
-│   ├── apps/AINativeBrain/          # Agent 大脑特权系统应用（108 个 Kotlin 文件）
+│   ├── apps/GentonBrain/          # Agent 大脑特权系统应用（108 个 Kotlin 文件）
 │   └── SystemUI/                    # SystemUI 独立模块（早期版本，向 overlay 版收敛中）
-├── vendor/ainative/                 # 平台配置 + 构建脚本 + 策略 DSL 基线
+├── vendor/genton/                 # 平台配置 + 构建脚本 + 策略 DSL 基线
 │   ├── config/                      # 基线策略、动作注册表、值域目录、机型校准
 │   ├── build/                       # 产品 mk + AndroidProducts.mk
 │   ├── services/                    # Python 版策略引擎参考实现
@@ -260,7 +260,7 @@ Genton/
 │   ├── p4-brain-in-image/           # 大脑集成
 │   ├── p5-missing-services/         # 缺失服务补全
 │   ├── w8-boot-fixes/               # 启动修复
-│   ├── ainativebrain-contract/      # Brain 契约
+│   ├── gentonbrain-contract/      # Brain 契约
 │   ├── inference-integration/       # 推理集成
 │   └── mainline2/                   # Mainline 模块适配
 ├── tools/                           # 开发与测试工具
@@ -306,8 +306,8 @@ chmod a+x ~/bin/repo
 export PATH=~/bin:$PATH
 
 # 初始化仓库
-mkdir ainative-os && cd ainative-os
-repo init -u https://github.com/ainative-os/manifests -b main -m ainative.xml
+mkdir genton-os && cd genton-os
+repo init -u https://github.com/forrestsong/Genton -b main -m manifests/genton.xml
 repo sync -c -j$(nproc --all)
 ```
 
@@ -322,7 +322,7 @@ repo sync -c -j$(nproc --all)
 
 ```bash
 source build/envsetup.sh
-lunch ainative_arm64-eng
+lunch genton_arm64-eng
 m -j$(nproc)
 ```
 
@@ -348,7 +348,7 @@ fastboot flashall -w
 
 #### 添加一条策略规则
 
-1. 编辑 `vendor/ainative/config/policy_baseline.dsl` 或新建策略包
+1. 编辑 `vendor/genton/config/policy_baseline.dsl` 或新建策略包
 2. 编译校验：
    ```bash
    python tools/policy_dsl_compiler.py --input your_policy.dsl
@@ -360,7 +360,7 @@ fastboot flashall -w
 
 #### 开发一个第三方 Agent
 
-参考 `vendor/ainative/templates/sample-agent/` 中的示例 Agent：
+参考 `vendor/genton/templates/sample-agent/` 中的示例 Agent：
 - 编写 `SandboxManifest.json` 声明能力与意图
 - 实现 Agent 逻辑（支持 Kotlin/Java，未来支持更多语言）
 - 经系统技能库注册后即可被用户授权使用

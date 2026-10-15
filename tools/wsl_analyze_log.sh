@@ -8,7 +8,7 @@ grep "error:" /tmp/services_core_build2.log 2>/dev/null | grep -oE "out/soong/.i
 echo
 echo "=== C. was framework or services.core failing? ==="
 grep "error:" /tmp/services_core_build2.log 2>/dev/null | grep -c "services/core\|frameworks/base/services"
-grep "error:" /tmp/services_core_build2.log 2>/dev/null | grep -c "ainative"
+grep "error:" /tmp/services_core_build2.log 2>/dev/null | grep -c "genton"
 echo
 echo "=== D. the first 'error:' line's full module path (sample 2) ==="
 grep "error:" /tmp/services_core_build2.log 2>/dev/null | head -2

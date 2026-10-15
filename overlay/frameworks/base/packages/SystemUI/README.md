@@ -13,7 +13,7 @@
 - `AssistantSurfaceController.java` - 双模式状态机和切换逻辑
 - `SessionViewController.java` / `SessionView.java` - 助理模式视图
 - `LauncherViewController.java` / `LauncherView.java` - 桌面模式视图
-- `AINativeSystemUIActivity.java` - 主Activity，托管双模式容器
+- `GentonSystemUIActivity.java` - 主Activity，托管双模式容器
 
 **关键特性：**
 - 模式枚举：LAUNCHER（桌面）↔ ASSISTANT（助理）
@@ -93,10 +93,10 @@ bubbleFromAgent(String agentId, String message);
 
 ### 模块结构
 ```
-com.android.systemui.ainative/
+com.android.systemui.genton/
 ├── AssistantSurfaceController.java     # 双模式容器控制器
-├── AINativeSystemUIActivity.java       # 主Activity
-├── AINativeSystemUIApplication.java    # Application类
+├── GentonSystemUIActivity.java       # 主Activity
+├── GentonSystemUIApplication.java    # Application类
 │
 ├── session/                             # 助理模式
 │   ├── SessionView.java
@@ -121,7 +121,7 @@ com.android.systemui.ainative/
 ```
 
 ### 权限配置
-见 `privapp-permissions-ainative-systemui.xml`：
+见 `privapp-permissions-genton-systemui.xml`：
 - STATUS_BAR - 状态栏权限
 - SYSTEM_ALERT_WINDOW - 系统窗口权限
 - INJECT_EVENTS - 输入注入权限
@@ -160,12 +160,12 @@ com.android.systemui.ainative/
 
 ### 启动SystemUI
 ```bash
-adb shell am start -n com.android.systemui.ainative/.AINativeSystemUIActivity
+adb shell am start -n com.android.systemui.genton/.GentonSystemUIActivity
 ```
 
 ### 启动悬浮球
 ```bash
-adb shell am startservice com.android.systemui.ainative/.entry.FloatingButtonService
+adb shell am startservice com.android.systemui.genton/.entry.FloatingButtonService
 ```
 
 ### 测试侧边手势

@@ -1,0 +1,23 @@
+// AI Native OS 核心 Kotlin 库（genton.core）
+// 编译 learn/semantics 的 Kotlin 实现（被 services.core 的 Java 服务引用）
+// - learn:   IntentLearningGenerator / LearnStateManager / LearnSuggestion* / LearnActivation*
+// - semantics: ontology / extraction / packing（EntityExtractionPipeline 等）
+// 依赖：framework（含 genton.* AIDL 生成的类，经 core/java/**/*.aidl 编译进 framework）
+// 消费：services.core（static_libs 引入本库）
+
+java_library {
+    name: "genton.core",
+    srcs: [
+        "learn/**/*.kt",
+        "semantics/**/*.kt",
+    ],
+    sdk_version: "core_platform",
+    platform_apis: true,
+    libs: [
+        "framework",
+    ],
+    visibility: [
+        "//frameworks/base/services:__subpackages__",
+        "//packages/apps:__subpackages__",
+    ],
+}

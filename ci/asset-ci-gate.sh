@@ -26,14 +26,14 @@ REPORTS_DIR="$PROJECT_ROOT/reports/ci"
 AUTO_DISABLE_DIR="$REPORTS_DIR/auto-disable"
 mkdir -p "$AUTO_DISABLE_DIR"
 
-SCHEMA_DIR="${AINATIVE_SCHEMA_DIR:-$PROJECT_ROOT/docs/schemas}"
-export AINATIVE_SCHEMA_DIR="$SCHEMA_DIR"
-export AINATIVE_PROJECT_ROOT="$PROJECT_ROOT"
-export AINATIVE_ALLOW_MISSING_SCHEMA=""
+SCHEMA_DIR="${GENTON_SCHEMA_DIR:-$PROJECT_ROOT/docs/schemas}"
+export GENTON_SCHEMA_DIR="$SCHEMA_DIR"
+export GENTON_PROJECT_ROOT="$PROJECT_ROOT"
+export GENTON_ALLOW_MISSING_SCHEMA=""
 for arg in "$@"; do
     case "$arg" in
-        --allow-missing-schema) export AINATIVE_ALLOW_MISSING_SCHEMA="1" ;;
-        --schema-dir=*) export AINATIVE_SCHEMA_DIR="${arg#--schema-dir=}" ;;
+        --allow-missing-schema) export GENTON_ALLOW_MISSING_SCHEMA="1" ;;
+        --schema-dir=*) export GENTON_SCHEMA_DIR="${arg#--schema-dir=}" ;;
     esac
 done
 
@@ -51,14 +51,14 @@ except Exception:
     pass
 
 PROJECT_ROOT = os.environ.get(
-    "AINATIVE_PROJECT_ROOT",
+    "GENTON_PROJECT_ROOT",
     os.path.dirname(os.path.dirname(os.path.abspath(__file__ or "."))))
-SCHEMA_DIR = os.environ.get("AINATIVE_SCHEMA_DIR",
+SCHEMA_DIR = os.environ.get("GENTON_SCHEMA_DIR",
                             os.path.join(PROJECT_ROOT, "docs", "schemas"))
 AUTO_DISABLE_DIR = os.path.join(PROJECT_ROOT, "reports", "ci", "auto-disable")
 os.makedirs(AUTO_DISABLE_DIR, exist_ok=True)
 
-ALLOW_MISSING = os.environ.get("AINATIVE_ALLOW_MISSING_SCHEMA") == "1"
+ALLOW_MISSING = os.environ.get("GENTON_ALLOW_MISSING_SCHEMA") == "1"
 
 PASS = 0
 FAIL = 0
@@ -108,10 +108,10 @@ for kind, names in SCHEMAS.items():
 # ============================================================
 ASSET_DIRS = [
     os.path.join(PROJECT_ROOT, "docs", "examples"),
-    os.path.join(PROJECT_ROOT, "vendor", "ainative", "assets"),
+    os.path.join(PROJECT_ROOT, "vendor", "genton", "assets"),
     os.path.join(PROJECT_ROOT, "macros"),
     os.path.join(PROJECT_ROOT, "packages", "apps"),
-    os.path.join(PROJECT_ROOT, "overlay", "frameworks", "base", "res", "ainative"),
+    os.path.join(PROJECT_ROOT, "overlay", "frameworks", "base", "res", "genton"),
 ]
 ASSET_FILES = []
 for d in ASSET_DIRS:
@@ -153,9 +153,9 @@ def check_execution_json(path, data):
         return
     if kind == "dmi":
         info = data.get("info", {})
-        xa = info.get("x-ainative", {}) if isinstance(info, dict) else {}
+        xa = info.get("x-genton", {}) if isinstance(info, dict) else {}
         if not xa.get("authorName") and not xa.get("reviewPolicy"):
-            bad(f"{rel}: DMI 作者侧字段缺失（info.x-ainative.authorName/reviewPolicy）")
+            bad(f"{rel}: DMI 作者侧字段缺失（info.x-genton.authorName/reviewPolicy）")
         else:
             ok(f"{rel}: DMI 作者侧字段齐备")
         paths = data.get("paths", {})
@@ -266,7 +266,7 @@ for path in sorted(ASSET_FILES):
         continue
     kind = classify_asset(path, data)
     if kind == "dmi":
-        xa = (data.get("info", {}) or {}).get("x-ainative", {}) or {}
+        xa = (data.get("info", {}) or {}).get("x-genton", {}) or {}
         if not xa.get("publisher"):
             bad(f"{os.path.relpath(path, PROJECT_ROOT)}: DMI 缺 publisher")
             author_issues += 1

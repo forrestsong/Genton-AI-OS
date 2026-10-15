@@ -5,9 +5,9 @@
  *   - 云端档位（TIER_CLOUD）      -> DeepSeek（https://api.deepseek.com）
  *   - 端侧决策档位（TIER_LOCAL_*）-> NeoHorse-Jev-4B（本地 llama.cpp 服务，127.0.0.1）
  *
- * 配置来源：/vendor/ainative/config/inference_providers.json
+ * 配置来源：/vendor/genton/config/inference_providers.json
  */
-package com.android.server.ainative;
+package com.android.server.genton;
 
 import android.util.Slog;
 
@@ -29,7 +29,7 @@ final class InferenceHttpClient {
 
     private static final String TAG = "InferenceHttpClient";
     private static final String CONFIG_PATH =
-            "/vendor/ainative/config/inference_providers.json";
+            "/vendor/genton/config/inference_providers.json";
 
     /** 配置节名 */
     static final String SECTION_CLOUD = "cloud";

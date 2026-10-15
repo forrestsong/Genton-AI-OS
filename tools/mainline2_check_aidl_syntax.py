@@ -14,7 +14,7 @@ import re
 import sys
 
 BASE = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..",
-                                     "overlay", "frameworks", "base", "core", "java", "com", "ainative"))
+                                     "overlay", "frameworks", "base", "core", "java", "com", "genton"))
 
 
 def check_aidl(path):

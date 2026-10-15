@@ -19,10 +19,10 @@ BASELINE = {
     "vendor.img":         30_000_000,   # ≥30MB
     "product.img":       200_000_000,   # ≥200MB
 }
-MIN_FRAMEWORK_CLASSES = 480      # framework.jar 中 com/ainative 类数
-MIN_SERVICE_CLASSES   = 220      # services.jar 中 server/ainative 类数
+MIN_FRAMEWORK_CLASSES = 480      # framework.jar 中 com/genton 类数
+MIN_SERVICE_CLASSES   = 220      # services.jar 中 server/genton 类数
 MIN_SERVICE_IFACES    = 17       # 注册的服务接口数
-MIN_CONFIG_FILES      = 10       # /vendor/ainative/config 文件数
+MIN_CONFIG_FILES      = 10       # /vendor/genton/config 文件数
 MIN_SERVICE_CONTEXTS  = 40       # sepolicy 服务上下文条目数
 
 
@@ -80,8 +80,8 @@ def main():
     print("\n[2] framework.jar（AIDL 契约 + 平台类）")
     fw = os.path.join(prod, "system/framework/framework.jar")
     if os.path.exists(fw):
-        classes, err = dex_strings(fw, r'Lcom/ainative/[A-Za-z0-9/_$]*;')
-        check("com/ainative 类数", len(classes) >= MIN_FRAMEWORK_CLASSES,
+        classes, err = dex_strings(fw, r'Lcom/genton/[A-Za-z0-9/_$]*;')
+        check("com/genton 类数", len(classes) >= MIN_FRAMEWORK_CLASSES,
               f"{len(classes)} 个", f"≥{MIN_FRAMEWORK_CLASSES}")
     else:
         check("framework.jar", False, "缺失")
@@ -90,15 +90,15 @@ def main():
     print("\n[3] services.jar（服务实现 + 注册表）")
     sv = os.path.join(prod, "system/framework/services.jar")
     if os.path.exists(sv):
-        classes, _ = dex_strings(sv, r'Lcom/android/server/ainative/[A-Za-z0-9_$]*;')
+        classes, _ = dex_strings(sv, r'Lcom/android/server/genton/[A-Za-z0-9_$]*;')
         check("服务实现类数", len(classes) >= MIN_SERVICE_CLASSES,
               f"{len(classes)} 个", f"≥{MIN_SERVICE_CLASSES}")
 
-        reg, _ = dex_strings(sv, r'AinativeServiceRegistry')
-        check("AinativeServiceRegistry", len(reg) >= 1, f"{len(reg)} 处引用")
+        reg, _ = dex_strings(sv, r'GentonServiceRegistry')
+        check("GentonServiceRegistry", len(reg) >= 1, f"{len(reg)} 处引用")
 
-        ifaces, _ = dex_strings(sv, r'com\.ainative\.[a-z]+\.[A-Z][A-Za-z]+')
-        ifaces = {i for i in ifaces if not i.startswith("com.ainative.permission")}
+        ifaces, _ = dex_strings(sv, r'com\.genton\.[a-z]+\.[A-Z][A-Za-z]+')
+        ifaces = {i for i in ifaces if not i.startswith("com.genton.permission")}
         check("注册的服务接口", len(ifaces) >= MIN_SERVICE_IFACES,
               f"{len(ifaces)} 个", f"≥{MIN_SERVICE_IFACES}")
     else:
@@ -106,15 +106,15 @@ def main():
 
     # ---- 4. vendor 配置 ----
     print("\n[4] vendor 配置")
-    cfg = os.path.join(prod, "vendor/ainative/config")
+    cfg = os.path.join(prod, "vendor/genton/config")
     n = len(os.listdir(cfg)) if os.path.isdir(cfg) else 0
-    check("/vendor/ainative/config 文件", n >= MIN_CONFIG_FILES, f"{n} 个", f"≥{MIN_CONFIG_FILES}")
+    check("/vendor/genton/config 文件", n >= MIN_CONFIG_FILES, f"{n} 个", f"≥{MIN_CONFIG_FILES}")
 
     # ---- 5. sepolicy ----
     print("\n[5] sepolicy")
     sc = os.path.join(prod, "system/etc/selinux/plat_service_contexts")
     if os.path.exists(sc):
-        cnt = sum(1 for ln in open(sc, encoding="utf-8", errors="replace") if "ainative" in ln)
+        cnt = sum(1 for ln in open(sc, encoding="utf-8", errors="replace") if "genton" in ln)
         check("服务上下文条目", cnt >= MIN_SERVICE_CONTEXTS, f"{cnt} 条", f"≥{MIN_SERVICE_CONTEXTS}")
     else:
         check("plat_service_contexts", False, "缺失")
@@ -123,12 +123,12 @@ def main():
     print("\n[6] 源码链路（关键修复回归）")
     fixes = [
         ("frameworks/base/services/proguard.flags",
-         "com.android.server.ainative", "R8 keep 规则"),
+         "com.android.server.genton", "R8 keep 规则"),
         ("frameworks/base/services/java/com/android/server/SystemServer.java",
-         "AinativeServiceRegistry.start(", "SystemServer 注册调用"),
-        ("frameworks/base/services/core/java/com/android/server/ainative/AinativeServiceRegistry.java",
+         "GentonServiceRegistry.start(", "SystemServer 注册调用"),
+        ("frameworks/base/services/core/java/com/android/server/genton/GentonServiceRegistry.java",
          "public static void start(", "服务注册表"),
-        ("device/ainative/cpday10/BoardConfig.mk",
+        ("device/genton/cpday10/BoardConfig.mk",
          "TARGET_COPY_OUT_VENDOR := vendor", "vendor 分区布局"),
     ]
     for rel, needle, label in fixes:

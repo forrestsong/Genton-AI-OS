@@ -77,8 +77,8 @@ if [ "$SELF_CHECK" -eq 1 ]; then
         "tools/security_audit.py" \
         "ci/security-gate-checks.py" \
         "overlay/frameworks/base/core/res/AndroidManifest_permissions.xml" \
-        "permissions/privapp-permissions-ainative.xml" \
-        "sepolicy/ainative.te" \
+        "permissions/privapp-permissions-genton.xml" \
+        "sepolicy/genton.te" \
         "sepolicy/service_contexts"; do
         if [ ! -f "$PROJECT_ROOT/$f" ]; then
             echo "[security-gate][SELF-CHECK] 缺失: $f" >&2

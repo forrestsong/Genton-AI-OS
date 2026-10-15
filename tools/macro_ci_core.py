@@ -193,18 +193,18 @@ def dispatch_case(adb: str, serial: str, case: dict) -> dict:
     """在设备上重放单个黄金样例。
 
     依赖 F1.1 MacroPlaybackValidator 的服务端上报：脚本触发
-    com.ainative.macro.EXECUTE_SCRIPT 广播后，从
-    /sdcard/ainative/test_reports/<testCaseId>.json 读取结果。
+    com.genton.macro.EXECUTE_SCRIPT 广播后，从
+    /sdcard/genton/test_reports/<testCaseId>.json 读取结果。
     """
     tc_id = case["testCaseId"]
     script_id = case["scriptId"]
-    device_path = f"/sdcard/ainative/test_reports/{tc_id}.json"
+    device_path = f"/sdcard/genton/test_reports/{tc_id}.json"
     base = [adb] + (["-s", serial] if serial else [])
 
     # 1) 触发重放
     try:
         trigger = base + ["shell", "am", "broadcast",
-                          "-a", "com.ainative.macro.EXECUTE_SCRIPT",
+                          "-a", "com.genton.macro.EXECUTE_SCRIPT",
                           "--es", "scriptId", str(script_id),
                           "--es", "testCaseId", str(tc_id)]
         r = subprocess.run(trigger, capture_output=True, text=True, timeout=120)

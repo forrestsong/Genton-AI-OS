@@ -21,17 +21,17 @@
 
 ### ✅ 1. 配置进模拟器产品（17/17 服务注册）
 
-新建产品 `ainative_emu`（继承官方 `sdk_phone64_x86_64` + 复用 `ainative_overlay.mk`）：
+新建产品 `genton_emu`（继承官方 `sdk_phone64_x86_64` + 复用 `genton_overlay.mk`）：
 
-- `device/ainative/emulator/AndroidProducts.mk`
-- `device/ainative/emulator/ainative_emu.mk`
+- `device/genton/emulator/AndroidProducts.mk`
+- `device/genton/emulator/genton_emu.mk`
 
-lunch：`ainative_emu-bp2a-userdebug`（`PRODUCT_BRAND` 不可含空格，否则 fingerprint 非法）
+lunch：`genton_emu-bp2a-userdebug`（`PRODUCT_BRAND` 不可含空格，否则 fingerprint 非法）
 
 **实测结果**：
 ```
-I AinativeServiceRegistry: AI Native OS services registered: ok=17 fail=0
-117  com.ainative.policy.IPolicyEngine: [com.ainative.policy.IPolicyEngine]
+I GentonServiceRegistry: AI Native OS services registered: ok=17 fail=0
+117  com.genton.policy.IPolicyEngine: [com.genton.policy.IPolicyEngine]
 ```
 
 ### ✅ 2. 顺带修复的真实 bug：`PolicyFileParser` success 语义
@@ -52,7 +52,7 @@ IllegalStateException: A7.1 boot policy baseline fail-stop: []
 ### ✅ 3. DeepSeek 接线 + 用户设置密钥机制
 
 **新增** `InferenceHttpClient.java`（OpenAI 兼容客户端，DeepSeek 与本地服务通用）：
-- 配置读取顺序：**`Settings.Secure`（用户设置） > `/vendor/ainative/config/inference_providers.json`（出厂默认）**
+- 配置读取顺序：**`Settings.Secure`（用户设置） > `/vendor/genton/config/inference_providers.json`（出厂默认）**
 - 支持流式分块回调（按中英文句末标点/空白切分）
 
 **接线**（`AgentInferenceRouterService`）：
@@ -64,16 +64,16 @@ IllegalStateException: A7.1 boot policy baseline fail-stop: []
 
 | 键 | 用途 |
 |---|---|
-| `ainative_inference_cloud_api_key` | DeepSeek API Key |
-| `ainative_inference_cloud_endpoint` | 云端端点（默认 `https://api.deepseek.com/chat/completions`） |
-| `ainative_inference_cloud_model` | 云端模型（默认 `deepseek-chat`） |
-| `ainative_inference_local_endpoint` | 端侧端点（llama.cpp / NeoHorse 服务） |
-| `ainative_inference_local_model` | 端侧模型名 |
+| `genton_inference_cloud_api_key` | DeepSeek API Key |
+| `genton_inference_cloud_endpoint` | 云端端点（默认 `https://api.deepseek.com/chat/completions`） |
+| `genton_inference_cloud_model` | 云端模型（默认 `deepseek-chat`） |
+| `genton_inference_local_endpoint` | 端侧端点（llama.cpp / NeoHorse 服务） |
+| `genton_inference_local_model` | 端侧模型名 |
 
 验证方式（无需 UI，adb 即可）：
 ```bash
-adb shell settings put secure ainative_inference_cloud_api_key "sk-..."
-adb shell settings get secure ainative_inference_cloud_api_key
+adb shell settings put secure genton_inference_cloud_api_key "sk-..."
+adb shell settings get secure genton_inference_cloud_api_key
 ```
 
 ---
@@ -104,7 +104,7 @@ adb shell settings get secure ainative_inference_cloud_api_key
 1. 建 Python 3.12 venv（CUDA 版 PyTorch 2.8）
 2. `pip install --no-deps dist/neohorse_decision-1.0.0-py3-none-any.whl` + fastapi/uvicorn 等
 3. `neohorse-decision serve --model-dir /mnt/d/.../NeoHorse-Jev-4B --port 8080`
-4. 配置 `ainative_inference_local_endpoint` 指向该服务
+4. 配置 `genton_inference_local_endpoint` 指向该服务
    - 注意：NeoHorse 接口是 `/v1/decision`（非 OpenAI 兼容），
      需在 `AgentInferenceRouterService` 中为其增加**决策专用适配**（当前 `InferenceHttpClient`
      走的是 `/chat/completions` 生成式协议）

@@ -43,10 +43,10 @@ class A1_1_Validator:
         """检查 manifest 文件"""
         log_info("检查 manifest 文件...")
         
-        manifest_file = self.project_root / "manifests" / "ainative.xml"
+        manifest_file = self.project_root / "manifests" / "genton.xml"
         
         if not manifest_file.exists():
-            log_fail("manifests/ainative.xml 不存在")
+            log_fail("manifests/genton.xml 不存在")
             self.errors.append("Missing manifest file")
             return False
         
@@ -55,7 +55,7 @@ class A1_1_Validator:
         
         required_elements = [
             '<remote name="aosp"',
-            '<remote name="ainative"',
+            '<remote name="genton"',
             '<default revision=',
             'platform/build',
             'platform/frameworks/base',

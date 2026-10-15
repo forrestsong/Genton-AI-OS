@@ -1,7 +1,7 @@
 // Genton (AI Native OS) - 感知/操作指示器引导（P1）
 //
 // 组装 Manager + 悬浮层 + 控制器，并在审计服务就绪后订阅活性流。
-package com.android.systemui.ainative.indicator;
+package com.android.systemui.genton.indicator;
 
 import android.content.Context;
 import android.os.Handler;

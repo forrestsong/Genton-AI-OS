@@ -80,8 +80,8 @@ if "%SELF_CHECK%"=="1" (
         "tools\security_audit.py"
         "ci\security-gate-checks.py"
         "overlay\frameworks\base\core\res\AndroidManifest_permissions.xml"
-        "permissions\privapp-permissions-ainative.xml"
-        "sepolicy\ainative.te"
+        "permissions\privapp-permissions-genton.xml"
+        "sepolicy\genton.te"
         "sepolicy\service_contexts"
     ) do (
         if not exist "%PROJECT_ROOT%\%%~f" (

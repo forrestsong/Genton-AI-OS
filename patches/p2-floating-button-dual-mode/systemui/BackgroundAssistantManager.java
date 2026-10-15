@@ -1,5 +1,5 @@
 // AI Native OS - Background Assistant Manager
-package com.android.systemui.ainative.background;
+package com.android.systemui.genton.background;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +13,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.ainative.agent.TaskCardData;
+import com.genton.agent.TaskCardData;
 
 /**
  * 后台助理管理器（D1.3）：普通模式助理后台化
@@ -27,7 +27,7 @@ public class BackgroundAssistantManager {
 
     /** 悬浮球任务状态广播（P2） */
     public static final String ACTION_UPDATE_TASK_STATUS =
-            "com.ainative.ACTION_UPDATE_TASK_STATUS";
+            "com.genton.ACTION_UPDATE_TASK_STATUS";
     public static final String EXTRA_HAS_ACTIVE_TASK = "has_active_task";
     public static final String EXTRA_TASK_COUNT = "task_count";
 
@@ -264,7 +264,7 @@ public class BackgroundAssistantManager {
      * 返回助理（携带任务 ID）
      */
     private void returnToAssistant(String taskId) {
-        Intent intent = new Intent("com.ainative.ACTION_SHOW_ASSISTANT");
+        Intent intent = new Intent("com.genton.ACTION_SHOW_ASSISTANT");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (taskId != null) {
             intent.putExtra("task_id", taskId);

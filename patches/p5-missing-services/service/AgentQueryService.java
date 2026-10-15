@@ -3,7 +3,7 @@
 // 依据 轨道A-执行层AIDL与动作契约草案.md（D2）：
 //   IAgentQueryService 提供"只读规划查询"——列出可启动应用、解析意图到具体组件，
 //   供 Agent 规划阶段使用（不产生副作用，与 IAgentActionService 的写路径分离）。
-package com.android.server.ainative;
+package com.android.server.genton;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +12,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.util.Slog;
 
-import com.ainative.action.ActionInfo;
-import com.ainative.action.AppInfo;
-import com.ainative.action.ComponentTarget;
-import com.ainative.action.IAgentQueryService;
+import com.genton.action.ActionInfo;
+import com.genton.action.AppInfo;
+import com.genton.action.ComponentTarget;
+import com.genton.action.IAgentQueryService;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -18,7 +18,7 @@ new3 = '''name: "framework-minus-apex-aconfig-java-defaults",
         // prebuilt system SDK stubs on the classpath so aconfig flag libs can
         // resolve android.os.Binder / android.provider.DeviceConfig at javac,
         // WITHOUT shadowing the per-module framework classpath.
-        "ainative.prebuilt_system_android_stubs",
+        "genton.prebuilt_system_android_stubs",
     ],
 }'''
 if old3 not in c3:

@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.action",
+    name: "com.genton.action",
     
     srcs: [
-        "com/ainative/action/*.aidl",
+        "com/genton/action/*.aidl",
     ],
     
     stability: "vintf",
@@ -36,12 +36,12 @@ aidl_interface {
     
     // 依赖其他 AIDL 模块
     imports: [
-        "com.ainative.policy",  // PolicyDecision
+        "com.genton.policy",  // PolicyDecision
     ],
     
     visibility: [
         "//frameworks/base/services/core",
         "//frameworks/base/core/java",
-        "//packages/apps/AINativeBrain",
+        "//packages/apps/GentonBrain",
     ],
 }

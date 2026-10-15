@@ -1,4 +1,4 @@
-package com.ainative.policy.token;
+package com.genton.policy.token;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

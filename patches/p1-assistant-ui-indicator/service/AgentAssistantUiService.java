@@ -1,21 +1,21 @@
 // Genton (AI Native OS) - 助手 UI 服务端代理（P1）
 //
-// 系统服务名 com.ainative.ui.IAgentAssistantUi 由本类（system_server 侧）注册。
+// 系统服务名 com.genton.ui.IAgentAssistantUi 由本类（system_server 侧）注册。
 // 由于 SystemUI 为应用 UID 无法自行注册系统服务，本类同时承担：
 //   1) 代理角色：接收大脑的 UI 命令并转发给 SystemUI 提供方
 //   2) 引导角色：接受 SystemUI 的 registerUiProvider 反向注册
 //
 // 依据：轨道A-SystemUI会话桥AIDL接口草案 / D5 §6 集成架构
-package com.android.server.ainative;
+package com.android.server.genton;
 
 import android.content.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Slog;
 
-import com.ainative.ui.IAgentAssistantUi;
-import com.ainative.ui.IAgentAssistantUiProvider;
-import com.ainative.ui.SuggestionCapsuleData;
+import com.genton.ui.IAgentAssistantUi;
+import com.genton.ui.IAgentAssistantUiProvider;
+import com.genton.ui.SuggestionCapsuleData;
 
 /** 助手 UI 命令服务（system_server 侧代理） */
 public class AgentAssistantUiService extends IAgentAssistantUi.Stub {

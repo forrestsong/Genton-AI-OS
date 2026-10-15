@@ -1,4 +1,4 @@
-package com.android.server.ainative;
+package com.android.server.genton;
 
 import android.content.Context;
 import android.os.Handler;
@@ -7,11 +7,11 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Slog;
 
-import com.ainative.policy.CapabilityToken;
-import com.ainative.ui.IAgentConfirmationHost;
-import com.ainative.ui.IAgentConfirmationUi;
-import com.ainative.ui.IConfirmationDecisionCallback;
-import com.ainative.ui.ConfirmationUiRequest;
+import com.genton.policy.CapabilityToken;
+import com.genton.ui.IAgentConfirmationHost;
+import com.genton.ui.IAgentConfirmationUi;
+import com.genton.ui.IConfirmationDecisionCallback;
+import com.genton.ui.ConfirmationUiRequest;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;

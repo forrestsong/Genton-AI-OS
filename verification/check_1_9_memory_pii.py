@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SVC = ROOT / "overlay/frameworks/base/services/core/java/com/android/server/ainative"
+SVC = ROOT / "overlay/frameworks/base/services/core/java/com/android/server/genton"
 MEM = SVC / "AgentMemoryService.java"
 
 failures = []

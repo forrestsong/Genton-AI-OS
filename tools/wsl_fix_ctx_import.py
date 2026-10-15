@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import sys
 
-p = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative/AgentContextService.java'
+p = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton/AgentContextService.java'
 with open(p) as f:
     c = f.read()
 
-old = 'import com.ainative.context.*;'
-new = '''import com.ainative.context.*;
-import com.ainative.perception.IAgentNotificationService;'''
+old = 'import com.genton.context.*;'
+new = '''import com.genton.context.*;
+import com.genton.perception.IAgentNotificationService;'''
 if old not in c:
     print("ERROR: import line not found")
     sys.exit(1)

@@ -1,0 +1,329 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://genton.os/schemas/machine-profile.schema.json",
+  "title": "AI Native OS 机型校准档案（MachineProfile）",
+  "description": "F4.1 机型校准库的单机型档案。采集与校验入口 tools/calibration_collect.py；被宏重放（F1.1）、捕获降采样/帧率纪律（A2.5/D8.2）、S7 档位与能力位（A12.2b）、DMI 可用性登记（F2.2）共同消费。实测字段未采集时取值 null，并在 measurement.pendingFields 登记。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profileId",
+    "schemaVersion",
+    "identity",
+    "display",
+    "macro",
+    "timing",
+    "render",
+    "dmiAvailability",
+    "s7",
+    "measurement"
+  ],
+  "properties": {
+    "profileId": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]{3,32}$",
+      "description": "档案 ID，建议 <soc>_<tier>，如 sm8550_p0"
+    },
+    "schemaVersion": { "type": "string", "const": "1.0" },
+    "updatedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["soc", "tier"],
+      "description": "机型身份与分级；来自 getprop（ro.product.model / ro.product.manufacturer / ro.board.platform / ro.build.version.*）",
+      "properties": {
+        "deviceModel": { "type": ["string", "null"], "description": "ro.product.model，实测采集" },
+        "deviceManufacturer": { "type": ["string", "null"], "description": "ro.product.manufacturer" },
+        "soc": { "type": "string", "description": "SoC 平台名，如 Qualcomm Snapdragon 8 Gen 2+" },
+        "socModel": { "type": ["string", "null"], "description": "SoC 型号代码，如 SM8550" },
+        "tier": {
+          "type": "string",
+          "enum": ["P0", "P1", "P2"],
+          "description": "机型分级：P0 旗舰 / P1 中端 / P2 入门（对齐 A12.2b 能力位表分类）"
+        },
+        "androidVersion": { "type": ["string", "null"] },
+        "sdkVersion": { "type": ["integer", "null"] },
+        "buildFingerprint": { "type": ["string", "null"], "description": "ro.build.fingerprint，用于宏版本绑定" }
+      }
+    },
+    "display": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coordinateSpace"],
+      "description": "显示与坐标空间（对齐 F1.1 万分比归一化）",
+      "properties": {
+        "widthPx": { "type": ["integer", "null"], "description": "当前分辨率宽（px）" },
+        "heightPx": { "type": ["integer", "null"] },
+        "densityDpi": { "type": ["integer", "null"] },
+        "refreshRateHz": { "type": ["number", "null"], "description": "当前刷新率；帧率纪律复原基准" },
+        "nativeRefreshRates": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "机型支持的刷新率档位（dumpsys display）"
+        },
+        "coordinateSpace": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["normalizedBase"],
+          "properties": {
+            "normalizedBase": {
+              "type": "integer",
+              "const": 10000,
+              "description": "宏坐标归一化基数（万分比），与 MacroRecordingEngine 一致"
+            }
+          }
+        }
+      }
+    },
+    "macro": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supportedStrategies", "successRateTarget"],
+      "description": "宏执行与校准参数（对齐 F1.1 MacroScriptGenerator.calibrationParams）",
+      "properties": {
+        "coordinateScaleX": { "type": ["number", "null"], "description": "coordinateParams.coord_scale_x" },
+        "coordinateScaleY": { "type": ["number", "null"], "description": "coordinateParams.coord_scale_y" },
+        "calibrationParamsKeys": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "本档案对接的 F1.1 calibrationParams 键名清单"
+        },
+        "supportedStrategies": {
+          "type": "array",
+          "items": { "type": "integer", "enum": [0, 1, 2] },
+          "description": "0=纯坐标 / 1=混合 / 2=纯感知"
+        },
+        "binding": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["appVersion", "deviceModel", "androidVersion"] },
+          "description": "宏失效判定绑定维度（D9 §3）"
+        },
+        "successRateTarget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sameDevice", "crossDevice", "crossVersion"],
+          "properties": {
+            "sameDevice": { "type": "number", "minimum": 0, "maximum": 1 },
+            "crossDevice": { "type": "number", "minimum": 0, "maximum": 1 },
+            "crossVersion": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targets"],
+      "description": "时序参数（实测值可空；targets 为 D9 §0/S2 验收目标，非实测）",
+      "properties": {
+        "tapInjectMs": { "type": ["number", "null"], "description": "单次点击注入耗时（dispatchGesture 往返）" },
+        "swipeInjectMs": { "type": ["number", "null"] },
+        "perceptionDetectMs": { "type": ["number", "null"], "description": "元素识别耗时（混合策略断言）" },
+        "legacyInjectFallbackMs": { "type": ["number", "null"], "description": "常规注入兜底路径耗时" },
+        "waitInsertThresholdMs": { "type": ["integer", "null"], "description": "录制时自动插入等待的步间隔阈值（默认 300）" },
+        "waitClampMinMs": { "type": ["integer", "null"], "description": "等待步骤下限（<该值移除，默认 100）" },
+        "waitClampMaxMs": { "type": ["integer", "null"], "description": "等待步骤上限（>该值截断，默认 5000）" },
+        "stepTimeoutMs": { "type": ["integer", "null"], "description": "单步超时（默认 30000）" },
+        "targets": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "D9 §0 KPI 目标（P95），采集后与实测值对比",
+          "properties": {
+            "commandToVisibleP95Ms": { "type": "integer" },
+            "injectFallbackP95Ms": { "type": "integer" },
+            "captureToPerceptionP95Ms": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "render": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["captureDownsample", "injectionFrameRateCapFps"],
+      "description": "渲染/帧率降载可行性（D9 §6h；与 A2.5、D8.2 联动）",
+      "properties": {
+        "captureDownsample": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["defaultFactor", "minFactor"],
+          "properties": {
+            "defaultFactor": { "type": "number", "description": "捕获降采样默认倍率（仅影响 Agent 感知）" },
+            "minFactor": { "type": "number", "description": "低端机可下探的最小倍率（需 VLM/OCR 准确率评测）" }
+          }
+        },
+        "injectionFrameRateCapFps": { "type": "integer", "description": "注入期目标 Surface 帧率上限" },
+        "disableAnimationsDuringInjection": { "type": "boolean" },
+        "renderDownscale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["supported", "requiresMacroRegression"],
+          "description": "渲染降采样（可选，仅低端机/GPU 受限且无敏感面；启用即触发宏回归）",
+          "properties": {
+            "supported": { "type": ["boolean", "null"] },
+            "requiresMacroRegression": { "type": "boolean", "const": true },
+            "allowedScenarios": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "允许启用降采样与帧率降载的场景（S5-h 约束）"
+            }
+          }
+        }
+      }
+    },
+    "dmiAvailability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registryRef"],
+      "description": "DMI 可用性：基线清单见 registryRef，本机型差异与实测结论写 overrides",
+      "properties": {
+        "registryRef": {
+          "type": "string",
+          "description": "相对本目录的可用性登记表路径，如 ../dmi-availability.json"
+        },
+        "overrides": {
+          "type": "object",
+          "description": "按桥工具名覆盖基线（如某机型无日历 Provider）",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["available"],
+            "properties": {
+              "available": { "type": "boolean" },
+              "reason": { "type": "string" },
+              "verifiedAt": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "s7": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["motionCapabilitiesHex", "sensorHub", "tiers", "gestures"],
+      "description": "S7 姿态交互硬件能力位（对齐 A12.2a 位定义与 A12.2b 机型能力位表；运行期读取 ro.genton.motion.capabilities）",
+      "properties": {
+        "motionCapabilitiesHex": {
+          "type": "string",
+          "pattern": "^0x[0-9A-Fa-f]{8}$",
+          "description": "32 位能力掩码（CAP_TIER_* | CAP_GESTURE_* | CAP_SENSOR_HUB_AON 等）"
+        },
+        "sensorHub": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["aonIsland"],
+          "properties": {
+            "type": { "type": ["string", "null"], "description": "如 hexagon_dsp / mtk_scp / none" },
+            "aonIsland": { "type": "boolean" }
+          }
+        },
+        "tiers": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["foreground", "deepSleep", "sensitiveStop"],
+          "properties": {
+            "foreground": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["enabled"],
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "powerBudgetMw": { "type": ["number", "null"] },
+                "accelerometerHz": { "type": ["integer", "null"] },
+                "gyroscopeHz": { "type": ["integer", "null"] }
+              }
+            },
+            "deepSleep": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["enabled"],
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "powerBudgetMw": { "type": ["number", "null"] },
+                "reason": { "type": ["string", "null"], "description": "裁剪原因（如 No AON island）" }
+              }
+            },
+            "sensitiveStop": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["enabled"],
+              "properties": { "enabled": { "type": "boolean" } }
+            }
+          }
+        },
+        "gestures": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "shake": { "$ref": "#/definitions/gestureSupport" },
+            "flip": { "$ref": "#/definitions/gestureSupport" },
+            "swipe": { "$ref": "#/definitions/gestureSupport" }
+          }
+        },
+        "cameraShutterSensor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["available"],
+          "description": "相机遮挡/隐私盖板传感器（非必须；无则走弱判定）",
+          "properties": {
+            "available": { "type": ["boolean", "null"] },
+            "source": { "type": ["string", "null"], "description": "如 hall_sensor / privacy_switch / none" }
+          }
+        },
+        "privacySwitch": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["available"],
+          "properties": {
+            "available": { "type": ["boolean", "null"] },
+            "source": { "type": ["string", "null"], "description": "SystemUI 相机隐私开关状态来源" }
+          }
+        },
+        "compileSwitches": {
+          "type": "object",
+          "description": "BoardConfig.mk 编译期适配开关（对齐 A12.2b §8）",
+          "additionalProperties": {
+            "type": ["boolean", "string", "number", "null"]
+          }
+        }
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "pendingFields"],
+      "description": "采集状态与来源追溯；禁止把未实测值写成 measured",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["draft", "pending_device_measurement", "measured", "verified"]
+        },
+        "collectedAt": { "type": ["string", "null"] },
+        "collectedBy": { "type": ["string", "null"] },
+        "deviceSerialMasked": { "type": ["string", "null"], "description": "仅保留后 4 位" },
+        "pendingFields": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "待实测字段的 JSON Pointer 相对路径"
+        },
+        "sourceNotes": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "各字段组来源：A12.2b / D9 / 实测 / 目标值"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "gestureSupport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supported"],
+      "properties": {
+        "supported": { "type": ["boolean", "null"] },
+        "reason": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

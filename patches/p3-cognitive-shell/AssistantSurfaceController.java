@@ -1,5 +1,5 @@
 // AI Native OS - Assistant Surface Controller
-package com.android.systemui.ainative;
+package com.android.systemui.genton;
 
 import android.content.Context;
 import android.os.Handler;
@@ -10,13 +10,13 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.android.systemui.ainative.session.SessionViewController;
-import com.android.systemui.ainative.launcher.LauncherViewController;
-import com.android.systemui.ainative.accessibility.AnimationAccessibilityManager;
-import com.android.systemui.ainative.suggestion.SuggestionCapsuleManager;
-import com.android.systemui.ainative.suggestion.SuggestionCapsuleContainer;
-import com.android.systemui.ainative.indicator.ActivityIndicatorManager;
-import com.ainative.audit.IAuditService;
+import com.android.systemui.genton.session.SessionViewController;
+import com.android.systemui.genton.launcher.LauncherViewController;
+import com.android.systemui.genton.accessibility.AnimationAccessibilityManager;
+import com.android.systemui.genton.suggestion.SuggestionCapsuleManager;
+import com.android.systemui.genton.suggestion.SuggestionCapsuleContainer;
+import com.android.systemui.genton.indicator.ActivityIndicatorManager;
+import com.genton.audit.IAuditService;
 
 /**
  * 双模式容器控制器：管理 Assistant Surface 和 Launcher3 同容器呈现
@@ -179,7 +179,7 @@ public class AssistantSurfaceController {
     }
 
     /** D2.3：下发一条主动提醒胶囊（由 AssistantUiProvider 调用） */
-    public boolean showSuggestionCapsule(com.ainative.ui.SuggestionCapsuleData capsule) {
+    public boolean showSuggestionCapsule(com.genton.ui.SuggestionCapsuleData capsule) {
         if (mCapsuleManager == null) {
             Log.w(TAG, "capsule manager unavailable");
             return false;
@@ -387,7 +387,7 @@ public class AssistantSurfaceController {
      */
     public ActivityIndicatorManager getIndicatorManager() {
         // [P2 调整] 指示器管理器由 ActivityIndicatorBootstrap 持有
-        return com.android.systemui.ainative.indicator.ActivityIndicatorBootstrap.getManager();
+        return com.android.systemui.genton.indicator.ActivityIndicatorBootstrap.getManager();
     }
     
     /**

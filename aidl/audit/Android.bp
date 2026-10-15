@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.audit",
+    name: "com.genton.audit",
     
     srcs: [
-        "com/ainative/audit/*.aidl",
+        "com/genton/audit/*.aidl",
     ],
     
     stability: "vintf",
@@ -37,7 +37,7 @@ aidl_interface {
     visibility: [
         "//frameworks/base/services/core",
         "//frameworks/base/core/java",
-        "//packages/apps/AINativeBrain",
+        "//packages/apps/GentonBrain",
         "//packages/apps/Settings",  // 隐私仪表盘
     ],
 }

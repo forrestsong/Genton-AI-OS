@@ -6,8 +6,8 @@ AI Native OS AIDL 骨架生成器
 
 使用方法:
     python tools/aidl_generator.py --interface IAgentUiTreeService \\
-        --package com.ainative.perception \\
-        --output overlay/frameworks/base/core/java/com/ainative/perception/
+        --package com.genton.perception \\
+        --output overlay/frameworks/base/core/java/com/genton/perception/
 """
 
 import os
@@ -224,7 +224,7 @@ class AIDLGenerator:
     
     def generate_android_bp(self, package: str, interfaces: List[str]) -> str:
         """生成 Android.bp 构建配置"""
-        module_name = package.replace("com.ainative.", "ainative.")
+        module_name = package.replace("com.genton.", "genton.")
         
         lines = []
         lines.append("// AI Native OS AIDL 模块")
@@ -272,7 +272,7 @@ class AIDLGenerator:
             return False
         
         interfaces = AIDL_INTERFACES[module_name]
-        package = f"com.ainative.{module_name}"
+        package = f"com.genton.{module_name}"
         
         # 创建输出目录
         module_dir = self.output_dir / module_name
@@ -358,7 +358,7 @@ AI Native OS {module_name} 层 AIDL 接口
         for interface in all_interfaces:
             readme_content += f"- `{interface}`: {module_name} 系统服务\n"
         
-        readme_content += "\n## 构建\n\n```bash\nm ainative.{module_name}\n```\n"
+        readme_content += "\n## 构建\n\n```bash\nm genton.{module_name}\n```\n"
         
         readme_file = module_dir / "README.md"
         readme_file.write_text(readme_content, encoding="utf-8")
@@ -395,8 +395,8 @@ def main():
     parser = argparse.ArgumentParser(description="AI Native OS AIDL 骨架生成器")
     parser.add_argument("--module", help="生成指定模块 (perception/action/agent/...)")
     parser.add_argument("--all", action="store_true", help="生成所有模块")
-    parser.add_argument("--output", default="overlay/frameworks/base/core/java/com/ainative",
-                       help="输出目录 (默认: overlay/frameworks/base/core/java/com/ainative)")
+    parser.add_argument("--output", default="overlay/frameworks/base/core/java/com/genton",
+                       help="输出目录 (默认: overlay/frameworks/base/core/java/com/genton)")
     parser.add_argument("--list", action="store_true", help="列出所有可用模块")
     
     args = parser.parse_args()

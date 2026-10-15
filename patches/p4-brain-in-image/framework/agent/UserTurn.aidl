@@ -1,8 +1,8 @@
 // UserTurn.aidl
 // 用户轮次数据
-package com.ainative.agent;
+package com.genton.agent;
 
-import com.ainative.agent.FormSubmitPayload;
+import com.genton.agent.FormSubmitPayload;
 
 /**
  * 用户轮次

@@ -157,7 +157,7 @@ The following are implemented modules from Track A (Android deep customization),
 | **Binder Single-Point Authz** | `overlay/.../AgentCallerAuth.java` | Implemented | Unified onTransact authz for all core services (WBS 1.3) |
 | **Capability Token Chain** | `overlay/.../policy/token/` | Implemented | Token signer / validator / revocation list three-piece set |
 | **PII Masking Engine** | `overlay/.../PiiMaskingEngine.java` | Implemented | Email / phone / ID card / bank card / credential assignment detection; fail-closed for high-risk scenarios |
-| **SELinux Policy** | `overlay/system/sepolicy/private/` | 5 domains | ainative_brain / service / systemui / system_server / neverallow |
+| **SELinux Policy** | `overlay/system/sepolicy/private/` | 5 domains | genton_brain / service / systemui / system_server / neverallow |
 
 #### Action Execution System (Deterministic Execution Guarantee)
 
@@ -182,7 +182,7 @@ The following are implemented modules from Track A (Android deep customization),
 | **UI Tree Service** | `AgentUiTreeService.java` + `UiTreeConsistencyValidator.java` | Mid-high |
 | **Secure Window Detector** | `SecureWindowDetector.kt` | Implemented |
 
-#### Agent Runtime (AINativeBrain Privileged System App, hereafter "the brain")
+#### Agent Runtime (GentonBrain Privileged System App, hereafter "the brain")
 
 | Module | Location | Status |
 |---|---|---|
@@ -234,16 +234,16 @@ The following are implemented modules from Track A (Android deep customization),
 Genton/
 ├── overlay/                          # Genton overlay layer (AOSP source tree patches)
 │   ├── frameworks/base/
-│   │   ├── core/java/com/ainative/  # AIDL interfaces and shared data models (21 packages, 243 .aidl files)
+│   │   ├── core/java/com/genton/  # AIDL interfaces and shared data models (21 packages, 243 .aidl files)
 │   │   ├── services/core/java/      # system_server service implementations (50+ services)
 │   │   ├── packages/SystemUI/       # SystemUI deep customization
 │   │   └── data/etc/                # Permission declarations + sysconfig
 │   └── system/sepolicy/private/     # SELinux policy (5 .te + file/service/seapp_contexts)
 ├── frameworks/base/                 # Kotlin framework services (earlier version, converging to Java version)
 ├── packages/
-│   ├── apps/AINativeBrain/          # Agent brain privileged system app (108 Kotlin files)
+│   ├── apps/GentonBrain/          # Agent brain privileged system app (108 Kotlin files)
 │   └── SystemUI/                    # SystemUI standalone module (earlier version)
-├── vendor/ainative/                 # Platform config + build scripts + policy DSL baseline
+├── vendor/genton/                 # Platform config + build scripts + policy DSL baseline
 │   ├── config/                      # Baseline policy, action registry, value domain catalog, device calibration
 │   ├── build/                       # Product mk + AndroidProducts.mk
 │   ├── services/                    # Python reference implementation of policy engine
@@ -289,7 +289,7 @@ export PATH=~/bin:$PATH
 
 # Initialize repository
 mkdir genton-os && cd genton-os
-repo init -u https://github.com/forrestsong/Genton -b main -m manifests/ainative.xml
+repo init -u https://github.com/forrestsong/Genton -b main -m manifests/genton.xml
 repo sync -c -j$(nproc --all)
 ```
 
@@ -330,7 +330,7 @@ fastboot flashall -w
 
 #### Adding a policy rule
 
-1. Edit `vendor/ainative/config/policy_baseline.dsl` or create a new policy pack
+1. Edit `vendor/genton/config/policy_baseline.dsl` or create a new policy pack
 2. Compile and validate:
    ```bash
    python tools/policy_dsl_compiler.py --input your_policy.dsl
@@ -342,7 +342,7 @@ fastboot flashall -w
 
 #### Developing a third-party Agent
 
-Refer to the sample agent in `vendor/ainative/templates/sample-agent/`:
+Refer to the sample agent in `vendor/genton/templates/sample-agent/`:
 - Write `SandboxManifest.json` to declare capabilities and intents
 - Implement agent logic (Kotlin/Java supported, more languages planned)
 - After registration through the system asset library, it can be used with user authorization

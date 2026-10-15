@@ -2,10 +2,10 @@
 //
 // [P4 补齐] ActionExecutor 引用了此类但仓库中缺失。
 // 负责：保存 ACB 返回的 actionRequestId，并按超时等待执行完成并汇总结果。
-package com.ainative.brain.executor
+package com.genton.brain.executor
 
 import android.util.Log
-import com.ainative.brain.toolloop.ExecutionContext
+import com.genton.brain.toolloop.ExecutionContext
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 

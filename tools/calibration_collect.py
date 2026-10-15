@@ -13,9 +13,9 @@
 
 用法示例：
   python tools/calibration_collect.py validate
-  python tools/calibration_collect.py validate --dir vendor/ainative/config/calibration
+  python tools/calibration_collect.py validate --dir vendor/genton/config/calibration
   python tools/calibration_collect.py collect --dump device-dump.json \\
-      --profile vendor/ainative/config/calibration/profiles/sm8550_p0.json --apply
+      --profile vendor/genton/config/calibration/profiles/sm8550_p0.json --apply
   python tools/calibration_collect.py matrix --out reports/F4.1_机型校准矩阵.md
   python tools/calibration_collect.py regression-validate
   python tools/calibration_collect.py regression-matrix --out reports/F4.2_校准回归样本库.md
@@ -33,7 +33,7 @@ import os
 import re
 import sys
 
-# MotionHub 能力位（对齐 frameworks/base/services/core/java/com/android/server/ainative/MotionHubService.java）
+# MotionHub 能力位（对齐 frameworks/base/services/core/java/com/android/server/genton/MotionHubService.java）
 CAP_SENSOR_HUB_AON = 1 << 0
 CAP_TIER_FOREGROUND = 1 << 24
 CAP_TIER_DEEP_SLEEP = 1 << 25
@@ -43,7 +43,7 @@ CAP_GESTURE_FLIP = 1 << 29
 CAP_GESTURE_SWIPE = 1 << 30
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-DEFAULT_CALIBRATION_DIR = os.path.join(REPO_ROOT, "vendor", "ainative", "config", "calibration")
+DEFAULT_CALIBRATION_DIR = os.path.join(REPO_ROOT, "vendor", "genton", "config", "calibration")
 DEFAULT_SCHEMA = os.path.join(DEFAULT_CALIBRATION_DIR, "machine-profile.schema.json")
 
 TYPE_MAP = {
@@ -329,13 +329,13 @@ def cmd_collect(args):
         print("[INFO] 已由宏录制样本聚合时序: %s" % json.dumps(stats, ensure_ascii=False))
 
     # S7：能力位与 profile 记录值的一致性核对
-    cap_hex = props.get("ro.ainative.motion.capabilities")
+    cap_hex = props.get("ro.genton.motion.capabilities")
     warnings = []
     if cap_hex:
         try:
             caps = int(str(cap_hex), 0)
         except ValueError:
-            warnings.append("ro.ainative.motion.capabilities 无法解析为整数: %s" % cap_hex)
+            warnings.append("ro.genton.motion.capabilities 无法解析为整数: %s" % cap_hex)
             caps = None
         if caps is not None:
             normalized = "0x%08X" % caps
@@ -427,7 +427,7 @@ def cmd_matrix(args):
         "# F4.1 机型校准矩阵",
         "",
         "> 生成工具：`python tools/calibration_collect.py matrix`",
-        "> 数据源：`vendor/ainative/config/calibration/profiles/*.json`",
+        "> 数据源：`vendor/genton/config/calibration/profiles/*.json`",
         "> 说明：实测列取值 `null` 表示尚未在真机采集（见各档案 measurement.pendingFields）",
         "",
         "## 1. 机型总览",
@@ -775,7 +775,7 @@ def cmd_regression_matrix(args):
         "# F4.2 校准回归样本库",
         "",
         "> 生成工具：`python tools/calibration_collect.py regression-matrix`",
-        "> 数据源：`vendor/ainative/config/calibration/regression/*.suite.json`",
+        "> 数据源：`vendor/genton/config/calibration/regression/*.suite.json`",
         "> 说明：黄金值来源见各用例 `assertion.source`；预期跳过项为机型能力裁剪（如 P1 无 AON 岛）",
         "",
         "## 1. 样本集总览",
@@ -854,7 +854,7 @@ def main(argv=None):
     sub = parser.add_subparsers(dest="command")
 
     p_validate = sub.add_parser("validate", help="校验机型档案与 DMI 可用性登记表")
-    p_validate.add_argument("--dir", help="校准库目录（默认 vendor/ainative/config/calibration）")
+    p_validate.add_argument("--dir", help="校准库目录（默认 vendor/genton/config/calibration）")
     p_validate.add_argument("--schema", help="schema 路径（默认机器档案 schema）")
     p_validate.set_defaults(func=cmd_validate)
 
@@ -872,7 +872,7 @@ def main(argv=None):
     p_matrix.set_defaults(func=cmd_matrix)
 
     p_reg_validate = sub.add_parser("regression-validate", help="校验校准回归样本集（F4.2）")
-    p_reg_validate.add_argument("--dir", help="校准库目录（默认 vendor/ainative/config/calibration）")
+    p_reg_validate.add_argument("--dir", help="校准库目录（默认 vendor/genton/config/calibration）")
     p_reg_validate.set_defaults(func=cmd_regression_validate)
 
     p_reg_matrix = sub.add_parser("regression-matrix", help="导出校准回归样本库（Markdown）")

@@ -1,6 +1,6 @@
 // Genton (AI Native OS) - 确认 UI 提供方（SystemUI 侧）
 //
-// 实现 com.ainative.ui.IAgentConfirmationUi，并通过
+// 实现 com.genton.ui.IAgentConfirmationUi，并通过
 // IAgentConfirmationHost.registerUiProvider(binder) 反向交给 system_server。
 //
 // 为什么不直接 ServiceManager.addService（实测）：
@@ -14,7 +14,7 @@
 //            -> 用户决策经 IConfirmationDecisionCallback 回到 system_server
 //            -> system_server 回灌 PolicyEngine.reportUserDecision 并路由回中介
 //   （决策全程不经过大脑进程）
-package com.android.systemui.ainative.confirmation;
+package com.android.systemui.genton.confirmation;
 
 import android.content.Context;
 import android.os.IBinder;
@@ -22,10 +22,10 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.Log;
 
-import com.ainative.ui.ConfirmationUiRequest;
-import com.ainative.ui.IAgentConfirmationHost;
-import com.ainative.ui.IAgentConfirmationUi;
-import com.ainative.ui.IConfirmationDecisionCallback;
+import com.genton.ui.ConfirmationUiRequest;
+import com.genton.ui.IAgentConfirmationHost;
+import com.genton.ui.IAgentConfirmationUi;
+import com.genton.ui.IConfirmationDecisionCallback;
 
 /** 确认 UI 提供方（SystemUI 独占绘制） */
 public class ConfirmationUiProvider extends IAgentConfirmationUi.Stub {
@@ -33,7 +33,7 @@ public class ConfirmationUiProvider extends IAgentConfirmationUi.Stub {
     private static final String TAG = "GentonConfirmUi";
 
     /** 确认宿主服务名（system_server 注册），须与 service_contexts 一致 */
-    private static final String HOST_SERVICE = "com.ainative.ui.IAgentConfirmationHost";
+    private static final String HOST_SERVICE = "com.genton.ui.IAgentConfirmationHost";
 
     private final Context mContext;
     private final ConfirmationPanel mPanel;

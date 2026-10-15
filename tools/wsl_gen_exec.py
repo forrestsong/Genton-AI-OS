@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 import os
 
-BASE = '/root/aosp/frameworks/base/core/java/com/ainative'
+BASE = '/root/aosp/frameworks/base/core/java/com/genton'
 
 path = os.path.join(BASE, 'execution', 'IActionExecutionService.aidl')
-content = '''package com.ainative.execution;
+content = '''package com.genton.execution;
 
-import com.ainative.execution.ActionRequest;
-import com.ainative.execution.IActionCallback;
-import com.ainative.execution.ActionExecutionStatus;
-import com.ainative.execution.ActionInfo;
+import com.genton.execution.ActionRequest;
+import com.genton.execution.IActionCallback;
+import com.genton.execution.ActionExecutionStatus;
+import com.genton.execution.ActionInfo;
 
 interface IActionExecutionService {
     int submitAction(in ActionRequest request, in IActionCallback callback, out String[] outRequestId);

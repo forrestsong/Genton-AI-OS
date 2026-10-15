@@ -1,5 +1,5 @@
 // AI Native OS - Edge Gesture Handler
-package com.android.systemui.ainative.entry;
+package com.android.systemui.genton.entry;
 
 import android.content.Context;
 import android.content.Intent;
@@ -92,7 +92,7 @@ public class EdgeGestureHandler {
     private void triggerAssistant() {
         Log.i(TAG, "Edge gesture triggered");
         
-        Intent intent = new Intent("com.ainative.ACTION_SHOW_ASSISTANT");
+        Intent intent = new Intent("com.genton.ACTION_SHOW_ASSISTANT");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
     }

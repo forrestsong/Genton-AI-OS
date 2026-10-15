@@ -44,14 +44,14 @@ def main():
     # 1. AIDL 接口文件
     print("\n[1] AIDL 接口文件")
     aidl_files = [
-        ("overlay/frameworks/base/core/java/com/ainative/policy/IPolicyEngine.aidl", "IPolicyEngine"),
-        ("overlay/frameworks/base/core/java/com/ainative/policy/IntentEvaluationRequest.aidl", "IntentEvaluationRequest"),
-        ("overlay/frameworks/base/core/java/com/ainative/policy/CapabilityRequest.aidl", "CapabilityRequest"),
-        ("overlay/frameworks/base/core/java/com/ainative/policy/PolicyDecision.aidl", "PolicyDecision"),
-        ("overlay/frameworks/base/core/java/com/ainative/policy/TaintMapEntry.aidl", "TaintMapEntry"),
-        ("overlay/frameworks/base/core/java/com/ainative/policy/PolicyRuleView.aidl", "PolicyRuleView"),
-        ("overlay/frameworks/base/core/java/com/ainative/policy/PolicyStats.aidl", "PolicyStats"),
-        ("overlay/frameworks/base/core/java/com/ainative/policy/IPolicyListener.aidl", "IPolicyListener"),
+        ("overlay/frameworks/base/core/java/com/genton/policy/IPolicyEngine.aidl", "IPolicyEngine"),
+        ("overlay/frameworks/base/core/java/com/genton/policy/IntentEvaluationRequest.aidl", "IntentEvaluationRequest"),
+        ("overlay/frameworks/base/core/java/com/genton/policy/CapabilityRequest.aidl", "CapabilityRequest"),
+        ("overlay/frameworks/base/core/java/com/genton/policy/PolicyDecision.aidl", "PolicyDecision"),
+        ("overlay/frameworks/base/core/java/com/genton/policy/TaintMapEntry.aidl", "TaintMapEntry"),
+        ("overlay/frameworks/base/core/java/com/genton/policy/PolicyRuleView.aidl", "PolicyRuleView"),
+        ("overlay/frameworks/base/core/java/com/genton/policy/PolicyStats.aidl", "PolicyStats"),
+        ("overlay/frameworks/base/core/java/com/genton/policy/IPolicyListener.aidl", "IPolicyListener"),
     ]
     
     for rel_path, desc in aidl_files:
@@ -63,7 +63,7 @@ def main():
     
     # 2. PolicyEngineService
     print("\n[2] PolicyEngineService 实现")
-    service_path = os.path.join(base_path, "overlay/frameworks/base/services/core/java/com/android/server/ainative/PolicyEngineService.java")
+    service_path = os.path.join(base_path, "overlay/frameworks/base/services/core/java/com/android/server/genton/PolicyEngineService.java")
     if check_file_exists(service_path, "PolicyEngineService"):
         lines = count_lines(service_path)
         print(f"   代码行数: {lines} 行")
@@ -78,7 +78,7 @@ def main():
     
     # 3. PolicyRuleEvaluator
     print("\n[3] PolicyRuleEvaluator 实现")
-    evaluator_path = os.path.join(base_path, "overlay/frameworks/base/services/core/java/com/android/server/ainative/PolicyRuleEvaluator.java")
+    evaluator_path = os.path.join(base_path, "overlay/frameworks/base/services/core/java/com/android/server/genton/PolicyRuleEvaluator.java")
     if check_file_exists(evaluator_path, "PolicyRuleEvaluator"):
         lines = count_lines(evaluator_path)
         print(f"   代码行数: {lines} 行")

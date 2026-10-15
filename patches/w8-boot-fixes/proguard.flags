@@ -138,11 +138,11 @@
 # AI Native OS 服务实现 keep 规则
 # ------------------------------------------------------------
 # 我们的服务通过 ServiceManager 按字符串名注册（尚未接入 SystemServer 的
-# 静态引用链），R8 无法静态判定可达性，会把整个 com.android.server.ainative
+# 静态引用链），R8 无法静态判定可达性，会把整个 com.android.server.genton
 # 包裁剪掉，导致镜像内 services.jar 不含服务实现。
 # 待 SystemServer 注册落地后，此规则可改为按需保留。
 # ============================================================
 # 注意：不可加 allowoptimization/allowaccessmodification —— 实测会改变 R8 的
 # 优化/可达性分析，导致 Kotlin 标准库接口方法（kotlin.jvm.functions.Function2.invoke）
 # 被裁剪，emulator 启动时 SystemServer 因 NoSuchMethodError 崩溃。
--keep class com.android.server.ainative.** { *; }
+-keep class com.android.server.genton.** { *; }

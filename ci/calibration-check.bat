@@ -12,7 +12,7 @@ echo.
 set SCRIPT_DIR=%~dp0
 set PROJECT_ROOT=%SCRIPT_DIR%..
 set TOOLS_DIR=%PROJECT_ROOT%\tools
-set CALIBRATION_DIR=%PROJECT_ROOT%\vendor\ainative\config\calibration
+set CALIBRATION_DIR=%PROJECT_ROOT%\vendor\genton\config\calibration
 set REPORTS_DIR=%PROJECT_ROOT%\reports\ci
 
 REM 创建目录

@@ -1,4 +1,4 @@
-package com.android.server.ainative;
+package com.android.server.genton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  * PolicyPack JSON 信封格式（与 C1.4 打包/灰度工具链对齐）：
  * <pre>
  * {
- *   "format": "ainative.policypack.v1",
+ *   "format": "genton.policypack.v1",
  *   "version": "1.0.0",
  *   "source": "platform | user | learning",
  *   "signature": "HMAC-SHA256(base64)",   // platform 源必填（E2.2 TEE 密钥入位前不可用）
@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 public class PolicyFileParser {
 
     private static final String TAG = "PolicyFileParser";
-    private static final String FORMAT = "ainative.policypack.v1";
+    private static final String FORMAT = "genton.policypack.v1";
 
     // ==================== 包/规则上限 ====================
     private static final int MAX_RULES_PER_PACK = 256;

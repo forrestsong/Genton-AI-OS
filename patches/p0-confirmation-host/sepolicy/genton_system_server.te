@@ -1,0 +1,114 @@
+# AI Native OS SELinux system_server 扩展策略
+#
+# 扩展 system_server 权限以支持 AI Native 服务
+#
+# 版本: v1.0
+# 日期: 2026-09-05
+# 依据: WBS A1.4 权限清单落地
+
+# ========================================
+# 服务注册权限
+# ========================================
+
+# 允许 system_server 注册所有 AI Native 服务
+allow system_server genton_ui_tree_service:service_manager add;
+allow system_server genton_screen_service:service_manager add;
+allow system_server genton_notification_service:service_manager add;
+allow system_server genton_event_stream_service:service_manager add;
+allow system_server genton_action_service:service_manager add;
+allow system_server genton_agent_runtime_service:service_manager add;
+allow system_server genton_memory_service:service_manager add;
+allow system_server genton_audit_service:service_manager add;
+allow system_server genton_entity_service:service_manager add;
+allow system_server genton_context_service:service_manager add;
+allow system_server genton_policy_engine_service:service_manager add;
+allow system_server genton_asset_library_service:service_manager add;
+allow system_server genton_inference_router_service:service_manager add;
+allow system_server genton_sandbox_service:service_manager add;
+allow system_server genton_call_gate_service:service_manager add;
+allow system_server genton_motion_hub_service:service_manager add;
+
+# ========================================
+# Binder 调用权限
+# ========================================
+
+# 允许 system_server 调用大脑 (用于回调)
+# [主线2修复] 引用已停用域 genton_brain
+# binder_call(system_server, genton_brain)
+
+# 允许 system_server 调用 SystemUI (用于 UI 命令)
+binder_call(system_server, system_app)
+
+# ========================================
+# 数据访问权限
+# ========================================
+
+# 允许 system_server 创建和管理 AI Native 数据目录
+# [主线2修复] 引用未定义类型 genton_data_file
+# allow system_server genton_data_file:dir create_dir_perms;
+# [主线2修复] 引用未定义类型 genton_data_file
+# allow system_server genton_data_file:file create_file_perms;
+
+# 审计服务需要写入审计日志
+# [主线2修复] 引用未定义类型 genton_data_file
+# allow system_server genton_data_file:file { write append };
+
+# ========================================
+# 传感器访问权限 (MotionHub 需要)
+# ========================================
+
+# 允许访问传感器设备
+# [主线2修复] sensor_device 类型在 Android 16 已不存在，规则移除
+# allow system_server sensor_device:chr_file rw_file_perms;
+
+# ========================================
+# 窗口管理权限 (UI 树服务需要)
+# ========================================
+
+# 允许访问 SurfaceFlinger
+allow system_server surfaceflinger:binder call;
+
+# 允许读取窗口状态
+# [主线2修复] window_manager_service 类型在 Android 16 不存在，规则移除
+# allow system_server window_manager_service:service_manager find;
+
+# ========================================
+# 通知访问权限 (通知服务需要)
+# ========================================
+
+# 允许访问 NotificationManager
+allow system_server notification_service:service_manager find;
+
+# ========================================
+# 电话访问权限 (CallGate 需要)
+# ========================================
+
+# 允许访问 TelephonyManager
+allow system_server radio_service:service_manager find;
+# [主线2修复] phone_service 类型在 Android 16 不存在，规则移除
+# allow system_server phone_service:service_manager find;
+
+# ========================================
+# 网络访问权限 (推理路由需要)
+# ========================================
+
+# 允许推理路由服务进行网络连接
+allow system_server self:tcp_socket create_stream_socket_perms;
+allow system_server port:tcp_socket { name_connect };
+
+# ========================================
+# 文件访问权限
+# ========================================
+
+# 允许读取策略包文件
+allow system_server system_file:dir r_dir_perms;
+allow system_server system_file:file r_file_perms;
+
+# 允许读取资产库文件
+allow system_server apk_data_file:dir r_dir_perms;
+allow system_server apk_data_file:file r_file_perms;
+
+# [P0] 执行层（system_server 内）需查找 SystemUI 注册的确认宿主
+allow system_server genton_confirmation_host_service:service_manager find;
+# [P0] system_server 注册确认宿主服务名（SystemUI 为应用 UID 无法注册）
+allow system_server genton_confirmation_host_service:service_manager add;

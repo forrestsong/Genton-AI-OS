@@ -66,10 +66,10 @@ BOARD_AVB_ENABLE := true
 BOARD_AVB_ROLLBACK_INDEX := 0
 
 # SELinux
-BOARD_VENDOR_SEPOLICY_DIRS += device/ainative/cpday10/sepolicy/vendor
+BOARD_VENDOR_SEPOLICY_DIRS += device/genton/cpday10/sepolicy/vendor
 
 # Properties
-TARGET_SYSTEM_PROP += device/ainative/cpday10/system.prop
+TARGET_SYSTEM_PROP += device/genton/cpday10/system.prop
 
 # Display (Real device: 720x720 square screen at 220 DPI)
 TARGET_SCREEN_DENSITY := 220
@@ -88,7 +88,7 @@ TARGET_DYNAMIC_64_32_DRMSERVER := true
 
 
 # Include vendor board configuration
--include vendor/ainative/mt6789/BoardConfigVendor.mk
+-include vendor/genton/mt6789/BoardConfigVendor.mk
 
 # Skip kernel build and VINTF check (no prebuilt kernel available)
 TARGET_NO_KERNEL := true

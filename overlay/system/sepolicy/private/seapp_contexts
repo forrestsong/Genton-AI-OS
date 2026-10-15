@@ -10,5 +10,5 @@
 # AI Native 大脑应用
 # ========================================
 
-# 大脑特权应用 -> ainative_brain 域
-isSystemServer=false domain=ainative_brain name=com.ainative.brain
+# 大脑特权应用 -> genton_brain 域
+isSystemServer=false domain=genton_brain name=com.genton.brain

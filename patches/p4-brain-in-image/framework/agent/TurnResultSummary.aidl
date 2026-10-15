@@ -1,6 +1,6 @@
 // TurnResultSummary.aidl
 // 轮次结果摘要
-package com.ainative.agent;
+package com.genton.agent;
 
 /**
  * 轮次结果摘要

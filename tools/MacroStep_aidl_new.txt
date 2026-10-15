@@ -1,4 +1,4 @@
-package com.ainative.macro;
+package com.genton.macro;
 
 /**
  * MacroStep

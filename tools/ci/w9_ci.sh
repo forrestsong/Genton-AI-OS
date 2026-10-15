@@ -17,7 +17,7 @@ JOBS="${JOBS:-20}"
 VERIFY_ONLY=0
 [ "$1" = "--verify-only" ] && VERIFY_ONLY=1
 
-REPORT_DIR="$AOSP/out/ainative-reports"
+REPORT_DIR="$AOSP/out/genton-reports"
 mkdir -p "$REPORT_DIR"
 STAMP=$(date '+%Y%m%d-%H%M%S')
 LOG="$REPORT_DIR/build-$STAMP.log"

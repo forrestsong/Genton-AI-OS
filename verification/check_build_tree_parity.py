@@ -3,7 +3,7 @@
 跨环境一致性门禁：**归档树 == 构建树**（WBS 0.2 / 3.4）
 
 为什么需要这道门禁（真实教训）：
-  本项目前九批安全修复全部落在工作区归档（com.ainative.*）里，
+  本项目前九批安全修复全部落在工作区归档（com.genton.*）里，
   而真正被编译的是 WSL 中的构建树 /root/aosp（已改名为 com.genton.*）。
   结果：修复看起来"完成"，但对镜像零影响——构建树里的前缀后门、假 TEE 签名
   一个都没少。本轮之前没有任何门禁能发现这件事，因为所有检查都只扫归档。
@@ -96,7 +96,7 @@ def main():
         print("  ok: 构建树无假 TEE 签名")
 
     # 6. 归档与构建树的规模差异（信息项，用于提示"两边早已分叉"）
-    rc, arch = wsl("ls '/mnt/d/AI Native OS/overlay/frameworks/base/services/core/java/com/android/server/ainative' 2>/dev/null | wc -l")
+    rc, arch = wsl("ls '/mnt/d/AI Native OS/overlay/frameworks/base/services/core/java/com/android/server/genton' 2>/dev/null | wc -l")
     rc, tree = wsl(f"ls {GENTON_DIR} | wc -l")
     print(f"  信息：归档目录 {arch.strip()} 个文件 vs 构建树 {tree.strip()} 个文件")
 

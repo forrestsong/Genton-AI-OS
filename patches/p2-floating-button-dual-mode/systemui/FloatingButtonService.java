@@ -1,5 +1,5 @@
 // AI Native OS - Floating Button Service
-package com.android.systemui.ainative.entry;
+package com.android.systemui.genton.entry;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -17,7 +17,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import com.android.systemui.ainative.background.BackgroundAssistantManager;
+import com.android.systemui.genton.background.BackgroundAssistantManager;
 
 /**
  * 悬浮球服务：提供快速唤起助理的悬浮入口
@@ -161,7 +161,7 @@ public class FloatingButtonService extends Service {
         Log.i(TAG, "Floating button clicked");
         
         // 启动助理
-        Intent intent = new Intent("com.ainative.ACTION_SHOW_ASSISTANT");
+        Intent intent = new Intent("com.genton.ACTION_SHOW_ASSISTANT");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
@@ -262,10 +262,10 @@ public class FloatingButtonService extends Service {
                 return;
             }
             boolean hasActive = intent.getBooleanExtra(
-                    com.android.systemui.ainative.background.BackgroundAssistantManager
+                    com.android.systemui.genton.background.BackgroundAssistantManager
                             .EXTRA_HAS_ACTIVE_TASK, false);
             int count = intent.getIntExtra(
-                    com.android.systemui.ainative.background.BackgroundAssistantManager
+                    com.android.systemui.genton.background.BackgroundAssistantManager
                             .EXTRA_TASK_COUNT, 0);
             Log.d(TAG, "Task status: hasActive=" + hasActive + " count=" + count);
             onTaskStatusChanged(hasActive, count);
@@ -280,7 +280,7 @@ public class FloatingButtonService extends Service {
             return;
         }
         IntentFilter f = new IntentFilter(
-                com.android.systemui.ainative.background.BackgroundAssistantManager
+                com.android.systemui.genton.background.BackgroundAssistantManager
                         .ACTION_UPDATE_TASK_STATUS);
         // [P2 修复] 同上：显式声明导出标志（仅同应用内广播）
         registerReceiver(mTaskStatusReceiver, f, Context.RECEIVER_NOT_EXPORTED);

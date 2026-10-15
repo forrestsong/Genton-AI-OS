@@ -4,24 +4,24 @@
 # ============================================
 # 服务启动
 # ============================================
-allow init ainative_service_exec:file { read open execute getattr };
-allow init ainative_audit_exec:file { read open execute getattr };
-allow init ainative_policy_exec:file { read open execute getattr };
-allow init ainative_inference_exec:file { read open execute getattr };
-allow init ainative_call_exec:file { read open execute getattr };
-allow init ainative_motion_exec:file { read open execute getattr };
+allow init genton_service_exec:file { read open execute getattr };
+allow init genton_audit_exec:file { read open execute getattr };
+allow init genton_policy_exec:file { read open execute getattr };
+allow init genton_inference_exec:file { read open execute getattr };
+allow init genton_call_exec:file { read open execute getattr };
+allow init genton_motion_exec:file { read open execute getattr };
 
 # 域转换
-domain_auto_trans(init, ainative_service_exec, ainative_service)
-domain_auto_trans(init, ainative_audit_exec, ainative_audit)
-domain_auto_trans(init, ainative_policy_exec, ainative_policy)
-domain_auto_trans(init, ainative_inference_exec, ainative_inference)
-domain_auto_trans(init, ainative_call_exec, ainative_call)
-domain_auto_trans(init, ainative_motion_exec, ainative_motion)
+domain_auto_trans(init, genton_service_exec, genton_service)
+domain_auto_trans(init, genton_audit_exec, genton_audit)
+domain_auto_trans(init, genton_policy_exec, genton_policy)
+domain_auto_trans(init, genton_inference_exec, genton_inference)
+domain_auto_trans(init, genton_call_exec, genton_call)
+domain_auto_trans(init, genton_motion_exec, genton_motion)
 
 # ============================================
 # 数据目录创建
 # ============================================
-allow init ainative_data_file_type:dir { create setattr relabelfrom relabelto };
-allow init ainative_audit_data_file:dir { create_dir_perms relabelfrom relabelto };
-allow init ainative_policy_data_file:dir { create_dir_perms relabelfrom relabelto };
+allow init genton_data_file_type:dir { create setattr relabelfrom relabelto };
+allow init genton_audit_data_file:dir { create_dir_perms relabelfrom relabelto };
+allow init genton_policy_data_file:dir { create_dir_perms relabelfrom relabelto };

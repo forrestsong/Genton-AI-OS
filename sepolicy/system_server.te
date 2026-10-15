@@ -4,41 +4,41 @@
 # ============================================
 # 启动 AI Native OS 服务
 # ============================================
-allow system_server ainative_service_exec:file { execute read open getattr };
-allow system_server ainative_service:process { fork signal sigkill transition };
+allow system_server genton_service_exec:file { execute read open getattr };
+allow system_server genton_service:process { fork signal sigkill transition };
 
-allow system_server ainative_audit_exec:file { execute read open getattr };
-allow system_server ainative_audit:process { fork signal sigkill transition };
+allow system_server genton_audit_exec:file { execute read open getattr };
+allow system_server genton_audit:process { fork signal sigkill transition };
 
-allow system_server ainative_policy_exec:file { execute read open getattr };
-allow system_server ainative_policy:process { fork signal sigkill transition };
+allow system_server genton_policy_exec:file { execute read open getattr };
+allow system_server genton_policy:process { fork signal sigkill transition };
 
-allow system_server ainative_inference_exec:file { execute read open getattr };
-allow system_server ainative_inference:process { fork signal sigkill transition };
+allow system_server genton_inference_exec:file { execute read open getattr };
+allow system_server genton_inference:process { fork signal sigkill transition };
 
-allow system_server ainative_call_exec:file { execute read open getattr };
-allow system_server ainative_call:process { fork signal sigkill transition };
+allow system_server genton_call_exec:file { execute read open getattr };
+allow system_server genton_call:process { fork signal sigkill transition };
 
-allow system_server ainative_motion_exec:file { execute read open getattr };
-allow system_server ainative_motion:process { fork signal sigkill transition };
+allow system_server genton_motion_exec:file { execute read open getattr };
+allow system_server genton_motion:process { fork signal sigkill transition };
 
 # ============================================
 # Binder 通信
 # ============================================
-binder_call(system_server, ainative_service)
-binder_call(system_server, ainative_audit)
-binder_call(system_server, ainative_policy)
-binder_call(system_server, ainative_inference)
-binder_call(system_server, ainative_call)
-binder_call(system_server, ainative_motion)
+binder_call(system_server, genton_service)
+binder_call(system_server, genton_audit)
+binder_call(system_server, genton_policy)
+binder_call(system_server, genton_inference)
+binder_call(system_server, genton_call)
+binder_call(system_server, genton_motion)
 
 # ============================================
 # 服务注册与查找
 # ============================================
-allow system_server ainative_service_type:service_manager { add find };
+allow system_server genton_service_type:service_manager { add find };
 
 # ============================================
 # 数据目录管理
 # ============================================
-allow system_server ainative_data_file_type:dir { create_dir_perms rw_dir_perms };
-allow system_server ainative_data_file_type:file { create_file_perms rw_file_perms };
+allow system_server genton_data_file_type:dir { create_dir_perms rw_dir_perms };
+allow system_server genton_data_file_type:file { create_file_perms rw_file_perms };

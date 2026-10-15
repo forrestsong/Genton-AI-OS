@@ -1,5 +1,5 @@
 // AI Native OS - Audit Timeline View (D4.1)
-package com.android.systemui.ainative.privacy;
+package com.android.systemui.genton.privacy;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.systemui.ainative.privacy.PrivacyDashboardManager.TimelineItem;
+import com.android.systemui.genton.privacy.PrivacyDashboardManager.TimelineItem;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

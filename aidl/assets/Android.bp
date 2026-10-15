@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.assets",
+    name: "com.genton.assets",
     
     srcs: [
-        "com/ainative/assets/*.aidl",
+        "com/genton/assets/*.aidl",
     ],
     
     stability: "vintf",
@@ -35,13 +35,13 @@ aidl_interface {
     ],
     
     imports: [
-        "com.ainative.action",  // 动作注册表
-        "com.ainative.policy",  // 权限校验
+        "com.genton.action",  // 动作注册表
+        "com.genton.policy",  // 权限校验
     ],
     
     visibility: [
         "//frameworks/base/services/core",
-        "//packages/apps/AINativeBrain",
+        "//packages/apps/GentonBrain",
         "//packages/apps/Settings",  // 资产管理
     ],
 }

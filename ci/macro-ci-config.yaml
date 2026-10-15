@@ -39,10 +39,10 @@ stages:
         required: true
         
       - name: "Clear Test Data"
-        action: "adb shell rm -rf /sdcard/ainative/test_*"
+        action: "adb shell rm -rf /sdcard/genton/test_*"
         
       - name: "Sync Test Assets"
-        action: "adb push tests/macro /sdcard/ainative/tests/"
+        action: "adb push tests/macro /sdcard/genton/tests/"
   
   # Stage 2: 加载宏资产
   - name: "Load Macros"
@@ -83,7 +83,7 @@ stages:
       - type: "junit_xml"
         output: "junit.xml"
     artifacts:
-      path: "/sdcard/ainative/test_reports"
+      path: "/sdcard/genton/test_reports"
       retention_days: 30
       
   # Stage 6: 通知
@@ -159,7 +159,7 @@ auto_disable:
 
 # 报告配置
 reports:
-  output_dir: "/sdcard/ainative/test_reports"
+  output_dir: "/sdcard/genton/test_reports"
   retention_days: 30
   
   # 报告内容
@@ -187,8 +187,8 @@ reports:
 environment:
   ANDROID_HOME: "${ANDROID_SDK_ROOT}"
   ADB_PATH: "${ANDROID_HOME}/platform-tools/adb"
-  TEST_DATA_DIR: "/sdcard/ainative/tests"
-  REPORT_DIR: "/sdcard/ainative/test_reports"
+  TEST_DATA_DIR: "/sdcard/genton/tests"
+  REPORT_DIR: "/sdcard/genton/test_reports"
 
 # 资源限制
 resources:

@@ -5,7 +5,7 @@
 //   - FLAG_SECURE 防截屏；任何 Agent 不可伪造、不可覆盖
 //   - 面板内容全部来自策略引擎签发的 ConfirmationUiRequest
 //   - 用户决策不经过大脑，由 ConfirmationHostService 直接回灌策略引擎
-package com.android.systemui.ainative.confirmation;
+package com.android.systemui.genton.confirmation;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -23,7 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.ainative.ui.ConfirmationUiRequest;
+import com.genton.ui.ConfirmationUiRequest;
 
 /** 全屏确认面板 */
 public class ConfirmationPanel {

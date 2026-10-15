@@ -47,8 +47,8 @@ echo Step 2: Validating golden DMI example...
 set /a TOTAL_TESTS+=1
 
 java -cp "%BUILD_DIR%;%TOOLS_DIR%\snakeyaml.jar;%TOOLS_DIR%\json.jar" ^
-    com.ainative.tools.DmiValidator ^
-    "%EXAMPLES_DIR%\ainative-dmi-weather-example.yaml" ^
+    com.genton.tools.DmiValidator ^
+    "%EXAMPLES_DIR%\genton-dmi-weather-example.yaml" ^
     --report "%REPORTS_DIR%\dmi-weather-validation.md"
 
 if %ERRORLEVEL% EQU 0 (
@@ -62,14 +62,14 @@ echo.
 
 REM 扫描 packages/apps/*/assets/ 中的 DMI 文件
 echo Step 3: Scanning application DMI assets...
-set DMI_PATTERN=ainative-dmi*.yaml ainative-dmi*.json
+set DMI_PATTERN=genton-dmi*.yaml genton-dmi*.json
 
 for /r "%PROJECT_ROOT%\packages\apps" %%F in (%DMI_PATTERN%) do (
     set /a TOTAL_TESTS+=1
     echo 校验: %%F
     
     java -cp "%BUILD_DIR%;%TOOLS_DIR%\snakeyaml.jar;%TOOLS_DIR%\json.jar" ^
-        com.ainative.tools.DmiValidator "%%F"
+        com.genton.tools.DmiValidator "%%F"
     
     if !ERRORLEVEL! EQU 0 (
         set /a PASSED_TESTS+=1
@@ -79,15 +79,15 @@ for /r "%PROJECT_ROOT%\packages\apps" %%F in (%DMI_PATTERN%) do (
     echo.
 )
 
-REM 扫描 overlay/frameworks/base/res/ainative/ 中的系统 DMI
+REM 扫描 overlay/frameworks/base/res/genton/ 中的系统 DMI
 echo Step 4: Scanning system DMI assets...
-if exist "%PROJECT_ROOT%\overlay\frameworks\base\res\ainative" (
-    for /r "%PROJECT_ROOT%\overlay\frameworks\base\res\ainative" %%F in (%DMI_PATTERN%) do (
+if exist "%PROJECT_ROOT%\overlay\frameworks\base\res\genton" (
+    for /r "%PROJECT_ROOT%\overlay\frameworks\base\res\genton" %%F in (%DMI_PATTERN%) do (
         set /a TOTAL_TESTS+=1
         echo 校验: %%F
         
         java -cp "%BUILD_DIR%;%TOOLS_DIR%\snakeyaml.jar;%TOOLS_DIR%\json.jar" ^
-            com.ainative.tools.DmiValidator "%%F"
+            com.genton.tools.DmiValidator "%%F"
         
         if !ERRORLEVEL! EQU 0 (
             set /a PASSED_TESTS+=1

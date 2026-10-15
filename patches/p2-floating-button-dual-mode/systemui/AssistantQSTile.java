@@ -1,5 +1,5 @@
 // AI Native OS - Quick Settings Tile
-package com.android.systemui.ainative.entry;
+package com.android.systemui.genton.entry;
 
 import android.content.Intent;
 import android.graphics.drawable.Icon;
@@ -49,7 +49,7 @@ public class AssistantQSTile extends TileService {
         Log.i(TAG, "QS Tile clicked");
         
         // 唤起助理
-        Intent intent = new Intent("com.ainative.ACTION_SHOW_ASSISTANT");
+        Intent intent = new Intent("com.genton.ACTION_SHOW_ASSISTANT");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivityAndCollapse(intent);
         

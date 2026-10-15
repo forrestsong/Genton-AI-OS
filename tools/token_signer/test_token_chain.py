@@ -58,8 +58,8 @@ class TokenChainTest:
         """测试 1: 验证令牌数据结构定义"""
         info("Test 1: Token structure definition")
         
-        token_aidl = self.workspace / "overlay/frameworks/base/core/java/com/ainative/policy/CapabilityToken.aidl"
-        revocation_aidl = self.workspace / "overlay/frameworks/base/core/java/com/ainative/policy/TokenRevocationInfo.aidl"
+        token_aidl = self.workspace / "overlay/frameworks/base/core/java/com/genton/policy/CapabilityToken.aidl"
+        revocation_aidl = self.workspace / "overlay/frameworks/base/core/java/com/genton/policy/TokenRevocationInfo.aidl"
         
         checks = []
         
@@ -203,7 +203,7 @@ class TokenChainTest:
         """测试 5: 验证令牌管理服务"""
         info("Test 5: Token management service")
         
-        service_java = self.workspace / "overlay/frameworks/base/services/core/java/com/android/server/ainative/TokenManagementService.java"
+        service_java = self.workspace / "overlay/frameworks/base/services/core/java/com/android/server/genton/TokenManagementService.java"
         
         if not service_java.exists():
             error(f"TokenManagementService.java not found: {service_java}")
@@ -257,7 +257,7 @@ class TokenChainTest:
             checks.append(('Expiry deny', 'REASON_TOKEN_EXPIRED' in content))
         
         # 检查令牌 TTL 限制
-        service_java = self.workspace / "overlay/frameworks/base/services/core/java/com/android/server/ainative/TokenManagementService.java"
+        service_java = self.workspace / "overlay/frameworks/base/services/core/java/com/android/server/genton/TokenManagementService.java"
         if service_java.exists():
             content = service_java.read_text(encoding='utf-8')
             checks.append(('Default TTL limit', 'DEFAULT_TOKEN_TTL_NANOS' in content))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 
-BASE = '/root/aosp/frameworks/base/core/java/com/ainative'
+BASE = '/root/aosp/frameworks/base/core/java/com/genton'
 for root, dirs, files in os.walk(BASE):
     for f in files:
         if not f.endswith('.aidl'):

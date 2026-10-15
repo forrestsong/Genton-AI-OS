@@ -37,10 +37,10 @@ POLICY_FILE = ROOT / "verification" / "build_config_baseline.json"
 # 代码文件：目标根目录（相对 AOSP 树根）
 CODE_ROOTS = {
     "aidl": "frameworks/base/core/java",
-    "com.ainative": "frameworks/base/core/java",
-    "com.android.server.ainative": "frameworks/base/services/core/java",
+    "com.genton": "frameworks/base/core/java",
+    "com.android.server.genton": "frameworks/base/services/core/java",
     "com.android.systemui": "frameworks/base/packages/SystemUI/src",
-    "com.ainative.brain": "packages/apps/AINativeBrain/src",
+    "com.genton.brain": "packages/apps/GentonBrain/src",
 }
 
 # 非代码载荷：按 (子目录, 文件名或扩展名) 显式映射（相对 AOSP 树根）
@@ -52,16 +52,16 @@ NONCODE_RULES = [
     ("vendor_service_contexts", "system/sepolicy/private"),
     ("plat_file_contexts_test", "system/sepolicy/private"),
     ("seapp_contexts", "system/sepolicy/private"),
-    ("proguard.flags", "frameworks/base/services/core/java/com/android/server/ainative"),
+    ("proguard.flags", "frameworks/base/services/core/java/com/android/server/genton"),
     ("service_fuzzer_bindings.go", "system/sepolicy/private"),
-    ("Android.bp", "packages/apps/AINativeBrain"),
-    ("AndroidManifest.xml", "packages/apps/AINativeBrain"),
-    ("inference_providers.json", "vendor/ainative/config"),
-    (".mk", "device/ainative/cpday10"),
-    ("action_registry.json", "vendor/ainative/config"),
-    ("privapp-permissions-ainative-systemui.xml", "frameworks/base/packages/SystemUI"),
-    ("privapp-permissions-ainative.xml", "frameworks/base/data/etc"),
-    ("sysconfig-ainative.xml", "frameworks/base/data/etc"),
+    ("Android.bp", "packages/apps/GentonBrain"),
+    ("AndroidManifest.xml", "packages/apps/GentonBrain"),
+    ("inference_providers.json", "vendor/genton/config"),
+    (".mk", "device/genton/cpday10"),
+    ("action_registry.json", "vendor/genton/config"),
+    ("privapp-permissions-genton-systemui.xml", "frameworks/base/packages/SystemUI"),
+    ("privapp-permissions-genton.xml", "frameworks/base/data/etc"),
+    ("sysconfig-genton.xml", "frameworks/base/data/etc"),
     ("README.md", None),          # 文档不部署
     ("SystemServer.java.patched", "frameworks/base/services/java/com/android/server"),
 ]
@@ -96,14 +96,14 @@ def derive_target(payload: Path, rel: Path):
     if ext in CODE_EXT:
         if ext == ".kt" and "brain" in rel.parts:
             m = PKG_RE.search(read(payload))
-            pkg = m.group(1) if m else "com.ainative.brain"
-            return f"{CODE_ROOTS['com.ainative.brain']}/{pkg.replace('.', '/')}/{name}", \
+            pkg = m.group(1) if m else "com.genton.brain"
+            return f"{CODE_ROOTS['com.genton.brain']}/{pkg.replace('.', '/')}/{name}", \
                    f"由 package {pkg} 推导（大脑专用根）"
         m = PKG_RE.search(read(payload))
         if not m:
             return None, "缺少 package 声明"
         pkg = m.group(1)
-        # 最长前缀优先，避免 com.ainative 抢走 com.android.server.ainative
+        # 最长前缀优先，避免 com.genton 抢走 com.android.server.genton
         for prefix in sorted((k for k in CODE_ROOTS if k != "aidl"), key=len, reverse=True):
             if pkg == prefix or pkg.startswith(prefix + "."):
                 return f"{CODE_ROOTS[prefix]}/{pkg.replace('.', '/')}/{name}", \
@@ -134,7 +134,7 @@ def load_baseline():
 def collect():
     """返回 (deploys, shadowed, skipped, errors)。
 
-    重要：冲突判定必须**跨补丁目录全局**进行。4 份 ainative_overlay.mk 分散在
+    重要：冲突判定必须**跨补丁目录全局**进行。4 份 genton_overlay.mk 分散在
     4 个不同批次目录里，若只在目录内比较，它们会依次被写入同一目标路径——
     最后写入者获胜，正是 3.2 要消灭的"二义性"。
     """

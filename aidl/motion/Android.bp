@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.motion",
+    name: "com.genton.motion",
     
     srcs: [
-        "com/ainative/motion/*.aidl",
+        "com/genton/motion/*.aidl",
     ],
     
     stability: "vintf",
@@ -35,13 +35,13 @@ aidl_interface {
     ],
     
     imports: [
-        "com.ainative.events",  // 手势事件
-        "com.ainative.policy",  // 敏感场景门控
+        "com.genton.events",  // 手势事件
+        "com.genton.policy",  // 敏感场景门控
     ],
     
     visibility: [
         "//frameworks/base/services/core",
         "//frameworks/native/services/sensorservice",  // 传感器集成
-        "//packages/apps/AINativeBrain",
+        "//packages/apps/GentonBrain",
     ],
 }

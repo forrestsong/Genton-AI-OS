@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # 配置
-VALUE_DOMAIN_CATALOG="$PROJECT_ROOT/vendor/ainative/config/value_domain_catalog_v1.yaml"
+VALUE_DOMAIN_CATALOG="$PROJECT_ROOT/vendor/genton/config/value_domain_catalog_v1.yaml"
 OTA_OUTPUT_DIR="$PROJECT_ROOT/out/value_domain_ota"
 SIGNATURE_KEY="$PROJECT_ROOT/keys/platform.pk8"  # 平台签名私钥
 

@@ -47,8 +47,8 @@ echo "Step 2: Validating golden DMI example..."
 TOTAL_TESTS=$((TOTAL_TESTS + 1))
 
 java -cp "$BUILD_DIR:$TOOLS_DIR/snakeyaml.jar:$TOOLS_DIR/json.jar" \
-    com.ainative.tools.DmiValidator \
-    "$EXAMPLES_DIR/ainative-dmi-weather-example.yaml" \
+    com.genton.tools.DmiValidator \
+    "$EXAMPLES_DIR/genton-dmi-weather-example.yaml" \
     --report "$REPORTS_DIR/dmi-weather-validation.md"
 
 if [ $? -eq 0 ]; then
@@ -68,7 +68,7 @@ if [ -d "$PROJECT_ROOT/packages/apps" ]; then
         echo "校验: $DMI_FILE"
         
         java -cp "$BUILD_DIR:$TOOLS_DIR/snakeyaml.jar:$TOOLS_DIR/json.jar" \
-            com.ainative.tools.DmiValidator "$DMI_FILE"
+            com.genton.tools.DmiValidator "$DMI_FILE"
         
         if [ $? -eq 0 ]; then
             PASSED_TESTS=$((PASSED_TESTS + 1))
@@ -76,18 +76,18 @@ if [ -d "$PROJECT_ROOT/packages/apps" ]; then
             FAILED_TESTS=$((FAILED_TESTS + 1))
         fi
         echo ""
-    done < <(find "$PROJECT_ROOT/packages/apps" -type f \( -name "ainative-dmi*.yaml" -o -name "ainative-dmi*.json" \) -print0)
+    done < <(find "$PROJECT_ROOT/packages/apps" -type f \( -name "genton-dmi*.yaml" -o -name "genton-dmi*.json" \) -print0)
 fi
 
-# 扫描 overlay/frameworks/base/res/ainative/ 中的系统 DMI
+# 扫描 overlay/frameworks/base/res/genton/ 中的系统 DMI
 echo "Step 4: Scanning system DMI assets..."
-if [ -d "$PROJECT_ROOT/overlay/frameworks/base/res/ainative" ]; then
+if [ -d "$PROJECT_ROOT/overlay/frameworks/base/res/genton" ]; then
     while IFS= read -r -d '' DMI_FILE; do
         TOTAL_TESTS=$((TOTAL_TESTS + 1))
         echo "校验: $DMI_FILE"
         
         java -cp "$BUILD_DIR:$TOOLS_DIR/snakeyaml.jar:$TOOLS_DIR/json.jar" \
-            com.ainative.tools.DmiValidator "$DMI_FILE"
+            com.genton.tools.DmiValidator "$DMI_FILE"
         
         if [ $? -eq 0 ]; then
             PASSED_TESTS=$((PASSED_TESTS + 1))
@@ -95,7 +95,7 @@ if [ -d "$PROJECT_ROOT/overlay/frameworks/base/res/ainative" ]; then
             FAILED_TESTS=$((FAILED_TESTS + 1))
         fi
         echo ""
-    done < <(find "$PROJECT_ROOT/overlay/frameworks/base/res/ainative" -type f \( -name "ainative-dmi*.yaml" -o -name "ainative-dmi*.json" \) -print0)
+    done < <(find "$PROJECT_ROOT/overlay/frameworks/base/res/genton" -type f \( -name "genton-dmi*.yaml" -o -name "genton-dmi*.json" \) -print0)
 fi
 
 echo "==============================================="

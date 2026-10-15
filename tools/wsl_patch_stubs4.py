@@ -15,7 +15,7 @@ old_sm = '''java_system_modules {
         // containing lambdas.
         "core-lambda-stubs-for-system-modules",
         // AI Native OS fix: backfill framework android.* into the core_platform image.
-        "ainative.prebuilt_system_android_stubs",
+        "genton.prebuilt_system_android_stubs",
     ],
 }'''
 new_sm = '''java_system_modules {
@@ -66,7 +66,7 @@ new_st = '''java_library {
         // framework classes (android.os.Binder, android.provider.DeviceConfig, ...).
         // Backfill the prebuilt system SDK stubs so core_platform modules (e.g. aconfig
         // flag libs) can resolve android.* classes at javac.
-        "ainative.prebuilt_system_android_stubs",
+        "genton.prebuilt_system_android_stubs",
     ],
     patch_module: "java.base",
     is_stubs_module: true,

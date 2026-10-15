@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AI Native OS - Android 16 Manifest
+  基于 AOSP android-16 分支的深度定制系统
+  
+  使用方法:
+    repo init -u https://android.googlesource.com/platform/manifest -b android-16
+    cp manifests/genton-android16.xml .repo/local_manifests/genton.xml
+    repo sync
+-->
+<manifest>
+  
+  <!-- ============================================= -->
+  <!-- 1. AI Native OS 核心框架扩展 -->
+  <!-- ============================================= -->
+  
+  <!-- AIDL 接口定义 (14个模块) -->
+  <project path="frameworks/aidl/genton/perception" 
+           name="genton/perception-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/perception/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/action" 
+           name="genton/action-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/action/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/agent" 
+           name="genton/agent-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/agent/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/memory" 
+           name="genton/memory-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/memory/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/audit" 
+           name="genton/audit-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/audit/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/semantics" 
+           name="genton/semantics-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/semantics/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/events" 
+           name="genton/events-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/events/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/context" 
+           name="genton/context-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/context/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/policy" 
+           name="genton/policy-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/policy/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/assets" 
+           name="genton/assets-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/assets/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/ui" 
+           name="genton/ui-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/ui/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/inference" 
+           name="genton/inference-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/inference/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/sandbox" 
+           name="genton/sandbox-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/sandbox/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/call" 
+           name="genton/call-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/call/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/genton/motion" 
+           name="genton/motion-aidl"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/genton/motion/Android.bp"/>
+  </project>
+  
+  <!-- ============================================= -->
+  <!-- 2. 系统服务实现 -->
+  <!-- ============================================= -->
+  
+  <!-- System Server 服务扩展 -->
+  <project path="frameworks/base/services/genton" 
+           name="genton/system-services"
+           remote="genton"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/services/genton/Android.bp"/>
+  </project>
+  
+  <!-- ============================================= -->
+  <!-- 3. SystemUI 深度定制 -->
+  <!-- ============================================= -->
+  
+  <project path="frameworks/base/packages/SystemUI/genton" 
+           name="genton/systemui-extensions"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 4. 大脑特权 App -->
+  <!-- ============================================= -->
+  
+  <project path="packages/apps/GentonBrain" 
+           name="genton/brain-app"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 5. 配置与策略 -->
+  <!-- ============================================= -->
+  
+  <!-- SELinux 策略扩展 -->
+  <project path="system/sepolicy/genton" 
+           name="genton/sepolicy-extensions"
+           remote="genton"
+           revision="main">
+    <linkfile src="genton.te" dest="system/sepolicy/private/genton.te"/>
+    <linkfile src="genton_brain.te" dest="system/sepolicy/private/genton_brain.te"/>
+    <linkfile src="genton_service.te" dest="system/sepolicy/private/genton_service.te"/>
+  </project>
+  
+  <!-- 权限与配置文件 -->
+  <project path="vendor/genton/config" 
+           name="genton/system-config"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- 策略包与 DSL 规则 -->
+  <project path="vendor/genton/policy" 
+           name="genton/policy-packs"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- 动作注册表 -->
+  <project path="vendor/genton/registry" 
+           name="genton/action-registry"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 6. 资产生态 -->
+  <!-- ============================================= -->
+  
+  <project path="vendor/genton/assets/skills" 
+           name="genton/skill-assets"
+           remote="genton"
+           revision="main"/>
+  
+  <project path="vendor/genton/assets/dmi" 
+           name="genton/dmi-assets"
+           remote="genton"
+           revision="main"/>
+  
+  <project path="vendor/genton/assets/macros" 
+           name="genton/macro-assets"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 7. AI Runtime -->
+  <!-- ============================================= -->
+  
+  <!-- 本地推理运行时 -->
+  <project path="vendor/genton/ai-runtime" 
+           name="genton/ai-runtime"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- 预置小模型 -->
+  <project path="vendor/genton/models" 
+           name="genton/prebuilt-models"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 8. 密钥与签名 -->
+  <!-- ============================================= -->
+  
+  <project path="vendor/genton/keys" 
+           name="genton/signing-keys"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 9. 构建脚本与工具 -->
+  <!-- ============================================= -->
+  
+  <project path="vendor/genton/build" 
+           name="genton/build-tools"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- CI 工具链 -->
+  <project path="vendor/genton/ci" 
+           name="genton/ci-tools"
+           remote="genton"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 10. 远程定义（占位，待替换为实际仓库地址） -->
+  <!-- ============================================= -->
+  
+  <remote name="genton"
+          fetch="https://github.com/genton-os"
+          review="https://github.com/genton-os"/>
+  
+  <remote name="aosp"
+          fetch="https://android.googlesource.com"
+          review="https://android-review.googlesource.com"/>
+  
+  <!-- ============================================= -->
+  <!-- 11. 默认配置 -->
+  <!-- ============================================= -->
+  
+  <default remote="aosp"
+           revision="refs/heads/android-16"
+           sync-j="4"
+           sync-c="true"/>
+  
+</manifest>

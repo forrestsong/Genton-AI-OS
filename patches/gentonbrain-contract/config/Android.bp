@@ -1,0 +1,53 @@
+// AI Native Brain Application
+// Agent 大脑特权应用
+
+android_app {
+    name: "GentonBrain",
+    
+    srcs: [
+        "src/**/*.kt",
+        "src/**/*.java",
+    ],
+    
+    resource_dirs: ["res"],
+    
+    certificate: "platform",
+    privileged: true,
+    platform_apis: true,
+    
+    static_libs: [
+        "kotlin-stdlib",
+        "kotlinx-coroutines-android",
+        "androidx.core_core-ktx",
+        "androidx.appcompat_appcompat",
+        // [主线2 修复] ControlRenderer 等使用 com.google.android.material.textfield.*
+        "com.google.android.material_material",
+    ],
+    
+    // 依赖 framework（包含 com.genton.* AIDL 接口）
+    libs: [
+        "framework",
+    ],
+    
+    optimize: {
+        enabled: false,
+    },
+    
+    dex_preopt: {
+        enabled: false,
+    },
+    
+    owner: "genton",
+    
+    required: [
+        "permissions_com.genton.brain.xml",
+    ],
+}
+
+// 权限配置
+prebuilt_etc {
+    name: "permissions_com.genton.brain.xml",
+    src: "permissions_com.genton.brain.xml",
+    sub_dir: "permissions",
+    filename_from_src: true,
+}

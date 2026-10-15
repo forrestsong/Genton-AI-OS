@@ -15,6 +15,7 @@ WBS 3.1 验收：补丁栈必须"要么真的铺上去，要么失败"
   F. 自检：合成"静默成功"的脚本必须被识别。
 """
 import json
+import os
 import re
 import subprocess
 import sys
@@ -132,15 +133,20 @@ log_info "✅ 补丁应用完成 (13/13)"
 
     # ---------- A. 真跑一次 dry-run ----------
     print("[A] 真跑 apply_patches.py --dry-run")
+    # 强制子进程以 UTF-8 输出：否则 Windows 上部署器的中文统计行按本地码页
+    # （GBK/cp936）编码，本检查器按 UTF-8 解码会得到乱码，正则永不匹配。
+    env = dict(os.environ)
+    env["PYTHONIOENCODING"] = "utf-8"
     r = subprocess.run([sys.executable, str(DEPLOYER), "--dry-run"],
                        cwd=str(ROOT), capture_output=True, text=True,
-                       encoding="utf-8", errors="replace")
+                       encoding="utf-8", errors="replace", env=env)
     out = (r.stdout or "") + (r.stderr or "")
     if r.returncode == 0:
         ok("dry-run 以 0 退出")
     else:
         fail(f"dry-run 非零退出（{r.returncode}）")
     m = re.search(r'部署计划：(\d+) 个文件\s+被遮蔽：(\d+)\s+基线内未映射：(\d+)\s+错误：(\d+)', out)
+    n_deploy = n_shadow = n_skip = n_err = None
     if not m:
         fail("未能从输出解析部署统计（输出格式变了？）")
     else:
@@ -164,7 +170,9 @@ log_info "✅ 补丁应用完成 (13/13)"
     base = {}
     if BASELINE.exists():
         base = json.loads(read(BASELINE)).get("known_unmapped", {})
-    if n_skip == len(base):
+    if n_skip is None:
+        fail(f"跳过计数未知（统计行未解析），无法与基线 {len(base)} 项比对")
+    elif n_skip == len(base):
         ok(f"基线 {len(base)} 项与实际跳过一致（无过期条目）")
     else:
         fail(f"基线 {len(base)} 项与实际跳过 {n_skip} 不一致 —— 基线必须收紧")

@@ -47,7 +47,7 @@ echo.
 
 REM 运行校验
 echo 运行校验...
-java -cp "%TEMP_DIR%" com.android.server.ainative.ActionRegistryValidator "%REGISTRY_FILE%"
+java -cp "%TEMP_DIR%" com.android.server.genton.ActionRegistryValidator "%REGISTRY_FILE%"
 
 set EXIT_CODE=%errorlevel%
 

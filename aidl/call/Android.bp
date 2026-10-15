@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.call",
+    name: "com.genton.call",
     
     srcs: [
-        "com/ainative/call/*.aidl",
+        "com/genton/call/*.aidl",
     ],
     
     stability: "vintf",
@@ -35,14 +35,14 @@ aidl_interface {
     ],
     
     imports: [
-        "com.ainative.agent",   // AgentHandle
-        "com.ainative.policy",  // 策略决策
-        "com.ainative.ui",      // 确认宿主
+        "com.genton.agent",   // AgentHandle
+        "com.genton.policy",  // 策略决策
+        "com.genton.ui",      // 确认宿主
     ],
     
     visibility: [
         "//frameworks/base/services/core",
         "//frameworks/base/telecomm",  // Telecom 集成
-        "//packages/apps/AINativeBrain",
+        "//packages/apps/GentonBrain",
     ],
 }

@@ -1,8 +1,8 @@
 // IAgentAssistantUi.aidl
 // 助手 UI 命令接口 - 由 SystemUI 实现，大脑调用
-package com.ainative.ui;
+package com.genton.ui;
 
-import com.ainative.ui.SuggestionCapsuleData;
+import com.genton.ui.SuggestionCapsuleData;
 
 /**
  * Agent 助手 UI 命令接口

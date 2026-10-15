@@ -148,7 +148,7 @@ SessionView (视图)
 ### 模块结构
 
 ```
-com.android.systemui.ainative/
+com.android.systemui.genton/
 ├── session/
 │   ├── SessionView.java                    # 会话主界面
 │   ├── SessionViewController.java          # 会话控制器
@@ -248,10 +248,10 @@ com.android.systemui.ainative/
 ### 测试会话UI
 ```bash
 # 启动SystemUI
-adb shell am start -n com.android.systemui.ainative/.AINativeSystemUIActivity
+adb shell am start -n com.android.systemui.genton/.GentonSystemUIActivity
 
 # 切换到助理模式
-adb shell am start -a com.ainative.ACTION_SHOW_ASSISTANT
+adb shell am start -a com.genton.ACTION_SHOW_ASSISTANT
 ```
 
 ### 测试表单渲染

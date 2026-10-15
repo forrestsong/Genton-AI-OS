@@ -34,7 +34,7 @@ import_block = '''// AI Native OS fix: this tree's mirror is missing frameworks/
 // Use the prebuilt system SDK stubs jar (complete, no aconfig dependency) to
 // backfill the core_platform system image.
 java_import {
-    name: "ainative.prebuilt_system_android_stubs",
+    name: "genton.prebuilt_system_android_stubs",
     jars: ["prebuilts/sdk/current/system/android.jar"],
     sdk_version: "none",
     system_modules: "none",
@@ -69,7 +69,7 @@ new_libs = '''java_system_modules {
         // containing lambdas.
         "core-lambda-stubs-for-system-modules",
         // AI Native OS fix: backfill framework android.* into the core_platform image.
-        "ainative.prebuilt_system_android_stubs",
+        "genton.prebuilt_system_android_stubs",
     ],
 }'''
 if old_libs not in content:

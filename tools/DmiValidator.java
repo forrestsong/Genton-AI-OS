@@ -1,4 +1,4 @@
-package com.ainative.tools;
+package com.genton.tools;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,7 +20,7 @@ import java.util.regex.*;
  * 
  * 使用：
  *   javac -cp snakeyaml.jar:json.jar DmiValidator.java
- *   java -cp .:snakeyaml.jar:json.jar com.ainative.tools.DmiValidator <dmi-file.yaml>
+ *   java -cp .:snakeyaml.jar:json.jar com.genton.tools.DmiValidator <dmi-file.yaml>
  */
 public class DmiValidator {
     
@@ -173,44 +173,44 @@ public class DmiValidator {
             error("info.version 必须遵循 SemVer 格式 (如 1.2.3 或 1.2.3-beta)");
         }
         
-        // x-ainative
-        if (!info.has("x-ainative")) {
-            error("info.x-ainative 不能为空");
+        // x-genton
+        if (!info.has("x-genton")) {
+            error("info.x-genton 不能为空");
             return;
         }
         
-        JSONObject xAinative = info.getJSONObject("x-ainative");
-        validateGlobalExtension(xAinative);
+        JSONObject xGenton = info.getJSONObject("x-genton");
+        validateGlobalExtension(xGenton);
         
         System.out.println("✓ info 字段验证通过");
     }
     
-    private void validateGlobalExtension(JSONObject xAinative) {
+    private void validateGlobalExtension(JSONObject xGenton) {
         // EXIST-001: assetType
-        if (!xAinative.has("assetType") || !"dmi".equals(xAinative.getString("assetType"))) {
-            error("EXIST-001: info.x-ainative.assetType 必须为 'dmi'");
+        if (!xGenton.has("assetType") || !"dmi".equals(xGenton.getString("assetType"))) {
+            error("EXIST-001: info.x-genton.assetType 必须为 'dmi'");
         }
         
         // EXIST-002: publisher
-        if (!xAinative.has("publisher")) {
-            error("EXIST-002: info.x-ainative.publisher 不能为空");
+        if (!xGenton.has("publisher")) {
+            error("EXIST-002: info.x-genton.publisher 不能为空");
         } else {
-            String publisher = xAinative.getString("publisher");
+            String publisher = xGenton.getString("publisher");
             if (!PACKAGE_NAME_PATTERN.matcher(publisher).matches()) {
                 error("EXIST-002: publisher 必须为有效包名格式 (如 com.example.app)");
             }
         }
         
         // category
-        if (!xAinative.has("category")) {
-            error("info.x-ainative.category 不能为空");
-        } else if (!VALID_CATEGORIES.contains(xAinative.getString("category"))) {
+        if (!xGenton.has("category")) {
+            error("info.x-genton.category 不能为空");
+        } else if (!VALID_CATEGORIES.contains(xGenton.getString("category"))) {
             error("category 必须为: " + VALID_CATEGORIES);
         }
         
         // fallbackChain
-        if (xAinative.has("fallbackChain")) {
-            JSONArray chain = xAinative.getJSONArray("fallbackChain");
+        if (xGenton.has("fallbackChain")) {
+            JSONArray chain = xGenton.getJSONArray("fallbackChain");
             for (int i = 0; i < chain.length(); i++) {
                 String fallback = chain.getString(i);
                 if (!FALLBACK_PATTERN.matcher(fallback).matches()) {
@@ -220,8 +220,8 @@ public class DmiValidator {
         }
         
         // minAndroidSdk
-        if (xAinative.has("minAndroidSdk")) {
-            int minSdk = xAinative.getInt("minAndroidSdk");
+        if (xGenton.has("minAndroidSdk")) {
+            int minSdk = xGenton.getInt("minAndroidSdk");
             if (minSdk < 29) {
                 warning("minAndroidSdk < 29 可能不受支持");
             }
@@ -287,13 +287,13 @@ public class DmiValidator {
             operationIds.add(opId);
         }
         
-        // x-ainative
-        if (!operation.has("x-ainative")) {
-            error(operationPath + ": 缺少 x-ainative 字段");
+        // x-genton
+        if (!operation.has("x-genton")) {
+            error(operationPath + ": 缺少 x-genton 字段");
             return;
         }
-        JSONObject xAinative = operation.getJSONObject("x-ainative");
-        validateOperationExtension(xAinative, operationPath, intentActionsSet);
+        JSONObject xGenton = operation.getJSONObject("x-genton");
+        validateOperationExtension(xGenton, operationPath, intentActionsSet);
         
         // execution
         if (!operation.has("execution")) {
@@ -301,7 +301,7 @@ public class DmiValidator {
             return;
         }
         JSONObject execution = operation.getJSONObject("execution");
-        validateExecution(execution, operationPath, xAinative);
+        validateExecution(execution, operationPath, xGenton);
         
         // responses
         if (!operation.has("responses")) {
@@ -314,13 +314,13 @@ public class DmiValidator {
         }
     }
     
-    private void validateOperationExtension(JSONObject xAinative, String operationPath, 
+    private void validateOperationExtension(JSONObject xGenton, String operationPath, 
                                            Set<String> intentActionsSet) {
         // EXIST-003: intentActions
-        if (!xAinative.has("intentActions")) {
+        if (!xGenton.has("intentActions")) {
             error("EXIST-003: " + operationPath + " 缺少 intentActions");
         } else {
-            JSONArray intentActions = xAinative.getJSONArray("intentActions");
+            JSONArray intentActions = xGenton.getJSONArray("intentActions");
             if (intentActions.length() == 0) {
                 error("EXIST-003: " + operationPath + " intentActions 至少需要一个");
             } else if (intentActions.length() > 10) {
@@ -340,25 +340,25 @@ public class DmiValidator {
         }
         
         // EXIST-004: executorType
-        if (!xAinative.has("executorType") || !"dmi".equals(xAinative.getString("executorType"))) {
+        if (!xGenton.has("executorType") || !"dmi".equals(xGenton.getString("executorType"))) {
             error("EXIST-004: " + operationPath + " executorType 必须为 'dmi'");
         }
         
         // EXIST-007: securityLevel
-        if (!xAinative.has("securityLevel")) {
+        if (!xGenton.has("securityLevel")) {
             error("EXIST-007: " + operationPath + " 缺少 securityLevel");
         } else {
-            String securityLevel = xAinative.getString("securityLevel");
+            String securityLevel = xGenton.getString("securityLevel");
             if (!VALID_SECURITY_LEVELS.contains(securityLevel)) {
                 error("EXIST-007: " + operationPath + " securityLevel 必须为 L0/L1/L2");
             }
             
             // EXIST-008: L2 必须声明 capabilityScope
             if ("L2".equals(securityLevel)) {
-                if (!xAinative.has("capabilityScope")) {
+                if (!xGenton.has("capabilityScope")) {
                     error("EXIST-008: " + operationPath + " L2 级别必须声明 capabilityScope");
                 } else {
-                    JSONArray capabilityScope = xAinative.getJSONArray("capabilityScope");
+                    JSONArray capabilityScope = xGenton.getJSONArray("capabilityScope");
                     if (capabilityScope.length() == 0) {
                         error("EXIST-008: " + operationPath + " capabilityScope 不能为空");
                     }
@@ -371,15 +371,15 @@ public class DmiValidator {
                 }
                 
                 // EXIST-009: L2 必须声明 taintPolicy
-                if (!xAinative.has("taintPolicy")) {
+                if (!xGenton.has("taintPolicy")) {
                     error("EXIST-009: " + operationPath + " L2 级别必须声明 taintPolicy");
                 }
             }
         }
         
         // rateLimit
-        if (xAinative.has("rateLimit")) {
-            JSONObject rateLimit = xAinative.getJSONObject("rateLimit");
+        if (xGenton.has("rateLimit")) {
+            JSONObject rateLimit = xGenton.getJSONObject("rateLimit");
             if (!rateLimit.has("maxCallsPerMinute")) {
                 error(operationPath + ": rateLimit 必须包含 maxCallsPerMinute");
             } else {
@@ -391,15 +391,15 @@ public class DmiValidator {
         }
         
         // timeout
-        if (xAinative.has("timeout")) {
-            int timeout = xAinative.getInt("timeout");
+        if (xGenton.has("timeout")) {
+            int timeout = xGenton.getInt("timeout");
             if (timeout < 100 || timeout > 30000) {
                 error(operationPath + ": timeout 必须在 100-30000 毫秒之间");
             }
         }
     }
     
-    private void validateExecution(JSONObject execution, String operationPath, JSONObject xAinative) {
+    private void validateExecution(JSONObject execution, String operationPath, JSONObject xGenton) {
         if (!execution.has("bridge")) {
             error(operationPath + ": execution 必须包含 bridge");
             return;

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-主线② W4b：patch AOSP services/core/Android.bp，让 services.core 依赖 ainative.* 模块
+主线② W4b：patch AOSP services/core/Android.bp，让 services.core 依赖 genton.* 模块
 用法: python3 tools/mainline2_patch_services.py <aosp_dir>
 
 逻辑：
   1. 定位 frameworks/base/services/core/Android.bp 中的 services.core 模块
-  2. 在 static_libs 中加入所有 ainative.* AIDL 模块 + ainative.core（去重）
+  2. 在 static_libs 中加入所有 genton.* AIDL 模块 + genton.core（去重）
   3. 若 services.core 用了 jarjar/合并，确保 java_sdk_library 不受影响
 """
 import os
@@ -39,7 +39,7 @@ def find_services_core_block(content):
     return start_line, idx
 
 
-def patch_services_core(bp_path, ainative_modules):
+def patch_services_core(bp_path, genton_modules):
     with open(bp_path, encoding="utf-8") as f:
         content = f.read()
 
@@ -73,9 +73,9 @@ def patch_services_core(bp_path, ainative_modules):
         target_name = "static_libs"
 
     existing = set(re.findall(r'"([^"]+)"', target.group(1)))
-    additions = [mod for mod in ainative_modules if mod not in existing]
+    additions = [mod for mod in genton_modules if mod not in existing]
     if not additions:
-        print(f"[OK] {target_name} 已包含全部 ainative 模块，无需修改")
+        print(f"[OK] {target_name} 已包含全部 genton 模块，无需修改")
         return True
 
     # 在列表末尾（] 前）插入 —— 注意：target 的偏移量属于 module_text，必须在 module_text 上操作
@@ -101,11 +101,11 @@ def main():
         print(f"[ERR] 未找到: {bp}")
         return 1
 
-    # 收集 ainative AIDL 模块 + core（从 overlay Android.bp 提取模块名）
+    # 收集 genton AIDL 模块 + core（从 overlay Android.bp 提取模块名）
     overlay_base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..",
-                                "overlay", "frameworks", "base", "core", "java", "com", "ainative")
+                                "overlay", "frameworks", "base", "core", "java", "com", "genton")
     overlay_base = os.path.normpath(overlay_base)
-    modules = ["ainative.core"]
+    modules = ["genton.core"]
     for root, dirs, files in os.walk(overlay_base):
         if "Android.bp" not in files:
             continue
@@ -116,7 +116,7 @@ def main():
         if m:
             modules.append(m.group(1))
     modules = sorted(set(modules))
-    print(f"将注入 {len(modules)} 个 ainative 模块: {', '.join(modules)}")
+    print(f"将注入 {len(modules)} 个 genton 模块: {', '.join(modules)}")
 
     return 0 if patch_services_core(bp, modules) else 1
 

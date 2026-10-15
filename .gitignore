@@ -4,16 +4,16 @@
 # ============================================================
 
 # ---------- 目录级排除 ----------
-# 过程文档与报告
-reports/
-docs/
+# 过程文档与报告（仅根目录）
+/reports/
+/docs/
 
-# 日志与构建产物
-logs/
-artifacts/
-out/
-dist/
-build/
+# 日志与构建产物（仅根目录，避免误排 vendor/*/build/ 等真实构建配置）
+/logs/
+/artifacts/
+/out/
+/dist/
+/build/
 
 # 密钥与签名文件（安全红线：私钥绝不入库）
 keys/
@@ -26,35 +26,35 @@ keys/
 商业计划书/
 
 # 临时代码快照
-tree_snapshot/
-tree_snapshot_fixed/
+/tree_snapshot/
+/tree_snapshot_fixed/
 
-# 过程工具脚本目录
-emulator_scripts/
-ops_scripts/
-port_scripts/
-build_scripts/
-audit_scripts/
-scripts/
+# 过程工具脚本目录（仅根目录；不影响 ml/*/scripts 等真实源码目录）
+/emulator_scripts/
+/ops_scripts/
+/port_scripts/
+/build_scripts/
+/audit_scripts/
+/scripts/
 
-# 测试用例目录
-tests/
+# 测试用例目录（仅根目录）
+/tests/
 
 # 缓存与下载
-downloads/
-android-sdk/
-temp_*/
-tmp/
-cache/
+/downloads/
+/android-sdk/
+/temp_*/
+/tmp/
+/cache/
 
 # 模型权重（大文件，独立分发）
-NeoHorse-Jev-4B/
+/NeoHorse-Jev-4B/
 
 # ACL 修复临时目录（本会话产物，非项目内容）
-_acl_recovery/
-.dsh-acl-recovery/
-.dsh-acl-reports/
-.dsh-write-test.tmp
+/_acl_recovery/
+/.dsh-acl-recovery/
+/.dsh-acl-reports/
+/.dsh-write-test.tmp
 
 # ---------- 根目录过程文件（全部排除，仅保留 README 和 LICENSE） ----------
 # 根目录所有 Markdown 文档（保留 README.md 和 README.en.md）

@@ -3,15 +3,15 @@
 // [P4] 说明：IAgentSessionService 的实现是 Binder Stub，不能直接作为
 // android:name 的 Service 声明（Android 要求 Service 子类且具备无参构造）。
 // 本类作为其绑定宿主：onBind 返回会话服务 binder。
-package com.ainative.brain.session
+package com.genton.brain.session
 
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 
-import com.ainative.agent.IAgentSessionService
-import com.ainative.brain.BrainApplication
+import com.genton.agent.IAgentSessionService
+import com.genton.brain.BrainApplication
 
 /** 会话服务绑定宿主（供 SystemUI 的 SessionServiceConnector 绑定） */
 class AgentSessionBinderService : Service() {

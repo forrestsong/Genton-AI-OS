@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://ainative.os/schemas/action-registry.v1.json",
+  "$id": "https://genton.os/schemas/action-registry.v1.json",
   "title": "Agent Native OS Action Registry Schema",
   "description": "动作注册表 JSON Schema（A3.1 动作注册表）- 定义系统中所有可执行动作的契约",
   "type": "object",

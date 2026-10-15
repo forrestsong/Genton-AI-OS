@@ -71,7 +71,7 @@ EXPECTED_MODULES = {
 class A1_3_Validator:
     def __init__(self, project_root: str):
         self.project_root = Path(project_root)
-        self.aidl_base = self.project_root / "overlay" / "frameworks" / "base" / "core" / "java" / "com" / "ainative"
+        self.aidl_base = self.project_root / "overlay" / "frameworks" / "base" / "core" / "java" / "com" / "genton"
         self.errors = []
         self.warnings = []
         self.stats = {
@@ -115,7 +115,7 @@ class A1_3_Validator:
             
             # 检查内容
             content = bp_file.read_text(encoding='utf-8')
-            if f'name: "ainative.{module_name}"' not in content:
+            if f'name: "genton.{module_name}"' not in content:
                 log_warn(f"  Android.bp 模块名称可能不正确")
                 self.warnings.append(f"Android.bp name mismatch in {module_name}")
         else:

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://ainative.os/schemas/action-registry.schema.json",
+  "$id": "https://genton.os/schemas/action-registry.schema.json",
   "title": "AI Native OS Action Registry Schema",
   "description": "Schema for action registry entries in AI Native OS",
   "type": "object",

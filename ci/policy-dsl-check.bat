@@ -10,7 +10,7 @@ echo.
 
 set SCRIPT_DIR=%~dp0
 set PROJECT_ROOT=%SCRIPT_DIR%..
-set SRC_DIR=%PROJECT_ROOT%\overlay\frameworks\base\services\core\java\com\android\server\ainative
+set SRC_DIR=%PROJECT_ROOT%\overlay\frameworks\base\services\core\java\com\android\server\genton
 set TESTS_DIR=%PROJECT_ROOT%\tests
 set BUILD_DIR=%PROJECT_ROOT%\build
 set REPORTS_DIR=%PROJECT_ROOT%\reports\ci
@@ -34,7 +34,7 @@ if %ERRORLEVEL% EQU 0 (
 echo.
 
 echo Step 2: Testing golden policy pack...
-java -cp "%BUILD_DIR%" com.android.server.ainative.PolicyDslCiTool ^
+java -cp "%BUILD_DIR%" com.android.server.genton.PolicyDslCiTool ^
     "%TESTS_DIR%\policy-pack-golden.json" ^
     platform
 
@@ -42,7 +42,7 @@ set GOLDEN_EXIT_CODE=%ERRORLEVEL%
 echo.
 
 echo Step 3: Generating conflict matrix report (golden)...
-java -cp "%BUILD_DIR%" com.android.server.ainative.ConflictMatrixReporter ^
+java -cp "%BUILD_DIR%" com.android.server.genton.ConflictMatrixReporter ^
     "%TESTS_DIR%\policy-pack-golden.json" ^
     platform ^
     "%REPORTS_DIR%\conflict-matrix-golden.md"
@@ -50,13 +50,13 @@ echo [32m✓ Report saved: %REPORTS_DIR%\conflict-matrix-golden.md[0m
 echo.
 
 echo Step 4: Testing conflict policy pack (should fail)...
-java -cp "%BUILD_DIR%" com.android.server.ainative.PolicyDslCiTool ^
+java -cp "%BUILD_DIR%" com.android.server.genton.PolicyDslCiTool ^
     "%TESTS_DIR%\policy-pack-conflict.json" ^
     platform
 echo.
 
 echo Step 5: Generating conflict matrix report (conflict test)...
-java -cp "%BUILD_DIR%" com.android.server.ainative.ConflictMatrixReporter ^
+java -cp "%BUILD_DIR%" com.android.server.genton.ConflictMatrixReporter ^
     "%TESTS_DIR%\policy-pack-conflict.json" ^
     platform ^
     "%REPORTS_DIR%\conflict-matrix-conflict.md"

@@ -6,11 +6,11 @@
 //      - 切到 LAUNCHER：表面隐藏，助理以悬浮球形式最小化存在（任务不中断）
 //      - 切回 ASSISTANT：表面恢复，状态源为系统服务而非 UI 本地缓存
 //   3. 三入口统管：悬浮球 / 侧边手势 / QS Tile（EntryManager）
-//   4. 响应 com.ainative.ACTION_SHOW_ASSISTANT 广播（悬浮球与胶囊点击）
+//   4. 响应 com.genton.ACTION_SHOW_ASSISTANT 广播（悬浮球与胶囊点击）
 //
 // 说明：助理表面采用 WindowManager 系统窗口而非 Activity，
 //       以避免 Home 栈重建导致的会话丢失与切换延迟（D5 §2 关键点）。
-package com.android.systemui.ainative.assistantui;
+package com.android.systemui.genton.assistantui;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,8 +24,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.android.systemui.ainative.AssistantSurfaceController;
-import com.android.systemui.ainative.entry.EntryManager;
+import com.android.systemui.genton.AssistantSurfaceController;
+import com.android.systemui.genton.entry.EntryManager;
 
 /** 助理表面与双模式引导 */
 public final class AssistantSurfaceBootstrap {
@@ -33,9 +33,9 @@ public final class AssistantSurfaceBootstrap {
     private static final String TAG = "GentonSurface";
 
     /** 悬浮球/胶囊点击后请求返回助理模式 */
-    public static final String ACTION_SHOW_ASSISTANT = "com.ainative.ACTION_SHOW_ASSISTANT";
+    public static final String ACTION_SHOW_ASSISTANT = "com.genton.ACTION_SHOW_ASSISTANT";
     /** 请求切到普通应用模式 */
-    public static final String ACTION_SHOW_LAUNCHER = "com.ainative.ACTION_SHOW_LAUNCHER";
+    public static final String ACTION_SHOW_LAUNCHER = "com.genton.ACTION_SHOW_LAUNCHER";
 
     private static volatile AssistantSurfaceBootstrap sInstance;
 
@@ -118,7 +118,7 @@ public final class AssistantSurfaceBootstrap {
         // 该广播受 SystemUI 自身签名级权限保护（仅 SystemUI 可发送），
         // 故使用 RECEIVER_EXPORTED；同时保留权限校验。
         mContext.registerReceiver(mModeReceiver, f,
-                com.android.systemui.ainative.entry.FloatingButtonService
+                com.android.systemui.genton.entry.FloatingButtonService
                         .PERMISSION_SELF, null,
                 Context.RECEIVER_EXPORTED);
         mReceiverRegistered = true;
@@ -148,7 +148,7 @@ public final class AssistantSurfaceBootstrap {
     }
 
     /** D2.3：下发主动提醒胶囊（可不在助理模式下呈现） */
-    public boolean showSuggestion(com.ainative.ui.SuggestionCapsuleData capsule) {
+    public boolean showSuggestion(com.genton.ui.SuggestionCapsuleData capsule) {
         if (mController == null) {
             return false;
         }

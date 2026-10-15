@@ -324,7 +324,7 @@ import java.util.Timer;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
-import com.android.server.ainative.AinativeServiceRegistry;
+import com.android.server.genton.GentonServiceRegistry;
 
 /**
  * Entry point to {@code system_server}.
@@ -3498,11 +3498,11 @@ public final class SystemServer implements Dumpable {
         t.traceEnd();
 
         t.traceEnd(); // startOtherServices
-            // AI Native OS: 注册 ainative 系统服务
+            // AI Native OS: 注册 genton 系统服务
         try {
-            AinativeServiceRegistry.start(context);
+            GentonServiceRegistry.start(context);
         } catch (Throwable e) {
-            reportWtf("starting Ainative Services", e);
+            reportWtf("starting Genton Services", e);
         }
 
 }

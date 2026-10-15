@@ -498,7 +498,7 @@ def main():
     """命令行入口"""
     if len(sys.argv) < 2:
         print("用法: python policy_compiler.py <dsl_file>")
-        print("示例: python policy_compiler.py ../vendor/ainative/config/policy_baseline.dsl")
+        print("示例: python policy_compiler.py ../vendor/genton/config/policy_baseline.dsl")
         sys.exit(1)
     
     dsl_file = Path(sys.argv[1])

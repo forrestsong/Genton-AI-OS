@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.context",
+    name: "com.genton.context",
     
     srcs: [
-        "com/ainative/context/*.aidl",
+        "com/genton/context/*.aidl",
     ],
     
     stability: "vintf",
@@ -35,13 +35,13 @@ aidl_interface {
     ],
     
     imports: [
-        "com.ainative.perception",  // UiSnapshot
-        "com.ainative.events",      // SystemEvent
-        "com.ainative.agent",       // AgentHandle
+        "com.genton.perception",  // UiSnapshot
+        "com.genton.events",      // SystemEvent
+        "com.genton.agent",       // AgentHandle
     ],
     
     visibility: [
         "//frameworks/base/services/core",
-        "//packages/apps/AINativeBrain",
+        "//packages/apps/GentonBrain",
     ],
 }

@@ -1,0 +1,46 @@
+# AI Native OS SELinux SystemUI 扩展策略
+#
+# 扩展 SystemUI 权限以支持 AI Native 功能
+#
+# 版本: v1.0
+# 日期: 2026-09-05
+# 依据: WBS A1.4 权限清单落地
+
+# ========================================
+# 服务发现权限
+# ========================================
+
+# 允许 SystemUI 查找 AI Native UI 相关服务
+allow system_app genton_context_service:service_manager find;
+allow system_app genton_audit_service:service_manager find;
+
+# 允许 SystemUI 查找大脑的会话服务
+allow system_app genton_agent_session_service:service_manager find;
+
+# ========================================
+# Binder 调用权限
+# ========================================
+
+# 允许 SystemUI 调用大脑的会话服务
+binder_call(system_app, genton_brain)
+
+# 允许 SystemUI 调用 system_server 中的 AI Native 服务
+binder_call(system_app, system_server)
+
+# ========================================
+# Agent UI 服务注册权限
+# ========================================
+
+# 允许 SystemUI 注册 IAgentAssistantUi 服务供大脑回调
+allow system_app genton_agent_ui_service:service_manager add;
+
+# 允许大脑调用 SystemUI 的 UI 命令接口
+binder_call(genton_brain, system_app)
+
+# ========================================
+# 数据访问权限
+# ========================================
+
+# 允许 SystemUI 读取审计日志 (用于仪表盘展示)
+allow system_app genton_data_file:dir r_dir_perms;
+allow system_app genton_data_file:file r_file_perms;

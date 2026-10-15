@@ -14,9 +14,9 @@ chmod a+x ~/bin/repo
 export PATH=~/bin:$PATH
 
 # 初始化 AI Native OS 代码树
-mkdir ainative-os
-cd ainative-os
-repo init -u https://github.com/ainative-os/manifests -b main -m ainative.xml
+mkdir genton-os
+cd genton-os
+repo init -u https://github.com/genton-os/manifests -b main -m genton.xml
 
 # 同步代码（首次约 100GB）
 repo sync -c -j$(nproc --all)
@@ -26,7 +26,7 @@ repo sync -c -j$(nproc --all)
 
 ```bash
 # 应用 AI Native OS 补丁到 AOSP 上游
-cd ainative-os
+cd genton-os
 ./patches/apply-patches.sh
 ```
 
@@ -34,12 +34,12 @@ cd ainative-os
 
 | 文件 | 用途 |
 |------|------|
-| `ainative.xml` | 主 manifest，基于 AOSP 15.0.0_r1 |
+| `genton.xml` | 主 manifest，基于 AOSP 15.0.0_r1 |
 
 ## 目录结构（同步后）
 
 ```
-ainative-os/
+genton-os/
 ├── build/                    # AOSP 构建系统
 ├── frameworks/               # Android 框架层
 ├── system/                   # 系统核心
@@ -47,8 +47,8 @@ ainative-os/
 ├── overlay/                  # AI Native OS 覆盖层
 │   ├── frameworks/base/      # 框架层修改
 │   ├── packages/apps/        # 应用修改
-│   └── vendor/ainative/      # 平台配置
-├── vendor/ainative/          # AI Native OS 专有代码
+│   └── vendor/genton/      # 平台配置
+├── vendor/genton/          # AI Native OS 专有代码
 │   ├── services/             # 19 个系统服务
 │   ├── policy/               # 策略引擎
 │   └── config/               # 配置文件

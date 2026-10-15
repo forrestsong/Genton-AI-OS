@@ -2,7 +2,7 @@
 import sys
 
 # 1. Add Context constructor to AuditInstrumentation
-p = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative/AuditInstrumentation.java'
+p = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton/AuditInstrumentation.java'
 with open(p) as f:
     c = f.read()
 
@@ -31,8 +31,8 @@ print("PATCHED AuditInstrumentation(Context) OK")
 # 2. Copy corrected AIDL files from workspace overlay to AOSP tree
 import shutil, os
 pairs = [
-    ('/mnt/d/AI Native OS/overlay/frameworks/base/core/java/com/ainative/memory/IAgentMemoryService.aidl',
-     '/root/aosp/frameworks/base/core/java/com/ainative/memory/IAgentMemoryService.aidl'),
+    ('/mnt/d/AI Native OS/overlay/frameworks/base/core/java/com/genton/memory/IAgentMemoryService.aidl',
+     '/root/aosp/frameworks/base/core/java/com/genton/memory/IAgentMemoryService.aidl'),
 ]
 for src, dst in pairs:
     shutil.copy2(src, dst)

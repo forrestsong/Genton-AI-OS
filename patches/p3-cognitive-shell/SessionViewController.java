@@ -1,18 +1,18 @@
 // AI Native OS - Session View Controller
-package com.android.systemui.ainative.session;
+package com.android.systemui.genton.session;
 
 import android.content.Context;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.ainative.agent.SessionHandle;
-import com.ainative.agent.TurnDelta;
-import com.ainative.agent.TurnResultSummary;
-import com.ainative.agent.TaskCardData;
-import com.ainative.agent.ActionCardData;
+import com.genton.agent.SessionHandle;
+import com.genton.agent.TurnDelta;
+import com.genton.agent.TurnResultSummary;
+import com.genton.agent.TaskCardData;
+import com.genton.agent.ActionCardData;
 
-import com.android.systemui.ainative.background.BackgroundAssistantManager;
+import com.android.systemui.genton.background.BackgroundAssistantManager;
 
 /**
  * 会话视图控制器：管理 Assistant Surface 的会话界面（D2.2完整实现）
@@ -26,7 +26,7 @@ import com.android.systemui.ainative.background.BackgroundAssistantManager;
 public class SessionViewController {
 
     /** D1.3 后台化：普通模式下助理以常驻胶囊形式最小化存在（P2） */
-    private com.android.systemui.ainative.background.BackgroundAssistantManager mBackgroundManager;
+    private com.android.systemui.genton.background.BackgroundAssistantManager mBackgroundManager;
 
 
     private static final String TAG = "SessionViewController";

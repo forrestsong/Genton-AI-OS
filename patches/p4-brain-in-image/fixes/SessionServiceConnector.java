@@ -1,5 +1,5 @@
 // AI Native OS - Session Service Connector
-package com.android.systemui.ainative.session;
+package com.android.systemui.genton.session;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,18 +11,18 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.ainative.agent.IAgentSessionService;
-import com.ainative.agent.IAgentSessionListener;
-import com.ainative.agent.IAgentRuntimeService;
-import com.ainative.agent.AgentHandle;
-import com.ainative.agent.AgentRuntimeStatus;
-import com.ainative.agent.SessionOpenRequest;
-import com.ainative.agent.SessionHandle;
-import com.ainative.agent.UserTurn;
-import com.ainative.agent.TurnDelta;
-import com.ainative.agent.TurnResultSummary;
-import com.ainative.agent.TaskCardData;
-import com.ainative.agent.ActionCardData;
+import com.genton.agent.IAgentSessionService;
+import com.genton.agent.IAgentSessionListener;
+import com.genton.agent.IAgentRuntimeService;
+import com.genton.agent.AgentHandle;
+import com.genton.agent.AgentRuntimeStatus;
+import com.genton.agent.SessionOpenRequest;
+import com.genton.agent.SessionHandle;
+import com.genton.agent.UserTurn;
+import com.genton.agent.TurnDelta;
+import com.genton.agent.TurnResultSummary;
+import com.genton.agent.TaskCardData;
+import com.genton.agent.ActionCardData;
 
 /**
  * 会话服务连接器（D2.2 完整实现）：连接AgentSessionService
@@ -37,9 +37,9 @@ public class SessionServiceConnector {
     private static final String TAG = "SessionServiceConnector";
     
     // Agent大脑服务包名（需要与实际包名一致）
-    private static final String AGENT_BRAIN_PACKAGE = "com.ainative.brain";
-    // [P4 修复] 与 AINativeBrain/AndroidManifest.xml 的 <service android:name=".session.AgentSessionService"> 对齐
-    private static final String AGENT_SESSION_SERVICE = "com.ainative.brain.session.AgentSessionBinderService";
+    private static final String AGENT_BRAIN_PACKAGE = "com.genton.brain";
+    // [P4 修复] 与 GentonBrain/AndroidManifest.xml 的 <service android:name=".session.AgentSessionService"> 对齐
+    private static final String AGENT_SESSION_SERVICE = "com.genton.brain.session.AgentSessionBinderService";
     
     // D2.2：推送超时阈值（推送未到达时触发 ACB 兜底）
     private static final long PUSH_TIMEOUT_MS = 5000; // 5秒无推送则兜底轮询
@@ -202,7 +202,7 @@ public class SessionServiceConnector {
         
         try {
             UserTurn turn = new UserTurn();
-            // [P2 修复] UserTurn 实际字段名（见 com/ainative/agent/UserTurn.aidl）
+            // [P2 修复] UserTurn 实际字段名（见 com/genton/agent/UserTurn.aidl）
             turn.kind = 0; // 0=text, 1=voice, 2=attachment
             turn.content = text;
             turn.createdAtRealtimeNanos = System.nanoTime();
@@ -371,7 +371,7 @@ public class SessionServiceConnector {
         
         @Override
         
-        public void onActionCardChanged(com.ainative.agent.SessionHandle handle, com.ainative.agent.ActionCardData card) {
+        public void onActionCardChanged(com.genton.agent.SessionHandle handle, com.genton.agent.ActionCardData card) {
         
             Log.d(TAG, "Action card changed: " + (card != null ? card.cardId : "null"));
         
@@ -416,7 +416,7 @@ public class SessionServiceConnector {
         
         try {
             // Runtime Service 由系统服务提供，通过 ServiceManager 获取
-            IBinder binder = android.os.ServiceManager.getService("ainative_agent_runtime");
+            IBinder binder = android.os.ServiceManager.getService("genton_agent_runtime");
             if (binder != null) {
                 mRuntimeService = IAgentRuntimeService.Stub.asInterface(binder);
                 mIsRuntimeBound = true;

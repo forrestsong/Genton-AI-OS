@@ -1,12 +1,12 @@
 // IAgentSessionListener.aidl
 // 会话监听器 - 由 SystemUI 实现，接收流式响应
-package com.ainative.agent;
+package com.genton.agent;
 
-import com.ainative.agent.SessionHandle;
-import com.ainative.agent.TurnDelta;
-import com.ainative.agent.TurnResultSummary;
-import com.ainative.agent.TaskCardData;
-import com.ainative.agent.ActionCardData;
+import com.genton.agent.SessionHandle;
+import com.genton.agent.TurnDelta;
+import com.genton.agent.TurnResultSummary;
+import com.genton.agent.TaskCardData;
+import com.genton.agent.ActionCardData;
 
 /**
  * Agent 会话监听器接口

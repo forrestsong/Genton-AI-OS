@@ -12,7 +12,7 @@ import android.util.Log;
 import com.android.systemui.dualmode.DualModeContainer;
 import com.android.systemui.dualmode.SystemMode;
 import com.android.systemui.dualmode.entry.ModeEntryManager;
-import com.android.systemui.ainative.accessibility.AccessibilityIntegration;
+import com.android.systemui.genton.accessibility.AccessibilityIntegration;
 
 /**
  * SystemUI 双模式集成类

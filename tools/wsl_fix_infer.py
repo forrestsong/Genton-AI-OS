@@ -2,7 +2,7 @@
 import sys
 
 # 1. Fix InferenceSession.tier: remove final
-p1 = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative/AgentInferenceRouterService.java'
+p1 = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton/AgentInferenceRouterService.java'
 with open(p1) as f:
     c1 = f.read()
 
@@ -27,7 +27,7 @@ with open(p1, 'w') as f:
 print("PATCHED InferenceSession.tier (removed final) OK")
 
 # 2. Add constants to IAgentInferenceRouter.aidl
-p2 = '/root/aosp/frameworks/base/core/java/com/ainative/inference/IAgentInferenceRouter.aidl'
+p2 = '/root/aosp/frameworks/base/core/java/com/genton/inference/IAgentInferenceRouter.aidl'
 with open(p2) as f:
     c2 = f.read()
 

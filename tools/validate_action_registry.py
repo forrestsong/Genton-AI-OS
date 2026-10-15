@@ -300,7 +300,7 @@ def main():
     """命令行入口"""
     if len(sys.argv) < 2:
         print("用法: python validate_action_registry.py <registry_file> [schema_file]")
-        print("示例: python validate_action_registry.py ../vendor/ainative/config/action_registry.json")
+        print("示例: python validate_action_registry.py ../vendor/genton/config/action_registry.json")
         sys.exit(1)
     
     registry_file = Path(sys.argv[1])

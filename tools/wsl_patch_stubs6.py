@@ -13,7 +13,7 @@ imp_block = '''// AI Native OS fix: this tree's mirror is missing frameworks/bas
 // Use the prebuilt system SDK stubs jar (complete, no aconfig dependency) to
 // backfill the core_platform system image.
 java_import {
-    name: "ainative.prebuilt_system_android_stubs",
+    name: "genton.prebuilt_system_android_stubs",
     jars: ["//prebuilts/sdk/current/system/android.jar"],
     sdk_version: "none",
     visibility: ["//visibility:public"],
@@ -24,7 +24,7 @@ if imp_block not in c1:
     print("WARN: import block not found in core-libraries (checking alt)")
     # try without the comment header
     alt = '''java_import {
-    name: "ainative.prebuilt_system_android_stubs",
+    name: "genton.prebuilt_system_android_stubs",
     jars: ["//prebuilts/sdk/current/system/android.jar"],
     sdk_version: "none",
     visibility: ["//visibility:public"],
@@ -52,7 +52,7 @@ with open(p2, "r", encoding="utf-8") as f:
 anchor = '''java_import {
     name: "android_current",'''
 add = '''java_import {
-    name: "ainative.prebuilt_system_android_stubs",
+    name: "genton.prebuilt_system_android_stubs",
     jars: ["system/android.jar"],
     sdk_version: "none",
     visibility: ["//visibility:public"],

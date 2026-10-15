@@ -7,7 +7,7 @@
 //   完全一致；后续可在不改本类的前提下换挂到状态栏槽位。
 //
 // 数据源：ActivityIndicatorManager（由 AuditService 活性流驱动）
-package com.android.systemui.ainative.indicator;
+package com.android.systemui.genton.indicator;
 
 import android.content.Context;
 import android.graphics.PixelFormat;

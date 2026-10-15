@@ -13,7 +13,7 @@ old1 = '''    static_libs: [
         // framework classes (android.os.Binder, android.provider.DeviceConfig, ...).
         // Backfill the prebuilt system SDK stubs so core_platform modules (e.g. aconfig
         // flag libs) can resolve android.* classes at javac.
-        "ainative.prebuilt_system_android_stubs",
+        "genton.prebuilt_system_android_stubs",
     ],
     patch_module: "java.base",
     is_stubs_module: true,
@@ -38,7 +38,7 @@ with open(p2, "r", encoding="utf-8") as f:
     c2 = f.read()
 
 old2 = '''java_import {
-    name: "ainative.prebuilt_system_android_stubs",
+    name: "genton.prebuilt_system_android_stubs",
     jars: ["system/android.jar"],
     sdk_version: "none",
     visibility: ["//visibility:public"],
@@ -65,7 +65,7 @@ with open(p2, "r", encoding="utf-8") as f:
 anchor = '''java_import {
     name: "android_current",'''
 add = '''java_import {
-    name: "ainative.prebuilt_system_android_stubs",
+    name: "genton.prebuilt_system_android_stubs",
     jars: ["system/android.jar"],
     sdk_version: "none",
     visibility: ["//visibility:public"],
@@ -100,7 +100,7 @@ new3 = '''java_defaults {
         // resolve android.os.Binder / android.provider.DeviceConfig at javac,
         // WITHOUT shadowing the per-module framework classpath (avoids stale
         // prebuilt Context etc. masking the real framework classes).
-        "ainative.prebuilt_system_android_stubs",
+        "genton.prebuilt_system_android_stubs",
     ],
 }'''
 if old3 not in c3:

@@ -579,7 +579,7 @@ def main() -> int:
         dsl_file = positionals[0]
     else:
         dsl_file = os.path.join(os.path.dirname(__file__), "..",
-                                "vendor", "ainative", "config",
+                                "vendor", "genton", "config",
                                 "policy_baseline.dsl")
 
     if not os.path.exists(dsl_file):

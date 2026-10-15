@@ -1,4 +1,4 @@
-package com.ainative.audit;
+package com.genton.audit;
 
 /**
  * 审计事件（Audit Event）
@@ -131,7 +131,7 @@ parcelable AuditEvent {
      * - trace_<actionRequestId>
      * 
      * 存储：
-     * - 原始证据存冷存储（/data/system/ainative/evidence/）
+     * - 原始证据存冷存储（/data/system/genton/evidence/）
      * - 按保留策略定期清理
      * - 司法解锁时导出
      * 

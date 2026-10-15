@@ -1,8 +1,8 @@
 // IAgentConfirmationHost.aidl
 // 确认承载接口 - 由 SystemUI 实现，执行层/策略引擎调用
-package com.ainative.ui;
+package com.genton.ui;
 
-import com.ainative.ui.ConfirmationUiRequest;
+import com.genton.ui.ConfirmationUiRequest;
 
 /**
  * Agent 确认承载接口

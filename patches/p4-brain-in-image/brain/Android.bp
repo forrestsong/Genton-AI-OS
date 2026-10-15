@@ -2,7 +2,7 @@
 // Agent 大脑特权应用
 
 android_app {
-    name: "AINativeBrain",
+    name: "GentonBrain",
     
     srcs: [
         "src/**/*.kt",
@@ -22,13 +22,13 @@ android_app {
         "androidx.appcompat_appcompat",
         // [主线2 修复] ControlRenderer 等使用 com.google.android.material.textfield.*
         "com.google.android.material_material",
-        // [P4] PII 掩码（com.ainative.privacy 源码此前从未编译）
-        "ainative.privacy",
+        // [P4] PII 掩码（com.genton.privacy 源码此前从未编译）
+        "genton.privacy",
         // [P4] TFLite（SummaryInferenceEngine / RLInferenceEngine 使用）
         "tensorflowlite_java",
     ],
     
-    // 依赖 framework（包含 com.ainative.* AIDL 接口）
+    // 依赖 framework（包含 com.genton.* AIDL 接口）
     libs: [
         "framework",
     ],
@@ -41,17 +41,17 @@ android_app {
         enabled: false,
     },
     
-    owner: "ainative",
+    owner: "genton",
     
     required: [
-        "permissions_com.ainative.brain.xml",
+        "permissions_com.genton.brain.xml",
     ],
 }
 
 // 权限配置
 prebuilt_etc {
-    name: "permissions_com.ainative.brain.xml",
-    src: "permissions_com.ainative.brain.xml",
+    name: "permissions_com.genton.brain.xml",
+    src: "permissions_com.genton.brain.xml",
     sub_dir: "permissions",
     filename_from_src: true,
 }

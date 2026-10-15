@@ -2,7 +2,7 @@
 import re
 import sys
 
-path = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative/AgentMemoryService.java'
+path = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton/AgentMemoryService.java'
 with open(path) as f:
     content = f.read()
 

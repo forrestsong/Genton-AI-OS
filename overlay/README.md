@@ -8,7 +8,7 @@
 overlay/
 ├── frameworks/
 │   └── base/
-│       └── core/java/com/ainative/
+│       └── core/java/com/genton/
 │           ├── perception/          # 感知层 AIDL（7个接口）
 │           ├── action/              # 执行层 AIDL（5个接口）
 │           ├── agent/               # Agent 运行时 AIDL（3个接口）
@@ -25,19 +25,19 @@ overlay/
 │           └── call/                # 通话门 AIDL（2个接口）
 ├── packages/
 │   └── apps/
-│       ├── AINativeBrain/          # 大脑特权 App
+│       ├── GentonBrain/          # 大脑特权 App
 │       ├── Settings/                # Settings 扩展
 │       └── SystemUI/                # SystemUI 扩展
 └── vendor/
-    └── ainative/
+    └── genton/
         ├── config/
         │   ├── action_registry.json        # 动作注册表
         │   ├── capability_definitions.json # 能力定义
         │   ├── policy_baseline.dsl         # 基线策略
-        │   └── privapp-permissions-ainative.xml
+        │   └── privapp-permissions-genton.xml
         ├── products/
-        │   ├── ainative_common.mk          # 通用产品配置
-        │   └── ainative_generic_arm64.mk   # Generic 产品
+        │   ├── genton_common.mk          # 通用产品配置
+        │   └── genton_generic_arm64.mk   # Generic 产品
         └── sepolicy/
             ├── private/                     # 私有 SELinux 策略
             └── public/                      # 公开 SELinux 策略
@@ -62,8 +62,8 @@ overlay/
 ```bash
 python tools/aidl_generator.py \
   --interface IAgentUiTreeService \
-  --package com.ainative.perception \
-  --output overlay/frameworks/base/core/java/com/ainative/perception/
+  --package com.genton.perception \
+  --output overlay/frameworks/base/core/java/com/genton/perception/
 ```
 
 ### 修改系统服务

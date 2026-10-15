@@ -24,7 +24,7 @@
         coreApp="true">
 
     <!-- [P4] 绑定大脑 AgentSessionService 所需（signature|privileged） -->
-    <uses-permission android:name="com.ainative.permission.BIND_AGENT_UI" />
+    <uses-permission android:name="com.genton.permission.BIND_AGENT_UI" />
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -437,12 +437,12 @@
         />
 
         <!-- Genton P2: 助理常驻悬浮球（普通模式下最小化存在） -->
-        <service android:name=".ainative.entry.FloatingButtonService"
+        <service android:name=".genton.entry.FloatingButtonService"
             android:exported="false"
             android:permission="com.android.systemui.permission.SELF" />
 
         <!-- Genton P2: 快捷设置磁贴（双向切换 助理模式 <-> 普通桌面） -->
-        <service android:name=".ainative.entry.AssistantQSTile"
+        <service android:name=".genton.entry.AssistantQSTile"
             android:exported="true"
             android:icon="@android:drawable/ic_dialog_info"
             android:label="AI 助理"

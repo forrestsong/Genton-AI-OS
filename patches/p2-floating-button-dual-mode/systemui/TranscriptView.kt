@@ -1,4 +1,4 @@
-package com.android.systemui.ainative.callgate
+package com.android.systemui.genton.callgate
 
 import android.content.Context
 import android.graphics.PixelFormat
@@ -11,8 +11,8 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import com.ainative.call.CallSessionHandle
-import com.ainative.call.TranscriptDelta
+import com.genton.call.CallSessionHandle
+import com.genton.call.TranscriptDelta
 import java.text.SimpleDateFormat
 import java.util.*
 

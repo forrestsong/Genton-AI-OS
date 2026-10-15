@@ -2,8 +2,8 @@
 # AI Native OS - 模拟器验证产品
 #
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/ainative_emu.mk
+    $(LOCAL_DIR)/genton_emu.mk
 
 COMMON_LUNCH_CHOICES := \
-    ainative_emu-bp2a-userdebug \
-    ainative_emu-bp2a-eng
+    genton_emu-bp2a-userdebug \
+    genton_emu-bp2a-eng

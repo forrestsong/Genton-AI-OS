@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.inference",
+    name: "com.genton.inference",
     
     srcs: [
-        "com/ainative/inference/*.aidl",
+        "com/genton/inference/*.aidl",
     ],
     
     stability: "vintf",
@@ -35,14 +35,14 @@ aidl_interface {
     ],
     
     imports: [
-        "com.ainative.agent",   // AgentHandle
-        "com.ainative.policy",  // CapabilityToken
-        "com.ainative.audit",   // 计量审计
+        "com.genton.agent",   // AgentHandle
+        "com.genton.policy",  // CapabilityToken
+        "com.genton.audit",   // 计量审计
     ],
     
     visibility: [
         "//frameworks/base/services/core",
-        "//packages/apps/AINativeBrain",
-        "//vendor/ainative/ai-runtime",  // AI Runtime 实现
+        "//packages/apps/GentonBrain",
+        "//vendor/genton/ai-runtime",  // AI Runtime 实现
     ],
 }

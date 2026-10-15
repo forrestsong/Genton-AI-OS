@@ -208,7 +208,7 @@ ml/pii-mask-model/
 ├── pii_mask_model_quantized.tflite    # 量化模型（部署用）
 └── evaluation_results.json             # 验收结果
 
-overlay/frameworks/base/core/java/com/ainative/privacy/
+overlay/frameworks/base/core/java/com/genton/privacy/
 ├── PiiMaskRules.kt                     # 规则库（已完成）
 ├── PiiMaskModelInference.kt            # 模型推理引擎（待实现）
 └── PiiMaskService.kt                   # 统一掩码服务（待实现）

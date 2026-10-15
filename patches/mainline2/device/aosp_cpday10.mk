@@ -24,17 +24,17 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 
 # Inherit from device-specific configuration
-$(call inherit-product, device/ainative/cpday10/device.mk)
+$(call inherit-product, device/genton/cpday10/device.mk)
 
 # AI Native OS 定制 overlay（大脑 App / 配置 / 权限）
-$(call inherit-product, device/ainative/cpday10/ainative_overlay.mk)
+$(call inherit-product, device/genton/cpday10/genton_overlay.mk)
 
 # Product identification
 PRODUCT_NAME := aosp_cpday10
 PRODUCT_DEVICE := cpday10
 PRODUCT_BRAND := AI_Native
 PRODUCT_MODEL := CPDAY10
-PRODUCT_MANUFACTURER := ainative
+PRODUCT_MANUFACTURER := genton
 
 # Build fingerprint
 PRODUCT_BUILD_PROP_OVERRIDES += \

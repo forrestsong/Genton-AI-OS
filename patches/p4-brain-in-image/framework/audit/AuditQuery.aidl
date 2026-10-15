@@ -1,4 +1,4 @@
-package com.ainative.audit;
+package com.genton.audit;
 
 /**
  * 审计查询条件（Audit Query）

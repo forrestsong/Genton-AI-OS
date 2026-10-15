@@ -72,7 +72,7 @@ class SecurityAuditor:
             content = f.read()
         
         # 检查 dangerous 权限（不应出现）
-        dangerous_pattern = r'<permission[^>]*android:name="([^"]*com\.ainative[^"]*)"[^>]*android:protectionLevel="dangerous"'
+        dangerous_pattern = r'<permission[^>]*android:name="([^"]*com\.genton[^"]*)"[^>]*android:protectionLevel="dangerous"'
         dangerous_perms = re.findall(dangerous_pattern, content)
         
         if dangerous_perms:
@@ -86,13 +86,13 @@ class SecurityAuditor:
             self.checks_passed += 1
             print("    ✅ 无 dangerous 权限")
         
-        # 检查是否所有 com.ainative.* 权限都是 signature|privileged
-        ainative_perms = re.findall(
-            r'<permission[^>]*android:name="(com\.ainative[^"]*)"[^>]*android:protectionLevel="([^"]*)"',
+        # 检查是否所有 com.genton.* 权限都是 signature|privileged
+        genton_perms = re.findall(
+            r'<permission[^>]*android:name="(com\.genton[^"]*)"[^>]*android:protectionLevel="([^"]*)"',
             content
         )
         
-        for perm_name, prot_level in ainative_perms:
+        for perm_name, prot_level in genton_perms:
             if "signature" not in prot_level:
                 self.add_violation(
                     "1.1 系统服务权限",
@@ -106,7 +106,7 @@ class SecurityAuditor:
         self.checks_run += 1
         print("  检查 1.2: 能力粒度控制...")
         
-        registry_path = self.base_dir / "overlay/vendor/ainative/config/action_registry.json"
+        registry_path = self.base_dir / "overlay/vendor/genton/config/action_registry.json"
         if not registry_path.exists():
             self.add_violation(
                 "1.2 能力粒度控制",
@@ -173,7 +173,7 @@ class SecurityAuditor:
         print("  检查 2.1: 策略引擎 deny 默认...")
         
         policy_paths = [
-            self.base_dir / "overlay/packages/apps/AinativeBrain/policy/PolicyEngine.java",
+            self.base_dir / "overlay/packages/apps/GentonBrain/policy/PolicyEngine.java",
             self.base_dir / "overlay/packages/apps/OpenPhoneAssistant/src/org/openphone/assistant/policy/PolicyEngine.java"
         ]
         
@@ -219,8 +219,8 @@ class SecurityAuditor:
         print("  检查 2.2: 令牌 fail-secure...")
         
         token_paths = [
-            self.base_dir / "overlay/frameworks/base/services/core/java/com/android/server/ainative/TokenValidator.java",
-            self.base_dir / "overlay/packages/apps/AinativeBrain/token/TokenValidator.java"
+            self.base_dir / "overlay/frameworks/base/services/core/java/com/android/server/genton/TokenValidator.java",
+            self.base_dir / "overlay/packages/apps/GentonBrain/token/TokenValidator.java"
         ]
         
         token_file = None
@@ -262,8 +262,8 @@ class SecurityAuditor:
         print("  检查 3.1: Taint 来源标注...")
         
         perception_paths = [
-            self.base_dir / "overlay/frameworks/base/core/java/com/ainative/perception",
-            self.base_dir / "overlay/frameworks/base/services/core/java/com/android/server/ainative/perception"
+            self.base_dir / "overlay/frameworks/base/core/java/com/genton/perception",
+            self.base_dir / "overlay/frameworks/base/services/core/java/com/android/server/genton/perception"
         ]
         
         found_trustlevel = False
@@ -377,7 +377,7 @@ class SecurityAuditor:
         print("  检查 6.1: FLAG_SECURE 保护...")
         
         screen_service_paths = [
-            self.base_dir / "overlay/frameworks/base/services/core/java/com/android/server/ainative/AgentScreenService.java",
+            self.base_dir / "overlay/frameworks/base/services/core/java/com/android/server/genton/AgentScreenService.java",
             self.base_dir / "overlay/frameworks/base/services/core/java/com/android/server/openphone/OpenPhoneAgentManagerService.java"
         ]
         

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 
-BASE = '/root/aosp/frameworks/base/core/java/com/ainative'
+BASE = '/root/aosp/frameworks/base/core/java/com/genton'
 
 def write_aidl(pkg_dir, fname, content):
     path = os.path.join(BASE, pkg_dir, fname)
@@ -12,18 +12,18 @@ def write_aidl(pkg_dir, fname, content):
 # ============ IAgentMemoryService (already done, skip) ============
 
 # ============ IAgentAssetLibraryService (assets) ============
-write_aidl('assets', 'IAgentAssetLibraryService.aidl', '''package com.ainative.assets;
+write_aidl('assets', 'IAgentAssetLibraryService.aidl', '''package com.genton.assets;
 
-import com.ainative.assets.AssetDescriptor;
-import com.ainative.assets.AssetQuery;
-import com.ainative.assets.ResolveRequest;
-import com.ainative.assets.ResolvedAsset;
-import com.ainative.assets.AssetManifest;
-import com.ainative.assets.RegressionJob;
-import com.ainative.assets.ExecutionReport;
-import com.ainative.assets.ToolSchema;
-import com.ainative.assets.IAgentAssetListener;
-import com.ainative.assets.CompatibilityReport;
+import com.genton.assets.AssetDescriptor;
+import com.genton.assets.AssetQuery;
+import com.genton.assets.ResolveRequest;
+import com.genton.assets.ResolvedAsset;
+import com.genton.assets.AssetManifest;
+import com.genton.assets.RegressionJob;
+import com.genton.assets.ExecutionReport;
+import com.genton.assets.ToolSchema;
+import com.genton.assets.IAgentAssetListener;
+import com.genton.assets.CompatibilityReport;
 
 interface IAgentAssetLibraryService {
     const int STATUS_OK          = 0;
@@ -66,14 +66,14 @@ interface IAgentAssetLibraryService {
 ''')
 
 # ============ IAgentCallGateService (call) ============
-write_aidl('call', 'IAgentCallGateService.aidl', '''package com.ainative.call;
+write_aidl('call', 'IAgentCallGateService.aidl', '''package com.genton.call;
 
-import com.ainative.call.CallDescriptor;
-import com.ainative.call.CallVerdict;
-import com.ainative.call.WhitelistEntry;
-import com.ainative.call.GateMode;
-import com.ainative.call.IAgentCallGateListener;
-import com.ainative.call.CallSessionHandle;
+import com.genton.call.CallDescriptor;
+import com.genton.call.CallVerdict;
+import com.genton.call.WhitelistEntry;
+import com.genton.call.GateMode;
+import com.genton.call.IAgentCallGateListener;
+import com.genton.call.CallSessionHandle;
 
 interface IAgentCallGateService {
     const int STATUS_OK            = 0;
@@ -112,13 +112,13 @@ interface IAgentCallGateService {
 ''')
 
 # ============ IAgentContextService (context) ============
-write_aidl('context', 'IAgentContextService.aidl', '''package com.ainative.context;
+write_aidl('context', 'IAgentContextService.aidl', '''package com.genton.context;
 
-import com.ainative.context.ContextFrame;
-import com.ainative.context.ContextSubscription;
-import com.ainative.context.IAgentContextListener;
-import com.ainative.context.ContextSubscriptionHandle;
-import com.ainative.context.SubscriptionInfo;
+import com.genton.context.ContextFrame;
+import com.genton.context.ContextSubscription;
+import com.genton.context.IAgentContextListener;
+import com.genton.context.ContextSubscriptionHandle;
+import com.genton.context.SubscriptionInfo;
 
 interface IAgentContextService {
     const int STATUS_OK        = 0;
@@ -148,14 +148,14 @@ interface IAgentContextService {
 ''')
 
 # ============ IAgentInferenceRouter (inference) ============
-write_aidl('inference', 'IAgentInferenceRouter.aidl', '''package com.ainative.inference;
+write_aidl('inference', 'IAgentInferenceRouter.aidl', '''package com.genton.inference;
 
-import com.ainative.inference.InferenceCapabilities;
-import com.ainative.inference.InferenceRequest;
-import com.ainative.inference.IInferenceCallback;
-import com.ainative.inference.InferenceStats;
-import com.ainative.inference.EgressPlan;
-import com.ainative.inference.AttestationReport;
+import com.genton.inference.InferenceCapabilities;
+import com.genton.inference.InferenceRequest;
+import com.genton.inference.IInferenceCallback;
+import com.genton.inference.InferenceStats;
+import com.genton.inference.EgressPlan;
+import com.genton.inference.AttestationReport;
 
 interface IAgentInferenceRouter {
     InferenceCapabilities getCapabilities();
@@ -173,11 +173,11 @@ interface IAgentInferenceRouter {
 ''')
 
 # ============ IAgentMacroRecorderService (macro) ============
-write_aidl('macro', 'IAgentMacroRecorderService.aidl', '''package com.ainative.macro;
+write_aidl('macro', 'IAgentMacroRecorderService.aidl', '''package com.genton.macro;
 
-import com.ainative.macro.MacroRecordSession;
-import com.ainative.macro.MacroScript;
-import com.ainative.macro.IMacroRecordListener;
+import com.genton.macro.MacroRecordSession;
+import com.genton.macro.MacroScript;
+import com.genton.macro.IMacroRecordListener;
 
 interface IAgentMacroRecorderService {
     int startRecording(in String intentAction, out String[] sessionId);
@@ -207,11 +207,11 @@ interface IAgentMacroRecorderService {
 ''')
 
 # ============ IMacroValidationService (macro) ============
-write_aidl('macro', 'IMacroValidationService.aidl', '''package com.ainative.macro;
+write_aidl('macro', 'IMacroValidationService.aidl', '''package com.genton.macro;
 
-import com.ainative.macro.MacroTestCase;
-import com.ainative.macro.MacroTestResult;
-import com.ainative.macro.IMacroTestListener;
+import com.genton.macro.MacroTestCase;
+import com.genton.macro.MacroTestResult;
+import com.genton.macro.IMacroTestListener;
 
 interface IMacroValidationService {
     int registerTestCase(in MacroTestCase testCase, out String[] testCaseId);
@@ -240,13 +240,13 @@ interface IMacroValidationService {
 
 # ============ IAgentScreenService (perception) ============
 # (3 methods - likely matches existing, but ensure constants not needed)
-write_aidl('perception', 'IAgentScreenService.aidl', '''package com.ainative.perception;
+write_aidl('perception', 'IAgentScreenService.aidl', '''package com.genton.perception;
 
-import com.ainative.perception.ScreenFrame;
-import com.ainative.perception.CaptureRequest;
-import com.ainative.perception.ScreenStreamConfig;
-import com.ainative.perception.ScreenStreamHandle;
-import com.ainative.perception.IAgentFrameListener;
+import com.genton.perception.ScreenFrame;
+import com.genton.perception.CaptureRequest;
+import com.genton.perception.ScreenStreamConfig;
+import com.genton.perception.ScreenStreamHandle;
+import com.genton.perception.IAgentFrameListener;
 
 interface IAgentScreenService {
     ScreenFrame captureScreen(in CaptureRequest request);
@@ -258,12 +258,12 @@ interface IAgentScreenService {
 ''')
 
 # ============ IAgentUiTreeService (perception) ============
-write_aidl('perception', 'IAgentUiTreeService.aidl', '''package com.ainative.perception;
+write_aidl('perception', 'IAgentUiTreeService.aidl', '''package com.genton.perception;
 
-import com.ainative.perception.UiSnapshot;
-import com.ainative.perception.UiTreeRequest;
-import com.ainative.perception.IAgentUiTreeListener;
-import com.ainative.perception.UiNode;
+import com.genton.perception.UiSnapshot;
+import com.genton.perception.UiTreeRequest;
+import com.genton.perception.IAgentUiTreeListener;
+import com.genton.perception.UiNode;
 
 interface IAgentUiTreeService {
     UiSnapshot captureUiTree(in UiTreeRequest request);
@@ -279,12 +279,12 @@ interface IAgentUiTreeService {
 ''')
 
 # ============ IAuditService (audit) ============
-write_aidl('audit', 'IAuditService.aidl', '''package com.ainative.audit;
+write_aidl('audit', 'IAuditService.aidl', '''package com.genton.audit;
 
-import com.ainative.audit.AuditEvent;
-import com.ainative.audit.AuditQuery;
-import com.ainative.audit.ChainStatus;
-import com.ainative.audit.IAuditListener;
+import com.genton.audit.AuditEvent;
+import com.genton.audit.AuditQuery;
+import com.genton.audit.ChainStatus;
+import com.genton.audit.IAuditListener;
 
 interface IAuditService {
     int record(in AuditEvent event, out String[] outEventId);
@@ -302,9 +302,9 @@ interface IAuditService {
 ''')
 
 # ============ IAgentConfirmationHost (ui) ============
-write_aidl('ui', 'IAgentConfirmationHost.aidl', '''package com.ainative.ui;
+write_aidl('ui', 'IAgentConfirmationHost.aidl', '''package com.genton.ui;
 
-import com.ainative.ui.ConfirmationUiRequest;
+import com.genton.ui.ConfirmationUiRequest;
 
 interface IAgentConfirmationHost {
     int showConfirmation(in ConfirmationUiRequest request);
@@ -314,10 +314,10 @@ interface IAgentConfirmationHost {
 ''')
 
 # ============ IMotionHubService (motion) ============
-write_aidl('motion', 'IMotionHubService.aidl', '''package com.ainative.motion;
+write_aidl('motion', 'IMotionHubService.aidl', '''package com.genton.motion;
 
-import com.ainative.motion.IMotionGestureListener;
-import com.ainative.motion.MotionTierState;
+import com.genton.motion.IMotionGestureListener;
+import com.genton.motion.MotionTierState;
 
 interface IMotionHubService {
     long registerGestureListener(in IMotionGestureListener listener, in int gestureMask);
@@ -341,15 +341,15 @@ interface IMotionHubService {
 ''')
 
 # ============ IPolicyEngine (policy) ============
-write_aidl('policy', 'IPolicyEngine.aidl', '''package com.ainative.policy;
+write_aidl('policy', 'IPolicyEngine.aidl', '''package com.genton.policy;
 
-import com.ainative.policy.IntentEvaluationRequest;
-import com.ainative.policy.PolicyDecision;
-import com.ainative.policy.CapabilityRequest;
-import com.ainative.policy.CapabilityToken;
-import com.ainative.policy.PolicyRuleView;
-import com.ainative.policy.IPolicyListener;
-import com.ainative.policy.PolicyStats;
+import com.genton.policy.IntentEvaluationRequest;
+import com.genton.policy.PolicyDecision;
+import com.genton.policy.CapabilityRequest;
+import com.genton.policy.CapabilityToken;
+import com.genton.policy.PolicyRuleView;
+import com.genton.policy.IPolicyListener;
+import com.genton.policy.PolicyStats;
 
 interface IPolicyEngine {
     int evaluateIntent(in IntentEvaluationRequest request, inout PolicyDecision decision);
@@ -377,12 +377,12 @@ interface IPolicyEngine {
 ''')
 
 # ============ IAgentActionService (action) ============
-write_aidl('action', 'IAgentActionService.aidl', '''package com.ainative.action;
+write_aidl('action', 'IAgentActionService.aidl', '''package com.genton.action;
 
-import com.ainative.action.ActionRequest;
-import com.ainative.action.IAgentActionCallback;
-import com.ainative.action.ActionExecutionStatus;
-import com.ainative.action.ActionInfo;
+import com.genton.action.ActionRequest;
+import com.genton.action.IAgentActionCallback;
+import com.genton.action.ActionExecutionStatus;
+import com.genton.action.ActionInfo;
 
 interface IAgentActionService {
     int submitAction(in ActionRequest request, in IAgentActionCallback callback, out String[] actionRequestId);

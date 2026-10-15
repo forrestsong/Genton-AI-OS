@@ -1,0 +1,90 @@
+# AI Native OS SELinux 安全策略
+#
+# neverallow 规则 - 强制安全边界
+#
+# 版本: v1.0
+# 日期: 2026-09-05
+# 依据: WBS A1.4 权限清单落地
+
+# ========================================
+# 核心安全原则: Fail-secure
+# ========================================
+
+# 禁止普通应用访问任何 AI Native 服务
+neverallow { domain -genton_brain -system_server -system_app -shell } genton_ui_tree_service:service_manager find;
+neverallow { domain -genton_brain -system_server -system_app -shell } genton_screen_service:service_manager find;
+neverallow { domain -genton_brain -system_server -system_app -shell } genton_notification_service:service_manager find;
+neverallow { domain -genton_brain -system_server -shell } genton_event_stream_service:service_manager find;
+neverallow { domain -genton_brain -system_server -shell } genton_action_service:service_manager find;
+neverallow { domain -genton_brain -system_server -system_app -shell } genton_agent_runtime_service:service_manager find;
+neverallow { domain -genton_brain -system_server -shell } genton_memory_service:service_manager find;
+neverallow { domain -genton_brain -system_server -system_app -shell } genton_audit_service:service_manager find;
+neverallow { domain -genton_brain -system_server -shell } genton_entity_service:service_manager find;
+neverallow { domain -genton_brain -system_server -system_app -shell } genton_context_service:service_manager find;
+neverallow { domain -genton_brain -system_server -system_app -shell } genton_policy_engine_service:service_manager find;
+neverallow { domain -genton_brain -system_server -shell } genton_asset_library_service:service_manager find;
+neverallow { domain -genton_brain -system_server -shell } genton_inference_router_service:service_manager find;
+neverallow { domain -genton_brain -system_server -shell } genton_sandbox_service:service_manager find;
+neverallow { domain -genton_brain -system_server -shell } genton_call_gate_service:service_manager find;
+neverallow { domain -genton_brain -system_server -shell } genton_motion_hub_service:service_manager find;
+
+# ========================================
+# 服务注册限制
+# ========================================
+
+# 禁止非 system_server 注册 AI Native 系统服务
+neverallow { domain -system_server } genton_ui_tree_service:service_manager add;
+neverallow { domain -system_server } genton_screen_service:service_manager add;
+neverallow { domain -system_server } genton_notification_service:service_manager add;
+neverallow { domain -system_server } genton_event_stream_service:service_manager add;
+neverallow { domain -system_server } genton_action_service:service_manager add;
+neverallow { domain -system_server } genton_agent_runtime_service:service_manager add;
+neverallow { domain -system_server } genton_memory_service:service_manager add;
+neverallow { domain -system_server } genton_audit_service:service_manager add;
+neverallow { domain -system_server } genton_entity_service:service_manager add;
+neverallow { domain -system_server } genton_context_service:service_manager add;
+neverallow { domain -system_server } genton_policy_engine_service:service_manager add;
+neverallow { domain -system_server } genton_asset_library_service:service_manager add;
+neverallow { domain -system_server } genton_inference_router_service:service_manager add;
+neverallow { domain -system_server } genton_sandbox_service:service_manager add;
+neverallow { domain -system_server } genton_call_gate_service:service_manager add;
+neverallow { domain -system_server } genton_motion_hub_service:service_manager add;
+
+# 仅大脑可注册会话服务
+neverallow { domain -genton_brain } genton_agent_session_service:service_manager add;
+
+# 仅 SystemUI 可注册 UI 命令服务
+neverallow { domain -system_app } genton_agent_ui_service:service_manager add;
+
+# ========================================
+# 数据访问限制
+# ========================================
+
+# 禁止普通应用访问 AI Native 数据目录
+neverallow { domain -genton_brain -system_server -system_app } genton_data_file:dir *;
+neverallow { domain -genton_brain -system_server -system_app } genton_data_file:file *;
+
+# 禁止非授权域写入审计日志
+neverallow { domain -system_server } genton_data_file:file { write append };
+
+# ========================================
+# 网络访问限制
+# ========================================
+
+# 禁止 AI Native 服务直接访问互联网 (必须通过推理路由)
+# 注意: genton_brain 和 system_server 的推理路由组件例外
+# neverallow { domain -genton_brain -system_server } self:tcp_socket *;
+
+# ========================================
+# 特权操作限制
+# ========================================
+
+# 禁止 AI Native 应用执行 setuid/setgid
+neverallow genton_brain self:capability { setuid setgid };
+
+# 禁止 AI Native 应用加载内核模块
+neverallow genton_brain kernel:system module_load;
+
+# 禁止 AI Native 应用修改 SELinux 策略
+neverallow genton_brain security_file:file *;
+neverallow genton_brain selinuxfs:file *;

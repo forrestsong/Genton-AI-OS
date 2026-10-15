@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 
-p = '/root/aosp/frameworks/base/core/java/com/ainative/assets/IAgentAssetLibraryService.aidl'
+p = '/root/aosp/frameworks/base/core/java/com/genton/assets/IAgentAssetLibraryService.aidl'
 with open(p) as f:
     lines = f.readlines()
 

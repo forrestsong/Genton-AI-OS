@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 
-p = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative/AgentScreenService.java'
+p = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton/AgentScreenService.java'
 with open(p, encoding='utf-8') as f:
     lines = f.readlines()
 

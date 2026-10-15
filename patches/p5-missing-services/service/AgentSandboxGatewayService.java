@@ -3,20 +3,20 @@
 // 依据 轨道A-第三方Agent接入面接口草案.md（D14）：
 //   沙箱内的第三方 Agent 只能经由本网关发起受限操作（类型白名单读 / 动作请求），
 //   网关按 OP_* 类型路由到对应系统服务，并做配额校验。
-package com.android.server.ainative;
+package com.android.server.genton;
 
 import android.content.Context;
 import android.os.ServiceManager;
 import android.util.Slog;
 
-import com.ainative.action.IAgentActionService;
-import com.ainative.context.IAgentContextService;
-import com.ainative.events.IAgentEventStreamService;
-import com.ainative.memory.IAgentMemoryService;
-import com.ainative.sandbox.GatewayRequest;
-import com.ainative.sandbox.GatewayResponse;
-import com.ainative.sandbox.IAgentSandboxGateway;
-import com.ainative.sandbox.SandboxHandle;
+import com.genton.action.IAgentActionService;
+import com.genton.context.IAgentContextService;
+import com.genton.events.IAgentEventStreamService;
+import com.genton.memory.IAgentMemoryService;
+import com.genton.sandbox.GatewayRequest;
+import com.genton.sandbox.GatewayResponse;
+import com.genton.sandbox.IAgentSandboxGateway;
+import com.genton.sandbox.SandboxHandle;
 
 /** 沙箱受限操作网关 */
 public class AgentSandboxGatewayService extends IAgentSandboxGateway.Stub {
@@ -48,8 +48,8 @@ public class AgentSandboxGatewayService extends IAgentSandboxGateway.Stub {
                         result = null;
                     } else {
                         // 只读：拉取当前上下文帧的脱敏视图
-                        com.ainative.context.ContextFrame frame =
-                                new com.ainative.context.ContextFrame();
+                        com.genton.context.ContextFrame frame =
+                                new com.genton.context.ContextFrame();
                         int rc = ctx.getCurrentFrame(0, frame);
                         result = (rc == 0) ? frame.toString() : null;
                         code = STATUS_OK;
@@ -106,7 +106,7 @@ public class AgentSandboxGatewayService extends IAgentSandboxGateway.Stub {
     private IAgentContextService contextService() {
         try {
             android.os.IBinder b =
-                    ServiceManager.getService("com.ainative.context.IAgentContextService");
+                    ServiceManager.getService("com.genton.context.IAgentContextService");
             return b == null ? null : IAgentContextService.Stub.asInterface(b);
         } catch (Throwable t) {
             return null;

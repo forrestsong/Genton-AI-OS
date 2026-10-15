@@ -2,14 +2,14 @@
   "_comment": "WBS 3.1a 部署基线：下列补丁载荷当前无法推导目标路径，因此**不部署**。只允许减少——一旦可推导，必须从本文件移除，否则 apply_patches.py 会失败。每条理由必须自洽，不许写『同上』。",
   "version": 1,
   "known_unmapped": {
-    "patches/ainativebrain-contract/session/ActionExecutor.kt": "Kotlin 载荷缺少 package 声明，无法推导命名空间；且 Android.bp 只收集 *.java，这些 .kt 从未参与编译。属 WBS 2.1 契约冻结范围。",
-    "patches/ainativebrain-contract/session/AgentRuntimeClient.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
-    "patches/ainativebrain-contract/session/AgentSessionService.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
-    "patches/ainativebrain-contract/session/FormRouter.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
-    "patches/ainativebrain-contract/session/FormSubmitRouter.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
-    "patches/ainativebrain-contract/planner/GoalModels.kt": "缺少 package 声明，目标路径不可推导；且与 PlanningDataTypes.kt 存在类型重名冲突。",
-    "patches/ainativebrain-contract/toolloop/ToolLoopModels.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
-    "patches/ainativebrain-contract/ui/FormCardView.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
+    "patches/gentonbrain-contract/session/ActionExecutor.kt": "Kotlin 载荷缺少 package 声明，无法推导命名空间；且 Android.bp 只收集 *.java，这些 .kt 从未参与编译。属 WBS 2.1 契约冻结范围。",
+    "patches/gentonbrain-contract/session/AgentRuntimeClient.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
+    "patches/gentonbrain-contract/session/AgentSessionService.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
+    "patches/gentonbrain-contract/session/FormRouter.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
+    "patches/gentonbrain-contract/session/FormSubmitRouter.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
+    "patches/gentonbrain-contract/planner/GoalModels.kt": "缺少 package 声明，目标路径不可推导；且与 PlanningDataTypes.kt 存在类型重名冲突。",
+    "patches/gentonbrain-contract/toolloop/ToolLoopModels.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
+    "patches/gentonbrain-contract/ui/FormCardView.kt": "缺少 package 声明，目标路径不可推导；且未被 Android.bp 收集编译。",
     "patches/p2-floating-button-dual-mode/systemui/TranscriptView.kt": "SystemUI 侧 Kotlin 同样缺少 package 声明且未被 Android.bp 收集（bp 只收 *.java）。"
   }
 }

@@ -2,8 +2,8 @@
 import os
 import re
 
-AIDL_DIR = '/root/aosp/frameworks/base/core/java/com/ainative'
-JAVA_DIR = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative'
+AIDL_DIR = '/root/aosp/frameworks/base/core/java/com/genton'
+JAVA_DIR = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton'
 
 # Map Java class -> aidl package+interface
 stub_map = {

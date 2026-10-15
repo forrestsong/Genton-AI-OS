@@ -5,7 +5,7 @@ AI Native OS - 策略 DSL 解析器（纯标准库）
 任务编号：H1.1 / H2.1（质量工程部）
 验收项  ：DSL C1-C8 编译检查的解析基础；策略引擎单测的规则装载基础
 
-解析 vendor/ainative/config/policy_baseline.dsl 的自定义 DSL 语法
+解析 vendor/genton/config/policy_baseline.dsl 的自定义 DSL 语法
 （rule <id> { ... } 块结构），输出与 policy_dsl_compiler.py 兼容的
 规则字典列表：
 

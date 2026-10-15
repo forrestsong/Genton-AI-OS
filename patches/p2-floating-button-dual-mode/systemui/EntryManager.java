@@ -1,5 +1,5 @@
 // AI Native OS - Entry Manager
-package com.android.systemui.ainative.entry;
+package com.android.systemui.genton.entry;
 
 import android.content.Context;
 import android.content.Intent;

@@ -55,37 +55,37 @@ Layer 5 (特殊模块):
 
 **阶段 1**: 基础模块
 ```bash
-m com.ainative.audit
-m com.ainative.perception
+m com.genton.audit
+m com.genton.perception
 ```
 
 **阶段 2**: 核心运行时
 ```bash
-m com.ainative.agent
-m com.ainative.policy
-m com.ainative.memory
+m com.genton.agent
+m com.genton.policy
+m com.genton.memory
 ```
 
 **阶段 3**: 服务层
 ```bash
-m com.ainative.events
-m com.ainative.action
-m com.ainative.semantics
-m com.ainative.context
+m com.genton.events
+m com.genton.action
+m com.genton.semantics
+m com.genton.context
 ```
 
 **阶段 4**: 高级功能
 ```bash
-m com.ainative.assets
-m com.ainative.inference
-m com.ainative.sandbox
+m com.genton.assets
+m com.genton.inference
+m com.genton.sandbox
 ```
 
 **阶段 5**: UI 与交互
 ```bash
-m com.ainative.ui
-m com.ainative.call
-m com.ainative.motion
+m com.genton.ui
+m com.genton.call
+m com.genton.motion
 ```
 
 ## 循环依赖检测

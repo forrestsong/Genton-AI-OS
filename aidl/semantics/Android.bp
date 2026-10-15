@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.semantics",
+    name: "com.genton.semantics",
     
     srcs: [
-        "com/ainative/semantics/*.aidl",
+        "com/genton/semantics/*.aidl",
     ],
     
     stability: "vintf",
@@ -35,11 +35,11 @@ aidl_interface {
     ],
     
     imports: [
-        "com.ainative.memory",  // MemoryEntry
+        "com.genton.memory",  // MemoryEntry
     ],
     
     visibility: [
         "//frameworks/base/services/core",
-        "//packages/apps/AINativeBrain",
+        "//packages/apps/GentonBrain",
     ],
 }

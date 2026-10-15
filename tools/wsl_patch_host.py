@@ -6,13 +6,13 @@ with open(p2, "r", encoding="utf-8") as f:
     c2 = f.read()
 
 old = '''java_import {
-    name: "ainative.prebuilt_system_android_stubs",
+    name: "genton.prebuilt_system_android_stubs",
     jars: ["system/android.jar"],
     sdk_version: "none",
     visibility: ["//visibility:public"],
 }'''
 new = '''java_import {
-    name: "ainative.prebuilt_system_android_stubs",
+    name: "genton.prebuilt_system_android_stubs",
     jars: ["system/android.jar"],
     sdk_version: "none",
     host_supported: true,

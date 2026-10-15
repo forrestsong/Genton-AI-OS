@@ -1,8 +1,8 @@
 // Genton (AI Native OS) - 活性指示器控制器（D3.2）
 //
-// 数据源：com.ainative.audit.IAuditService（AIDL）的活性流订阅
+// 数据源：com.genton.audit.IAuditService（AIDL）的活性流订阅
 //
-// [P1 修复] 原实现直接依赖 com.android.server.ainative.AgentAuditService 类，
+// [P1 修复] 原实现直接依赖 com.android.server.genton.AgentAuditService 类，
 //   而 SystemUI 是独立 APK（应用 UID），无法访问服务端类 —— 这是当初整批
 //   SystemUI 覆盖层被移出编译的根因之一。现改为纯 AIDL 跨进程订阅：
 //     IAuditService.registerActivityListener(IAuditListener)
@@ -11,7 +11,7 @@
 //       -> ActivityIndicatorOverlay 显示芯片
 //
 // 线程模型：Binder 回调 -> 主线程 Handler -> Manager
-package com.android.systemui.ainative.indicator;
+package com.android.systemui.genton.indicator;
 
 import android.content.Context;
 import android.os.Handler;
@@ -21,9 +21,9 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.Log;
 
-import com.ainative.audit.ActivityIndicator;
-import com.ainative.audit.IAuditListener;
-import com.ainative.audit.IAuditService;
+import com.genton.audit.ActivityIndicator;
+import com.genton.audit.IAuditListener;
+import com.genton.audit.IAuditService;
 
 /** 活性指示器控制器：订阅审计活性流并驱动指示器 */
 public class ActivityIndicatorController {
@@ -31,7 +31,7 @@ public class ActivityIndicatorController {
     private static final String TAG = "GentonIndicatorCtrl";
 
     /** 审计服务名（system_server 注册），与 service_contexts 一致 */
-    private static final String AUDIT_SERVICE = "com.ainative.audit.IAuditService";
+    private static final String AUDIT_SERVICE = "com.genton.audit.IAuditService";
 
     private final Context mContext;
     private final ActivityIndicatorManager mManager;

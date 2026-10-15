@@ -81,7 +81,7 @@ public class SystemUIService extends Service {
 
         // Genton: 启动 AI Native OS 确认宿主（IAgentConfirmationHost，P0）
         // 依据 D5 §5.1：确认面板由 SystemUI 独占实现并反向注册到 ServiceManager
-        com.android.systemui.ainative.confirmation.ConfirmationUiProvider.start(this);
+        com.android.systemui.genton.confirmation.ConfirmationUiProvider.start(this);
 
         // Finish initializing dump logic
         mLogBufferFreezer.attach(mBroadcastDispatcher);

@@ -37,7 +37,7 @@ NNNN-short-description.patch
 ### 应用所有补丁
 
 ```bash
-cd ainative-os
+cd genton-os
 ./patches/apply-patches.sh
 ```
 
@@ -72,7 +72,7 @@ git apply --check ../../patches/frameworks_base/0001-add-agent-manager-service.p
 
 | 编号 | 补丁文件 | 功能 |
 |------|---------|------|
-| 0001 | label-ainative-services.patch | 标记 19 个系统服务 |
+| 0001 | label-genton-services.patch | 标记 19 个系统服务 |
 | 0002 | agent-runtime-context.patch | Agent 运行时上下文 |
 | 0003 | capability-token-domain.patch | 令牌验证域 |
 
@@ -93,7 +93,7 @@ d:\AI Native OS\openphone\patches\frameworks_base\
 
 # 迁移方法
 1. 复制 openphone 补丁作为起点
-2. 根据轨道 A 规范调整接口名称（OpenPhone* -> AINative*）
+2. 根据轨道 A 规范调整接口名称（OpenPhone* -> Genton*）
 3. 添加新功能（令牌链、策略 DSL、多层记忆等）
 4. 运行安全检查: python tools/security_audit.py
 ```

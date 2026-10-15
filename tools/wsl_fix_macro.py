@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 import os
 
-BASE = '/root/aosp/frameworks/base/core/java/com/ainative'
+BASE = '/root/aosp/frameworks/base/core/java/com/genton'
 
 def write(path, content):
     with open(path, 'w') as f:
         f.write(content)
-    print(f"WROTE {path.split('ainative/')[1]}")
+    print(f"WROTE {path.split('genton/')[1]}")
 
 # 1. MacroStep.aidl - rewrite to match AgentMacroRecorderService usage
 write(os.path.join(BASE, 'macro', 'MacroStep.aidl'), '''// MacroStep.aidl
-package com.ainative.macro;
+package com.genton.macro;
 
 /**
  * 宏步骤
@@ -44,9 +44,9 @@ parcelable MacroStep {
 
 # 2. MacroScript.aidl - add macroId field
 write(os.path.join(BASE, 'macro', 'MacroScript.aidl'), '''// MacroScript.aidl
-package com.ainative.macro;
+package com.genton.macro;
 
-import com.ainative.macro.MacroStep;
+import com.genton.macro.MacroStep;
 
 /**
  * 宏脚本
@@ -101,9 +101,9 @@ parcelable MacroScript {
 ''')
 
 # 3. IAgentFrameListener.aidl - add onFrameCaptured/onFrameDropped
-write(os.path.join(BASE, 'perception', 'IAgentFrameListener.aidl'), '''package com.ainative.perception;
+write(os.path.join(BASE, 'perception', 'IAgentFrameListener.aidl'), '''package com.genton.perception;
 
-import com.ainative.perception.ScreenFrame;
+import com.genton.perception.ScreenFrame;
 
 interface IAgentFrameListener {
     void onFrameCaptured(in ScreenFrame frame);
@@ -113,11 +113,11 @@ interface IAgentFrameListener {
 ''')
 
 # 4. IMacroValidationService.aidl - add STATUS_* constants
-write(os.path.join(BASE, 'macro', 'IMacroValidationService.aidl'), '''package com.ainative.macro;
+write(os.path.join(BASE, 'macro', 'IMacroValidationService.aidl'), '''package com.genton.macro;
 
-import com.ainative.macro.MacroTestCase;
-import com.ainative.macro.MacroTestResult;
-import com.ainative.macro.IMacroTestListener;
+import com.genton.macro.MacroTestCase;
+import com.genton.macro.MacroTestResult;
+import com.genton.macro.IMacroTestListener;
 
 interface IMacroValidationService {
     const int STATUS_OK              = 0;

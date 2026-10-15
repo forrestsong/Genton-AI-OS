@@ -6,10 +6,10 @@ package {
 }
 
 aidl_interface {
-    name: "com.ainative.events",
+    name: "com.genton.events",
     
     srcs: [
-        "com/ainative/events/*.aidl",
+        "com/genton/events/*.aidl",
     ],
     
     stability: "vintf",
@@ -35,12 +35,12 @@ aidl_interface {
     ],
     
     imports: [
-        "com.ainative.agent",  // AgentHandle
-        "com.ainative.policy", // 授权检查
+        "com.genton.agent",  // AgentHandle
+        "com.genton.policy", // 授权检查
     ],
     
     visibility: [
         "//frameworks/base/services/core",
-        "//packages/apps/AINativeBrain",
+        "//packages/apps/GentonBrain",
     ],
 }

@@ -13,7 +13,7 @@ import os
 import re
 
 BASE = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..",
-                                     "overlay", "frameworks", "base", "core", "java", "com", "ainative"))
+                                     "overlay", "frameworks", "base", "core", "java", "com", "genton"))
 
 
 def fix_bp(path):
@@ -49,7 +49,7 @@ def main():
         with open(bp, encoding="utf-8", errors="replace") as f:
             c = f.read()
         if "aidl_interface" not in c:
-            continue  # 跳过 ainative.core 等非 AIDL 模块
+            continue  # 跳过 genton.core 等非 AIDL 模块
         if fix_bp(bp):
             print(f"  [FIX] {os.path.relpath(bp, BASE)}")
             fixed += 1

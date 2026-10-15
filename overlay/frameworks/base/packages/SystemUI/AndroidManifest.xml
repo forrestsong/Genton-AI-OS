@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- AI Native OS - SystemUI Manifest -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.android.systemui.ainative"
+    package="com.android.systemui.genton"
     android:sharedUserId="android.uid.system">
 
     <!-- 权限声明 -->
@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
 
     <application
-        android:name=".AINativeSystemUIApplication"
+        android:name=".GentonSystemUIApplication"
         android:label="AI Native SystemUI"
         android:persistent="true"
         android:allowBackup="false"
@@ -24,7 +24,7 @@
 
         <!-- 主Activity -->
         <activity
-            android:name=".AINativeSystemUIActivity"
+            android:name=".GentonSystemUIActivity"
             android:label="AI Native OS"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:launchMode="singleInstance"
@@ -37,7 +37,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.ainative.ACTION_SHOW_ASSISTANT" />
+                <action android:name="com.genton.ACTION_SHOW_ASSISTANT" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

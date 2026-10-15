@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 
-BASE = '/root/aosp/frameworks/base/services/core/java/com/android/server/ainative'
+BASE = '/root/aosp/frameworks/base/services/core/java/com/android/server/genton'
 ok = True
 
 def patch_file(fname, replacements, label):
@@ -22,7 +22,7 @@ def patch_file(fname, replacements, label):
 
 # 1. MANAGE_AI_NATIVE_AGENTS -> string literal (3 files)
 perm_old = 'android.Manifest.permission.MANAGE_AI_NATIVE_AGENTS'
-perm_new = '"com.ainative.permission.MANAGE_AI_NATIVE_AGENTS"'
+perm_new = '"com.genton.permission.MANAGE_AI_NATIVE_AGENTS"'
 patch_file('AgentActionService.java', [(perm_old, perm_new)], 'perm')
 patch_file('AgentMacroRecorderService.java', [(perm_old, perm_new)], 'perm')
 patch_file('AgentMacroValidationService.java', [(perm_old, perm_new)], 'perm')
@@ -55,8 +55,8 @@ mem_new = '''    private boolean checkPermission(String capability) {
 patch_file('AgentMemoryService.java', [(mem_old, mem_new)], 'checkPermission')
 
 # add IAgentRuntimeService import to AgentMemoryService
-mem_imp_old = 'import com.ainative.memory.MemoryStats;'
-mem_imp_new = 'import com.ainative.memory.MemoryStats;\nimport com.ainative.agent.IAgentRuntimeService;'
+mem_imp_old = 'import com.genton.memory.MemoryStats;'
+mem_imp_new = 'import com.genton.memory.MemoryStats;\nimport com.genton.agent.IAgentRuntimeService;'
 patch_file('AgentMemoryService.java', [(mem_imp_old, mem_imp_new)], 'import runtime')
 
 # 3. EntityQueryService: fix checkPermission
@@ -89,8 +89,8 @@ patch_file('EntityQueryService.java', [(eq_old, eq_new)], 'checkPermission')
 dv_old = 'int result = mAssetLibrary.disableAsset(macroId, 1);  // reason=1 (auto_failure)'
 dv_new = 'int result = mAssetLibrary.setAssetStatus(macroId, IAgentAssetLibraryService.ASSET_STATUS_DISABLED);'
 patch_file('AgentMacroValidationService.java', [(dv_old, dv_new)], 'disableAsset')
-dv_imp_old = 'import com.ainative.assets.AssetExecutionResult;'
-dv_imp_new = 'import com.ainative.assets.AssetExecutionResult;\nimport com.ainative.assets.IAgentAssetLibraryService;'
+dv_imp_old = 'import com.genton.assets.AssetExecutionResult;'
+dv_imp_new = 'import com.genton.assets.AssetExecutionResult;\nimport com.genton.assets.IAgentAssetLibraryService;'
 patch_file('AgentMacroValidationService.java', [(dv_imp_old, dv_imp_new)], 'import asset lib')
 
 if not ok:

@@ -1,5 +1,5 @@
 // AI Native OS - Privacy Dashboard Manager (D4.1)
-package com.android.systemui.ainative.privacy;
+package com.android.systemui.genton.privacy;
 
 import android.content.Context;
 import android.os.Handler;
@@ -8,10 +8,10 @@ import android.util.Log;
 
 import android.os.RemoteException;
 
-import com.ainative.audit.AuditEvent;
-import com.ainative.audit.AuditQuery;
-import com.ainative.audit.ChainStatus;
-import com.ainative.audit.IAuditService;
+import com.genton.audit.AuditEvent;
+import com.genton.audit.AuditQuery;
+import com.genton.audit.ChainStatus;
+import com.genton.audit.IAuditService;
 
 import java.util.ArrayList;
 import java.util.List;

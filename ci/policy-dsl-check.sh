@@ -13,7 +13,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 JAVA_COMPILER="javac"
 JAVA_RUNTIME="java"
-SRC_DIR="$PROJECT_ROOT/overlay/frameworks/base/services/core/java/com/android/server/ainative"
+SRC_DIR="$PROJECT_ROOT/overlay/frameworks/base/services/core/java/com/android/server/genton"
 TESTS_DIR="$PROJECT_ROOT/tests"
 BUILD_DIR="$PROJECT_ROOT/build"
 REPORTS_DIR="$PROJECT_ROOT/reports/ci"
@@ -37,7 +37,7 @@ fi
 echo ""
 
 echo "Step 2: Testing golden policy pack..."
-$JAVA_RUNTIME -cp "$BUILD_DIR" com.android.server.ainative.PolicyDslCiTool \
+$JAVA_RUNTIME -cp "$BUILD_DIR" com.android.server.genton.PolicyDslCiTool \
     "$TESTS_DIR/policy-pack-golden.json" \
     "platform"
 
@@ -45,7 +45,7 @@ GOLDEN_EXIT_CODE=$?
 echo ""
 
 echo "Step 3: Generating conflict matrix report (golden)..."
-$JAVA_RUNTIME -cp "$BUILD_DIR" com.android.server.ainative.ConflictMatrixReporter \
+$JAVA_RUNTIME -cp "$BUILD_DIR" com.android.server.genton.ConflictMatrixReporter \
     "$TESTS_DIR/policy-pack-golden.json" \
     "platform" \
     "$REPORTS_DIR/conflict-matrix-golden.md"
@@ -53,13 +53,13 @@ echo "✓ Report saved: $REPORTS_DIR/conflict-matrix-golden.md"
 echo ""
 
 echo "Step 4: Testing conflict policy pack (should fail)..."
-$JAVA_RUNTIME -cp "$BUILD_DIR" com.android.server.ainative.PolicyDslCiTool \
+$JAVA_RUNTIME -cp "$BUILD_DIR" com.android.server.genton.PolicyDslCiTool \
     "$TESTS_DIR/policy-pack-conflict.json" \
     "platform" || true
 
 echo ""
 echo "Step 5: Generating conflict matrix report (conflict test)..."
-$JAVA_RUNTIME -cp "$BUILD_DIR" com.android.server.ainative.ConflictMatrixReporter \
+$JAVA_RUNTIME -cp "$BUILD_DIR" com.android.server.genton.ConflictMatrixReporter \
     "$TESTS_DIR/policy-pack-conflict.json" \
     "platform" \
     "$REPORTS_DIR/conflict-matrix-conflict.md"

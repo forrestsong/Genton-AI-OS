@@ -12,7 +12,7 @@ G1.1b 云端决策服务参考实现（Cloud Decision Service Stub）
   5. 错误码映射（与端侧 DecisionResult.statusCode 对齐）
 
 契约：docs/cloud/G1.1b-CloudBroker决策接口扩展.md
-端侧：com.ainative.decision.IAgentDecisionService（choose/judge/score）
+端侧：com.genton.decision.IAgentDecisionService（choose/judge/score）
 """
 import hashlib
 import hmac

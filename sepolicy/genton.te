@@ -1,0 +1,218 @@
+# AI Native OS - SELinux 策略定义
+# 系统服务核心域
+
+# ============================================
+# genton_service - 系统服务基础域
+# ============================================
+type genton_service, domain;
+type genton_service_exec, exec_type, file_type;
+
+# 允许从 system_server 启动
+init_daemon_domain(genton_service)
+
+# 基本权限
+allow genton_service self:capability {
+    dac_read_search
+    dac_override
+    setuid
+    setgid
+};
+
+# Binder 通信
+binder_use(genton_service)
+binder_call(genton_service, system_server)
+allow genton_service system_server:binder { call transfer };
+
+# ServiceManager 注册
+allow genton_service servicemanager:binder { call transfer };
+allow genton_service service_manager_type:service_manager { add find };
+
+# 文件系统访问
+allow genton_service system_data_file:dir { create_dir_perms rw_dir_perms };
+allow genton_service system_data_file:file { create_file_perms rw_file_perms };
+
+# 日志权限
+allow genton_service kmsg_device:chr_file w_file_perms;
+userdebug_or_eng(`
+  allow genton_service su:unix_stream_socket connectto;
+')
+
+# ============================================
+# genton_brain_app - 大脑特权 App
+# ============================================
+type genton_brain_app, domain;
+type genton_brain_app_data_file, file_type, data_file_type;
+
+# 从 platform_app 继承基本权限
+app_domain(genton_brain_app)
+
+# 标记为特权应用
+priv_app(genton_brain_app)
+
+# Binder 通信
+binder_call(genton_brain_app, system_server)
+binder_call(genton_brain_app, genton_service)
+
+# 访问 AI Native OS 系统服务
+allow genton_brain_app genton_service_type:service_manager find;
+allow genton_brain_app genton_service:binder { call transfer };
+
+# 数据目录权限
+allow genton_brain_app genton_brain_app_data_file:dir create_dir_perms;
+allow genton_brain_app genton_brain_app_data_file:file create_file_perms;
+
+# 网络访问（云端推理）
+allow genton_brain_app self:tcp_socket create_stream_socket_perms;
+allow genton_brain_app node_type:node { tcp_recv tcp_send };
+allow genton_brain_app port_type:tcp_socket { name_connect };
+
+# 传感器访问（MotionHub）
+allow genton_brain_app sensorservice_service:service_manager find;
+allow genton_brain_app system_server:binder call;
+
+# ============================================
+# genton_audit - 审计服务域
+# ============================================
+type genton_audit, domain;
+type genton_audit_exec, exec_type, file_type;
+type genton_audit_data_file, file_type, data_file_type;
+
+init_daemon_domain(genton_audit)
+
+# Binder 通信
+binder_use(genton_audit)
+binder_call(genton_audit, system_server)
+
+# 审计日志写入
+allow genton_audit genton_audit_data_file:dir create_dir_perms;
+allow genton_audit genton_audit_data_file:file create_file_perms;
+
+# 哈希链验证
+allow genton_audit self:capability { sys_admin };
+
+# ============================================
+# genton_policy - 策略引擎域
+# ============================================
+type genton_policy, domain;
+type genton_policy_exec, exec_type, file_type;
+type genton_policy_data_file, file_type, data_file_type;
+
+init_daemon_domain(genton_policy)
+
+# Binder 通信
+binder_use(genton_policy)
+binder_call(genton_policy, system_server)
+binder_call(genton_policy, genton_brain_app)
+
+# DSL 规则目录访问
+allow genton_policy system_file:dir r_dir_perms;
+allow genton_policy system_file:file r_file_perms;
+
+# 策略决策日志
+allow genton_policy genton_policy_data_file:dir create_dir_perms;
+allow genton_policy genton_policy_data_file:file create_file_perms;
+
+# ============================================
+# genton_inference - 推理路由域
+# ============================================
+type genton_inference, domain;
+type genton_inference_exec, exec_type, file_type;
+
+init_daemon_domain(genton_inference)
+
+# Binder 通信
+binder_use(genton_inference)
+binder_call(genton_inference, system_server)
+
+# AI Runtime 访问
+allow genton_inference self:capability { sys_nice };  # 调整 NPU 优先级
+allow genton_inference gpu_device:chr_file rw_file_perms;  # NPU 设备
+allow genton_inference ion_device:chr_file rw_file_perms;  # 内存映射
+
+# 模型文件访问
+allow genton_inference vendor_file:dir r_dir_perms;
+allow genton_inference vendor_file:file r_file_perms;
+
+# ============================================
+# genton_call - 通话门控域
+# ============================================
+type genton_call, domain;
+type genton_call_exec, exec_type, file_type;
+
+init_daemon_domain(genton_call)
+
+# Binder 通信
+binder_use(genton_call)
+binder_call(genton_call, system_server)
+binder_call(genton_call, radio)  # Telephony 集成
+
+# Telecom 服务访问
+allow genton_call telecom_service:service_manager find;
+allow genton_call radio:binder call;
+
+# 紧急号码白名单
+allow genton_call system_file:file r_file_perms;
+
+# ============================================
+# genton_motion - 姿态交互域
+# ============================================
+type genton_motion, domain;
+type genton_motion_exec, exec_type, file_type;
+
+init_daemon_domain(genton_motion)
+
+# Binder 通信
+binder_use(genton_motion)
+binder_call(genton_motion, system_server)
+
+# 传感器访问
+allow genton_motion sensorservice_service:service_manager find;
+allow genton_motion system_server:binder call;
+allow genton_motion sensor_device:chr_file rw_file_perms;
+
+# 功耗统计
+allow genton_motion sysfs_batteryinfo:dir r_dir_perms;
+allow genton_motion sysfs_batteryinfo:file r_file_perms;
+
+# ============================================
+# 服务类型定义（所有 AI Native OS 服务）
+# ============================================
+type genton_service_type, service_manager_type;
+
+# 14 个系统服务
+type genton_perception_service, genton_service_type, service_manager_type;
+type genton_action_service, genton_service_type, service_manager_type;
+type genton_agent_service, genton_service_type, service_manager_type;
+type genton_memory_service, genton_service_type, service_manager_type;
+type genton_audit_service, genton_service_type, service_manager_type;
+type genton_semantics_service, genton_service_type, service_manager_type;
+type genton_events_service, genton_service_type, service_manager_type;
+type genton_context_service, genton_service_type, service_manager_type;
+type genton_policy_service, genton_service_type, service_manager_type;
+type genton_assets_service, genton_service_type, service_manager_type;
+type genton_ui_service, genton_service_type, service_manager_type;
+type genton_inference_service, genton_service_type, service_manager_type;
+type genton_sandbox_service, genton_service_type, service_manager_type;
+type genton_call_service, genton_service_type, service_manager_type;
+type genton_motion_service, genton_service_type, service_manager_type;
+
+# ============================================
+# 禁止第三方应用访问
+# ============================================
+neverallow { appdomain -genton_brain_app -system_app -priv_app } genton_service_type:service_manager find;
+neverallow { appdomain -genton_brain_app -system_app -priv_app } genton_service:binder call;
+
+# 禁止 shell 访问（仅调试构建允许）
+neverallow shell genton_service_type:service_manager { add find };
+userdebug_or_eng(`
+  allow shell genton_service_type:service_manager find;
+')
+
+# ============================================
+# 数据保护
+# ============================================
+# 禁止非特权域读取审计日志
+neverallow { domain -genton_audit -system_server } genton_audit_data_file:file read;
+
+# 禁止非策略引擎修改 DSL 规则
+neverallow { domain -genton_policy -init } genton_policy_data_file:file write;

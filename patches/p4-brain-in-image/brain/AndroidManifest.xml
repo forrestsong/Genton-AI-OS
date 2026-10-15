@@ -29,6 +29,18 @@
     <permission android:name="com.genton.permission.BIND_MEMORY_SERVICE" android:protectionLevel="signature|privileged" android:label="Genton 记忆服务绑定" />
     <permission android:name="com.genton.permission.MANAGE_SANDBOX" android:protectionLevel="signature|privileged" android:label="Genton 沙箱管理" />
     <permission android:name="com.genton.permission.SUBMIT_USER_DECISION" android:protectionLevel="signature|privileged" android:label="Genton 用户决策回灌" />
+
+    <!-- 感知/事件服务权限
+         以下 6 项被系统服务（AgentCallerAuth / AgentNotificationService /
+         AgentEventStreamService）以 enforceCallingPermission 引用；若无人声明，
+         等价于"拒绝所有人"——服务在设备上会静默不可用。由门禁
+         verification/check_permission_declarations.py 强制要求声明。 -->
+    <permission android:name="com.genton.permission.READ_UI_TREE" android:protectionLevel="signature|privileged" android:label="Genton UI 树读取" />
+    <permission android:name="com.genton.permission.READ_SCREEN_CONTENT" android:protectionLevel="signature|privileged" android:label="Genton 屏幕内容读取" />
+    <permission android:name="com.genton.permission.READ_NOTIFICATIONS" android:protectionLevel="signature|privileged" android:label="Genton 通知读取" />
+    <permission android:name="com.genton.permission.DISMISS_NOTIFICATIONS" android:protectionLevel="signature|privileged" android:label="Genton 通知清除" />
+    <permission android:name="com.genton.permission.PERFORM_NOTIFICATION_ACTIONS" android:protectionLevel="signature|privileged" android:label="Genton 通知动作执行" />
+    <permission android:name="com.genton.permission.SUBSCRIBE_EVENTS" android:protectionLevel="signature|privileged" android:label="Genton 事件订阅" />
     <application
         android:name=".BrainApplication"
         android:label="@string/app_name"

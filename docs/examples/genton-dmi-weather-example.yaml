@@ -1,0 +1,266 @@
+openapi: 3.0.0
+info:
+  title: "天气查询 DMI"
+  version: "1.0.0"
+  description: "通过 DMI 暴露天气查询功能给 AI Agent"
+  contact:
+    name: "Weather App Support"
+    email: "support@weatherapp.com"
+  x-genton:
+    assetType: "dmi"
+    category: "weather"
+    publisher: "com.example.weatherapp"
+    requiredPermissions:
+      - "android.permission.INTERNET"
+      - "android.permission.ACCESS_FINE_LOCATION"
+    requiredCapabilities:
+      - "network.http"
+      - "location.coarse"
+    fallbackChain:
+      - "dmi:weather_api_v1"
+      - "macro:open_weather_app"
+    minAndroidSdk: 33
+
+paths:
+  /query_weather:
+    post:
+      summary: "查询天气"
+      description: "根据城市名称和日期查询天气信息"
+      operationId: "queryWeather"
+      x-genton:
+        intentActions:
+          - "查天气"
+          - "天气怎么样"
+          - "今天天气"
+          - "明天天气"
+        executorType: "dmi"
+        securityLevel: "L1"
+        rateLimit:
+          maxCallsPerMinute: 10
+          maxBurst: 3
+        timeout: 5000
+        retryPolicy:
+          maxRetries: 2
+          retryDelayMs: 1000
+      execution:
+        bridge:
+          type: "http"
+          target: "https://api.weatherapp.com/v1/query"
+          method: "POST"
+          paramsMapping:
+            location:
+              targetParam: "location"
+              transform: "direct"
+            date:
+              targetParam: "date"
+              transform: "direct"
+            units:
+              targetParam: "units"
+              transform: "direct"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                  description: "城市名称或经纬度"
+                  example: "北京"
+                date:
+                  type: string
+                  format: date
+                  description: "查询日期 (YYYY-MM-DD)，默认今天"
+                  example: "2026-09-06"
+                units:
+                  type: string
+                  enum: ["celsius", "fahrenheit"]
+                  default: "celsius"
+                  description: "温度单位"
+              required:
+                - location
+      responses:
+        '200':
+          description: "查询成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  location:
+                    type: string
+                    example: "北京"
+                  date:
+                    type: string
+                    format: date
+                    example: "2026-09-06"
+                  temperature:
+                    type: number
+                    description: "温度"
+                    example: 25.5
+                  condition:
+                    type: string
+                    description: "天气状况"
+                    example: "晴"
+                  humidity:
+                    type: number
+                    description: "湿度 (%)"
+                    example: 65
+                  windSpeed:
+                    type: number
+                    description: "风速 (km/h)"
+                    example: 12.5
+                  aqi:
+                    type: integer
+                    description: "空气质量指数"
+                    example: 85
+        '400':
+          description: "请求参数错误"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid location"
+        '500':
+          description: "服务器内部错误"
+
+  /forecast:
+    post:
+      summary: "查询天气预报"
+      description: "查询未来几天的天气预报"
+      operationId: "getForecast"
+      x-genton:
+        intentActions:
+          - "天气预报"
+          - "未来几天天气"
+          - "一周天气"
+        executorType: "dmi"
+        securityLevel: "L1"
+        rateLimit:
+          maxCallsPerMinute: 5
+        timeout: 8000
+      execution:
+        bridge:
+          type: "http"
+          target: "https://api.weatherapp.com/v1/forecast"
+          method: "POST"
+          paramsMapping:
+            location:
+              targetParam: "city"
+              transform: "direct"
+            days:
+              targetParam: "forecast_days"
+              transform: "to_int"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                  description: "城市名称"
+                days:
+                  type: integer
+                  minimum: 1
+                  maximum: 7
+                  default: 3
+                  description: "预报天数"
+              required:
+                - location
+      responses:
+        '200':
+          description: "查询成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  location:
+                    type: string
+                  forecast:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        temperature:
+                          type: object
+                          properties:
+                            min:
+                              type: number
+                            max:
+                              type: number
+                        condition:
+                          type: string
+                        humidity:
+                          type: number
+
+  /send_alert:
+    post:
+      summary: "设置天气预警"
+      description: "设置天气异常时的通知提醒"
+      operationId: "setWeatherAlert"
+      x-genton:
+        intentActions:
+          - "提醒我天气变化"
+          - "设置天气预警"
+        executorType: "dmi"
+        securityLevel: "L2"
+        capabilityScope:
+          - "agent:action:notify"
+        taintPolicy:
+          taintableFields:
+            - "alertType"
+            - "threshold"
+          taintBehavior: "block"
+      execution:
+        bridge:
+          type: "system"
+          target: "notification"
+          method: "notify"
+          paramsMapping:
+            location:
+              targetParam: "notif_location"
+              transform: "direct"
+            alertType:
+              targetParam: "alert_type"
+              transform: "direct"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                alertType:
+                  type: string
+                  enum: ["rain", "snow", "extreme_temperature", "air_quality"]
+                threshold:
+                  type: object
+                  description: "触发阈值"
+              required:
+                - location
+                - alertType
+      responses:
+        '200':
+          description: "设置成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alertId:
+                    type: string
+                  message:
+                    type: string
+                    example: "天气预警已设置"

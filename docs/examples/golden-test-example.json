@@ -1,0 +1,55 @@
+{
+  "testCaseId": "tc_example_001",
+  "macroId": "macro_weather_query",
+  "name": "查询北京天气 - 黄金样例",
+  "description": "验证查询北京当日天气的完整流程，包括应用启动、输入城市、获取结果",
+  "testType": "golden",
+  "priority": "high",
+  "isGolden": true,
+  "initialState": {
+    "screenState": "home_screen",
+    "appState": "closed",
+    "connectivity": "wifi",
+    "location": {
+      "latitude": 39.9042,
+      "longitude": 116.4074
+    }
+  },
+  "inputParameters": {
+    "location": "北京",
+    "date": "today"
+  },
+  "expectedResult": {
+    "status": "success",
+    "data": {
+      "location": "北京",
+      "temperature": "*",
+      "condition": "*",
+      "humidity": {"min": 0, "max": 100}
+    }
+  },
+  "expectedUiState": {
+    "topActivity": "com.example.weatherapp/.MainActivity",
+    "visibleElements": [
+      "temperature_text",
+      "condition_icon",
+      "location_label"
+    ],
+    "notVisibleElements": [
+      "loading_spinner",
+      "error_message"
+    ],
+    "elementProperties": {
+      "temperature_text": {
+        "text": {"regex": "^-?\\d+°C$"}
+      },
+      "location_label": {
+        "text": "北京"
+      }
+    }
+  },
+  "timeoutMs": 15000,
+  "createdAt": 1709654400000,
+  "lastRunAt": 0,
+  "lastRunResult": null
+}

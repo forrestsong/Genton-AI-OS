@@ -343,6 +343,7 @@ sessionInfo.turnIdByRequestId[turn.requestId] = turnId
 
 ## 参考文档
 
-- [轨道A-D12-会话与推送桥](../../docs/D12-会话与推送桥.md)
-- [WBS B3.1 任务说明](../../系统级开发项目WBS.md#3-部门-b大脑与-ai-runtime-部wbs-b)
-- [A11.1 快速参考](../../docs/A11.1_快速参考.md)
+- [双模式容器设计](../../../docs/models/D1.1-双模式容器设计文档.md)
+- [三入口切换设计](../../../docs/models/D1.2-三入口切换设计文档.md)
+- [动效与可访问性设计](../../../docs/models/D8.1-动效与可访问性设计文档.md)
+- [项目主页 README](../../../README.md)

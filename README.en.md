@@ -434,6 +434,44 @@ Genton AI OS is an open contract layer project. The future of agent-native opera
 
 ---
 
+## Further Reading
+
+The `docs/` directory ships with the repository and is the formal developer and ecosystem documentation (CI scripts and tools depend directly on its schemas and examples).
+
+**Build and development**
+- [Build guide](docs/BUILD.md) · [Development guide](docs/DEVELOPMENT.md)
+
+**Ecosystem integration (third-party Agents / DMI / skills / macros)**
+- [Third-party Agent SDK notes](docs/F5.1-三方Agent开发包说明.md) · [Third-party sandbox compliance](docs/F5.2-三方沙箱合规指引.md)
+- [DMI author guide](docs/DMI_AUTHOR_GUIDE.md) · [DMI specification](docs/dmi-specification.md)
+- [Skill author guide](docs/SKILL_AUTHOR_GUIDE.md) · [Skill semantic-direct annotations](docs/SKILL_SEMANTIC_DIRECT_ANNOTATIONS.md)
+- [Macro testing specification](docs/macro-testing-specification.md) · [Value-domain OTA protocol](docs/value_domain_ota_protocol.md)
+- Asset schemas: [DMI](docs/schemas/dmi-asset-schema.json) · [macro](docs/schemas/macro-asset-schema.json) · [skill](docs/schemas/skill-asset-schema.json)
+- Examples: [DMI weather example](docs/examples/genton-dmi-weather-example.yaml) · [golden sample](docs/examples/golden-test-example.json)
+
+**Security and compliance**
+- [Security red-line checklist v1](docs/security/E1.1-安全红线检查单v1.md) · [Key tiering and lifecycle review](docs/security/E2.1-密钥分级与生命周期评审.md) · [TEE integration review](docs/security/E2.2-TEE接入评审.md)
+- [PII masking acceptance baseline v1](docs/security/E3.1-PII掩码验收基准v1.md) · [Data minimisation review](docs/security/E3.2-数据最小化评审.md) · [Deletion propagation review](docs/security/E3.3-删除传播评审.md)
+- Red-team methodology: [base](docs/security/E5.1-基座红队方法论.md) · [perception UI](docs/security/E5.2-感知UI红队方法论.md) · [sandbox escape](docs/security/E5.3-沙箱逃逸专项.md) · [posture gestures](docs/security/E5.4-姿态手势渗透.md)
+
+**Cloud-edge collaboration and decision models**
+- [CloudBroker gateway design](docs/cloud/G1.1-CloudBroker网关设计.md) · [decision API extension](docs/cloud/G1.1b-CloudBroker决策接口扩展.md) · [model tiering and quota](docs/cloud/G1.2-模型分级路由与配额.md)
+- [Egress redaction middleware](docs/cloud/G1.3-出端脱敏中间件.md) · [device remote attestation](docs/cloud/G2.1-设备远程证明服务.md) · [ticket lifecycle and revocation](docs/cloud/G2.2-票据生命周期与吊销.md)
+- [Cloud deletion propagation](docs/cloud/G3.1-云端删除传播.md) · [data retention and region policy](docs/cloud/G3.2-数据留存与地域策略.md)
+- [Federated fine-tuning aggregation](docs/cloud/G4.1-联邦微调聚合服务.md) · [weight OTA pipeline](docs/cloud/G4.2-权重OTA管线.md) · [egress audit console](docs/cloud/G5.1-出网审计台.md)
+- [Local decision model integration design](docs/decision/B5.3-B5.4-决策模型集成设计.md)
+
+**Interaction and design specifications**
+- [Dual-mode container](docs/models/D1.1-双模式容器设计文档.md) · [three-entry switching](docs/models/D1.2-三入口切换设计文档.md) · [CallGate handover UI](docs/models/D7.1-CallGate接管UI设计文档.md) · [motion and accessibility](docs/models/D8.1-动效与可访问性设计文档.md)
+- [S1 operation-intent RL prediction](docs/models/C5.1-S1操作意图RL预测设计文档.md) · [prediction gating](docs/models/C5.2-预测门控设计文档.md) · [ASR/TTS/summary models](docs/models/C4.4-ASR-TTS-摘要模型设计文档.md)
+- [Memory extraction design](docs/memory/C3.4-记忆抽取设计文档.md) · [machine calibration guide](docs/MACHINE_CALIBRATION_GUIDE.md)
+
+**Quality and evaluation**
+- [Device matrix baseline](docs/quality/H4.1-真机矩阵基线.md) · [performance and power profiling template](docs/quality/H4.2-性能功耗建档模板.md) · [S7 power differential method](docs/quality/H4.3-S7功耗差分方法.md)
+- [KPI telemetry framework](docs/quality/H5.1-KPI遥测框架.md) · [human-factors evaluation plan](docs/quality/H5.2-人因评测方案.md)
+
+---
+
 ## License
 
 This project is licensed under the **MIT License**, allowing arbitrary modification, distribution, and commercial use. See the [LICENSE](LICENSE) file for details.

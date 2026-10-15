@@ -88,18 +88,18 @@ git apply --check ../../patches/frameworks_base/0001-add-agent-manager-service.p
 | 0001 | add-confirmation-panel.patch | FLAG_SECURE 确认面板 |
 | 0002 | add-activity-indicator.patch | 活性指示器 |
 
-## 从 openphone 迁移
+## 关于参考系统
 
-许多补丁参考了 openphone 项目的实现：
+部分补丁在设计阶段参考了公开的 AI-OS 参考项目（如 openphone）的**补丁组织纪律与契约形态**，
+但**不包含、也不复制其代码**（其授权为非商用）。本仓库的实现全部独立完成。
+
+如需追溯参考来源，请查阅 [参考开源系统说明](../参考开源系统说明.md)（该文档未随开源仓库发布）。
 
 ```bash
-# openphone 补丁位置
-d:\AI Native OS\openphone\patches\frameworks_base\
-
-# 迁移方法
-1. 复制 openphone 补丁作为起点
-2. 根据轨道 A 规范调整接口名称（OpenPhone* -> Genton*）
-3. 添加新功能（令牌链、策略 DSL、多层记忆等）
+# 迁移（自建）流程
+1. 依据本仓库 overlay/ 下的目标路径组织载荷
+2. 按轨道 A 规范命名接口（Genton* 前缀）
+3. 补齐新能力（令牌链、策略 DSL、多层记忆等）
 4. 运行安全检查: python tools/security_audit.py
 ```
 
@@ -150,5 +150,5 @@ git diff --cached > ../../patches/frameworks_base/0001-add-agent-manager-service
 ## 相关文档
 
 - [构建指南](../docs/BUILD.md)
-- [A1 里程碑实施计划](../A1里程碑实施计划.md)
-- [openphone 参考](../openphone/patches/)
+- [开发指南](../docs/DEVELOPMENT.md)
+- [项目主页 README](../README.md)

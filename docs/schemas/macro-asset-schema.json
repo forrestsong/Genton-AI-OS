@@ -1,0 +1,261 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://genton.os/schemas/macro-asset.json",
+  "title": "AI Native OS Macro Asset Schema v1.0",
+  "description": "宏（Macro）资产声明 JSON Schema（F1.x 宏录制/生成/校验；对齐 D11/D9 S2 与用户体验保障草案 §3：像素/坐标确定性脚本，绑定 App 版本×机型校准）",
+  "type": "object",
+  "required": ["macro", "metadata", "execution"],
+  "version": "1.0.0",
+  "changelog": [
+    "v1.0.0: 初始版本（宏资产声明：机型绑定/感知策略/执行步骤/断言/回退/executionMode 判定）"
+  ],
+  "properties": {
+    "macro": {
+      "type": "object",
+      "description": "宏基础信息",
+      "required": ["id", "name", "version", "category", "capability"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^macro:[a-z][a-z0-9_.-]{2,}$",
+          "description": "宏唯一 ID（格式 macro:domain.action，如 macro:weather.open_today）"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "宏名称（Agent 工具调用名，如 open_weather_today）"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-z0-9]+)?$",
+          "description": "宏版本（SemVer 格式）"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "notification",
+            "calendar",
+            "communication",
+            "system",
+            "productivity",
+            "media",
+            "utilities",
+            "other"
+          ],
+          "description": "功能分类"
+        },
+        "capability": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "description": "能力令牌声明（复用 agent.input_inject 等，走标准令牌链，不豁免策略/确认/审计）"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "description": "宏功能描述（自然语言，供意图理解）"
+        },
+        "publisher": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*\\.[a-zA-Z][a-zA-Z0-9_.]*$",
+          "description": "发布者包名"
+        },
+        "executionMode": {
+          "type": "integer",
+          "enum": [0, 1],
+          "default": 1,
+          "description": "D15 语义：0=semantic_direct（免渲染直连，仅 DMI 组合类）/1=macro_inject（有参宏需渲染目标界面，宏资产默认 1）"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "宏元数据（资产库注册/灰度/审计用）",
+      "required": ["authorName", "reviewPolicy", "signatureRef"],
+      "properties": {
+        "authorName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "作者标识（录制工具/生成器+人工校验）"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "创建时间"
+        },
+        "reviewPolicy": {
+          "type": "string",
+          "enum": ["human_reviewed", "tool_reviewed", "golden_replay"],
+          "default": "golden_replay",
+          "description": "准入评审方式（生成器产出必须 human_reviewed 或 golden_replay 通过）"
+        },
+        "signatureRef": {
+          "type": "string",
+          "description": "资产签名引用（平台/发布签名校验；未签名不分发）"
+        },
+        "stagedEnable": {
+          "type": "boolean",
+          "default": true,
+          "description": "staged-enable 灰度观察（回归未过不启用）"
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "description": "宏执行配置（确定性脚本核心；资产门强制 execution.steps）",
+      "required": ["mode", "steps"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["sequential", "conditional", "fallback"],
+          "default": "sequential",
+          "description": "执行模式：sequential=顺序注入/conditional=条件步骤/fallback=降级链"
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 60000,
+          "default": 15000,
+          "description": "总执行超时（毫秒）"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["action", "target"],
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "tap",
+                  "long_tap",
+                  "swipe",
+                  "type",
+                  "key",
+                  "wait",
+                  "assert_ui",
+                  "launch_app",
+                  "input",
+                  "open_notification"
+                ],
+                "description": "注入动作类型（与动作注册表 ui.* 对应）"
+              },
+              "target": {
+                "type": "object",
+                "description": "动作目标（UI 节点/坐标/页面条件）",
+                "properties": {
+                  "nodeId": {
+                    "type": "string",
+                    "description": "UI 树节点 ID（感知层解析）"
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "文本匹配（type 动作的输入文本 / tap 的节点文本）"
+                  },
+                  "bounds": {
+                    "type": "object",
+                    "description": "像素坐标（经 F4.1 机型校准；deviceTags 绑定机型）",
+                    "properties": {
+                      "x": { "type": "number" },
+                      "y": { "type": "number" },
+                      "width": { "type": "number" },
+                      "height": { "type": "number" }
+                    }
+                  },
+                  "pageContains": {
+                    "type": "string",
+                    "description": "页面包含条件（waitFor/assert 用）"
+                  }
+                }
+              },
+              "waitFor": {
+                "type": "object",
+                "description": "等待条件",
+                "properties": {
+                  "pageContains": { "type": "string" },
+                  "nodeId": { "type": "string" },
+                  "timeoutMs": { "type": "integer", "minimum": 100, "maximum": 10000 }
+                }
+              },
+              "timeoutMs": {
+                "type": "integer",
+                "minimum": 100,
+                "maximum": 10000,
+                "description": "单步超时"
+              }
+            }
+          },
+          "description": "注入序列（前置/断言/回退）"
+        },
+        "errorHandling": {
+          "type": "object",
+          "description": "失败处理",
+          "properties": {
+            "onStepFailure": {
+              "type": "string",
+              "enum": ["abort", "retry", "fallback"],
+              "default": "fallback",
+              "description": "步骤失败时行为（任一断言失败 → 自动降级，见 fallbackChain）"
+            },
+            "maxRetries": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3,
+              "default": 1
+            },
+            "retryDelayMs": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 5000,
+              "default": 500
+            }
+          }
+        }
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["expect", "value"],
+        "properties": {
+          "expect": {
+            "type": "string",
+            "enum": ["page_contains", "page_not_contains", "element_text", "element_visible", "element_not_visible"]
+          },
+          "value": { "type": "string" },
+          "timeoutMs": { "type": "integer", "minimum": 100, "maximum": 10000 }
+        }
+      },
+      "description": "结果断言（任一失败 → fallback 降级）"
+    },
+    "fallbackChain": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 5,
+      "description": "降级链（macro 失败 → 下一宏/L2 即时注入；与 A8.1 解析降级链一致）"
+    },
+    "deviceTags": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+      "minItems": 1,
+      "description": "绑定机型标签（如 sm8550_p0 / mt6897_p1 / cpday10；坐标按 F4.1 校准表，App 版本漂移自动停用）"
+    },
+    "perceptionStrategy": {
+      "type": "integer",
+      "enum": [0, 1, 2],
+      "default": 0,
+      "description": "感知策略：0=纯坐标（固定机型）/1=UI 树混合（HYBRID）/2=语义直连（DMI 组合）"
+    },
+    "appVersionBinding": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "目标 App 版本约束（如 weather-app:4.2.1；版本漂移 → 校验失败自动停用）"
+    }
+  },
+  "additionalProperties": true,
+  "definitions": {}
+}

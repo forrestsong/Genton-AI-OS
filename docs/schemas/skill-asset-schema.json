@@ -1,0 +1,590 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://genton.os/schemas/skill-asset.json",
+  "title": "AI Native OS Skill Asset Schema v1.0",
+  "description": "Skill 资产声明 JSON Schema（F3.1 编排模板：DMI 组合/条件/回退链/executionMode 判定）",
+  "type": "object",
+  "required": ["skill", "metadata", "execution"],
+  "version": "1.0.0",
+  "changelog": [
+    "v1.0.0: 初始版本（DMI 编排/条件执行/回退声明/executionMode 判定）"
+  ],
+  "properties": {
+    "skill": {
+      "type": "object",
+      "description": "Skill 基础信息",
+      "required": ["id", "name", "version", "category"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^skill:[a-z][a-z0-9_-]{2,}$",
+          "description": "Skill 唯一 ID（格式 skill:domain.action，如 skill:notification.send）"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "Skill 名称（Agent 工具调用名，如 send_notification）"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-z0-9]+)?$",
+          "description": "Skill 版本（SemVer 格式）"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "notification",
+            "calendar",
+            "communication",
+            "system",
+            "productivity",
+            "media",
+            "utilities",
+            "other"
+          ],
+          "description": "功能分类"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "description": "Skill 功能描述（自然语言，供意图理解）"
+        },
+        "publisher": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*\\.[a-zA-Z][a-zA-Z0-9_.]*$",
+          "description": "发布者包名（系统 Skill 为 android.system）"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Skill 元数据（能力声明、风险级别、目标平台）",
+      "required": ["capability", "riskLevel"],
+      "properties": {
+        "capability": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_:-]{2,}$",
+          "description": "须已在动作注册表登记的能力名（如 agent:action:notify）"
+        },
+        "riskLevel": {
+          "type": "integer",
+          "enum": [0, 1, 2],
+          "description": "风险级别：0=无副作用/1=一般副作用/2=敏感操作"
+        },
+        "confirmation": {
+          "type": "string",
+          "enum": ["default", "always", "never"],
+          "default": "default",
+          "description": "确认策略：default=由策略引擎裁决/always=始终确认/never=不确认（仅 riskLevel=0）"
+        },
+        "requiredCapabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_:-]{2,}$"
+          },
+          "description": "依赖的能力令牌列表（Skill 执行前校验）"
+        },
+        "executionMode": {
+          "type": "string",
+          "enum": ["semantic_direct", "macro_inject"],
+          "default": "semantic_direct",
+          "description": "语义直连执行标注（D15/AssetManifest.executionMode）：semantic_direct=免渲染直连(0)/macro_inject=有参宏需渲染目标(1)"
+        },
+        "semanticTriggers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "maxItems": 20,
+          "description": "语义直连触发词（自然语言，供意图匹配；不得与同能力 DMI intentActions 完全重复）"
+        },
+        "targetPlatform": {
+          "type": "object",
+          "properties": {
+            "minAndroidSdk": {
+              "type": "integer",
+              "minimum": 29,
+              "description": "最低 Android SDK 版本"
+            },
+            "deviceModels": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "机型白名单（空=不限）"
+            },
+            "osRange": {
+              "type": "string",
+              "pattern": "^>=A-\\d+\\.\\d+$",
+              "description": "OS 版本范围（如 >=A-0.4）"
+            }
+          }
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,32}$"
+          },
+          "maxItems": 10,
+          "description": "标签（如 high_frequency / user_facing）"
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "description": "Skill 执行配置（编排模板核心）",
+      "required": ["mode", "steps"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["sequential", "parallel", "conditional", "fallback"],
+          "description": "执行模式：sequential=顺序执行/parallel=并行执行/conditional=条件分支/fallback=回退链"
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 60000,
+          "default": 10000,
+          "description": "总执行超时（毫秒）"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/ExecutionStep"
+          },
+          "description": "执行步骤列表"
+        },
+        "errorHandling": {
+          "type": "object",
+          "properties": {
+            "onStepFailure": {
+              "type": "string",
+              "enum": ["abort", "continue", "retry", "fallback"],
+              "default": "abort",
+              "description": "步骤失败时行为"
+            },
+            "maxRetries": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3,
+              "default": 0
+            },
+            "retryDelayMs": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 5000,
+              "default": 1000
+            }
+          }
+        },
+        "resultAggregation": {
+          "type": "object",
+          "description": "多步骤结果聚合规则（parallel/fallback 模式）",
+          "properties": {
+            "strategy": {
+              "type": "string",
+              "enum": ["merge", "first_success", "all_results", "custom"],
+              "default": "merge",
+              "description": "聚合策略"
+            },
+            "mergeScript": {
+              "type": "string",
+              "description": "自定义聚合脚本（JavaScript，受限沙箱）"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "description": "Skill 输入参数 JSON Schema",
+      "properties": {
+        "type": { "const": "object" },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "description": { "type": "string" },
+              "required": { "type": "boolean" },
+              "default": {}
+            }
+          }
+        },
+        "required": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "returns": {
+      "type": "object",
+      "description": "Skill 输出结果 JSON Schema",
+      "properties": {
+        "type": { "const": "object" },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "fallbackChain": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(skill|dmi|macro|system):[a-zA-Z0-9_.:-]+$"
+      },
+      "description": "降级链：当前 Skill 失败时按序尝试备选资产（格式 type:assetId）"
+    }
+  },
+  "definitions": {
+    "ExecutionStep": {
+      "type": "object",
+      "required": ["type", "config"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{1,32}$",
+          "description": "步骤唯一 ID（同一 Skill 内不重复）"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["dmi", "macro", "skill", "system", "condition", "loop"],
+          "description": "步骤类型"
+        },
+        "config": {
+          "oneOf": [
+            { "$ref": "#/definitions/DmiStepConfig" },
+            { "$ref": "#/definitions/MacroStepConfig" },
+            { "$ref": "#/definitions/SkillStepConfig" },
+            { "$ref": "#/definitions/SystemStepConfig" },
+            { "$ref": "#/definitions/ConditionStepConfig" },
+            { "$ref": "#/definitions/LoopStepConfig" }
+          ]
+        },
+        "condition": {
+          "$ref": "#/definitions/Condition",
+          "description": "步骤执行前置条件（可选）"
+        },
+        "outputMapping": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "description": "将步骤输出字段映射到 Skill 输出（使用 JSONPath）"
+          },
+          "description": "输出字段映射（如 {\"result\": \"$.data.temperature\"}）"
+        }
+      }
+    },
+    "DmiStepConfig": {
+      "type": "object",
+      "required": ["dmiId", "operation"],
+      "properties": {
+        "dmiId": {
+          "type": "string",
+          "pattern": "^dmi:[a-zA-Z0-9_:-]+$",
+          "description": "DMI 资产 ID"
+        },
+        "operation": {
+          "type": "string",
+          "description": "DMI 操作名（对应 OpenAPI operationId）"
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "DMI 调用参数（支持 JSONPath 引用前序步骤输出，如 $.step1.result）"
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 30000,
+          "description": "DMI 调用超时（毫秒）"
+        }
+      }
+    },
+    "MacroStepConfig": {
+      "type": "object",
+      "required": ["macroId"],
+      "properties": {
+        "macroId": {
+          "type": "string",
+          "pattern": "^macro:[a-zA-Z0-9_:-]+$",
+          "description": "Macro 资产 ID"
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Macro 参数（坐标变量/文本变量）"
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 60000,
+          "description": "Macro 执行超时（毫秒）"
+        }
+      }
+    },
+    "SkillStepConfig": {
+      "type": "object",
+      "required": ["skillId"],
+      "properties": {
+        "skillId": {
+          "type": "string",
+          "pattern": "^skill:[a-zA-Z0-9_.:-]+$",
+          "description": "嵌套调用的 Skill 资产 ID"
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Skill 参数"
+        }
+      }
+    },
+    "SystemStepConfig": {
+      "type": "object",
+      "required": ["service", "method"],
+      "properties": {
+        "service": {
+          "type": "string",
+          "enum": [
+            "notification",
+            "calendar",
+            "contacts",
+            "telephony",
+            "settings",
+            "media",
+            "location"
+          ],
+          "description": "系统服务名"
+        },
+        "method": {
+          "type": "string",
+          "description": "系统服务方法名"
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "系统服务调用参数"
+        }
+      }
+    },
+    "ConditionStepConfig": {
+      "type": "object",
+      "required": ["condition", "then"],
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/Condition"
+        },
+        "then": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ExecutionStep" },
+          "description": "条件为真时执行的步骤"
+        },
+        "else": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ExecutionStep" },
+          "description": "条件为假时执行的步骤"
+        }
+      }
+    },
+    "LoopStepConfig": {
+      "type": "object",
+      "required": ["iterateOver", "steps"],
+      "properties": {
+        "iterateOver": {
+          "type": "string",
+          "description": "迭代数据源（JSONPath，如 $.results）"
+        },
+        "itemVariable": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "default": "item",
+          "description": "循环项变量名"
+        },
+        "indexVariable": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "default": "index",
+          "description": "循环索引变量名"
+        },
+        "steps": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ExecutionStep" },
+          "description": "循环体步骤"
+        },
+        "maxIterations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10,
+          "description": "最大迭代次数"
+        }
+      }
+    },
+    "Condition": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "equals",
+            "not_equals",
+            "greater_than",
+            "less_than",
+            "contains",
+            "regex",
+            "exists",
+            "and",
+            "or",
+            "not"
+          ],
+          "description": "条件类型"
+        },
+        "left": {
+          "type": "string",
+          "description": "左操作数（JSONPath 或字面值）"
+        },
+        "right": {
+          "description": "右操作数（字面值或 JSONPath）"
+        },
+        "conditions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Condition" },
+          "description": "复合条件（and/or/not 使用）"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "skill": {
+        "id": "skill:notification.send_scheduled",
+        "name": "send_scheduled_notification",
+        "version": "1.0.0",
+        "category": "notification",
+        "description": "发送定时通知（结合日历查询+通知发送）",
+        "publisher": "android.system"
+      },
+      "metadata": {
+        "capability": "agent:action:notify",
+        "riskLevel": 1,
+        "confirmation": "default",
+        "requiredCapabilities": [
+          "agent:action:notify",
+          "agent:action:calendar_read"
+        ]
+      },
+      "execution": {
+        "mode": "sequential",
+        "timeout": 10000,
+        "steps": [
+          {
+            "id": "query_calendar",
+            "type": "dmi",
+            "config": {
+              "dmiId": "dmi:calendar.query",
+              "operation": "queryEvents",
+              "parameters": {
+                "startTime": "$.input.startTime",
+                "endTime": "$.input.endTime"
+              },
+              "timeout": 5000
+            },
+            "outputMapping": {
+              "events": "$.data.events"
+            }
+          },
+          {
+            "id": "check_events",
+            "type": "condition",
+            "config": {
+              "condition": {
+                "type": "greater_than",
+                "left": "$.step.query_calendar.data.events.length",
+                "right": 0
+              },
+              "then": [
+                {
+                  "id": "send_notification",
+                  "type": "system",
+                  "config": {
+                    "service": "notification",
+                    "method": "notify",
+                    "parameters": {
+                      "title": "日程提醒",
+                      "body": "您有 {{$.step.query_calendar.events.length}} 个即将到来的日程"
+                    }
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "id": "send_empty_notification",
+                  "type": "system",
+                  "config": {
+                    "service": "notification",
+                    "method": "notify",
+                    "parameters": {
+                      "title": "日程提醒",
+                      "body": "暂无日程安排"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "errorHandling": {
+          "onStepFailure": "fallback",
+          "maxRetries": 2,
+          "retryDelayMs": 1000
+        }
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "查询开始时间"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "查询结束时间"
+          }
+        },
+        "required": ["startTime", "endTime"]
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "是否成功发送通知"
+          },
+          "eventCount": {
+            "type": "integer",
+            "description": "日程数量"
+          }
+        }
+      },
+      "fallbackChain": [
+        "macro:notification.open_app"
+      ]
+    }
+  ]
+}

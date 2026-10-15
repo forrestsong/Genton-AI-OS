@@ -1,0 +1,428 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://genton.os/schemas/dmi-asset.json",
+  "title": "AI Native OS DMI Asset Schema v1.1",
+  "description": "DMI 资产声明 JSON Schema，基于 OpenAPI 3.0 + x-genton + execution 扩展（回补 D11 草案字段）",
+  "type": "object",
+  "required": ["openapi", "info", "paths"],
+  "version": "1.1.0",
+  "changelog": [
+    "v1.1.0: 回补 execution 字段、桥接类型枚举扩展、存在性校验规则声明",
+    "v1.0.0: 初始版本（OpenAPI 3.0 + 基础 x-genton 扩展）"
+  ],
+  "properties": {
+    "openapi": {
+      "type": "string",
+      "pattern": "^3\\.0\\.",
+      "description": "OpenAPI 版本，必须为 3.0.x"
+    },
+    "info": {
+      "type": "object",
+      "required": ["title", "version", "x-genton"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "DMI 标题（作者可见，也用于意图匹配）"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-z0-9]+)?$",
+          "description": "DMI 版本（SemVer 格式，如 1.2.3-beta）"
+        },
+        "description": {
+          "type": "string",
+          "description": "DMI 功能详细描述（自然语言，用于意图理解）"
+        },
+        "x-genton": {
+          "$ref": "#/definitions/GlobalExtension"
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        "^/[a-zA-Z0-9_/-]+$": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 1,
+          "patternProperties": {
+            "^(get|post|put|delete|patch)$": {
+              "$ref": "#/definitions/OperationObject"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "definitions": {
+    "GlobalExtension": {
+      "type": "object",
+      "description": "info.x-genton 全局扩展字段",
+      "required": ["assetType", "category", "publisher"],
+      "properties": {
+        "assetType": {
+          "type": "string",
+          "const": "dmi",
+          "description": "资产类型，固定为 dmi（与 macro/skill 区分）"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "weather",
+            "calendar",
+            "communication",
+            "media",
+            "navigation",
+            "shopping",
+            "finance",
+            "health",
+            "productivity",
+            "entertainment",
+            "system",
+            "utilities",
+            "education",
+            "social",
+            "other"
+          ],
+          "description": "功能分类（用于策略路由与资产目录分组）"
+        },
+        "publisher": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*\\.[a-zA-Z][a-zA-Z0-9_.]*$",
+          "description": "发布者包名（如 com.example.weatherapp）"
+        },
+        "requiredPermissions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "所需 Android 权限列表（运行时 + 签名权限）"
+        },
+        "requiredCapabilities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "所需能力令牌列表（agent:intent / agent:action:tap 等）"
+        },
+        "fallbackChain": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(dmi|macro|skill|system):[a-zA-Z0-9_-]+$"
+          },
+          "description": "降级链：当前 DMI 不可用时按序尝试备选资产（格式 type:assetId）"
+        },
+        "minAndroidSdk": {
+          "type": "integer",
+          "minimum": 29,
+          "description": "最低 Android SDK 版本"
+        },
+        "maxAndroidSdk": {
+          "type": "integer",
+          "description": "最高 Android SDK 版本"
+        },
+        "authorName": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "作者/开发者名称（展示信息，非安全字段）"
+        },
+        "authorContact": {
+          "type": "string",
+          "format": "email",
+          "description": "作者联系方式（仅用于合规审核，不上云）"
+        },
+        "reviewPolicy": {
+          "type": "string",
+          "enum": ["auto", "manual", "trusted"],
+          "default": "auto",
+          "description": "审核策略：auto=自动校验通过/manual=人工审核/trusted=免审（信任开发者）"
+        }
+      },
+      "additionalProperties": false
+    },
+    "OperationObject": {
+      "type": "object",
+      "required": ["summary", "x-genton", "execution"],
+      "description": "OpenAPI Path Operation + x-genton + execution",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "操作摘要（短描述）"
+        },
+        "description": {
+          "type": "string",
+          "description": "操作详细描述（长描述，自然语言，帮助意图理解）"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$",
+          "description": "操作唯一 ID（同一资产内不重复）"
+        },
+        "x-genton": {
+          "$ref": "#/definitions/OperationExtension"
+        },
+        "execution": {
+          "$ref": "#/definitions/ExecutionObject"
+        },
+        "requestBody": {
+          "type": "object",
+          "description": "请求体定义（OpenAPI 标准，可为空对象 {} 表示无参数）"
+        },
+        "responses": {
+          "type": "object",
+          "description": "响应定义（OpenAPI 标准）",
+          "required": ["200"],
+          "properties": {
+            "200": { "type": "object", "description": "成功响应" },
+            "400": { "type": "object", "description": "参数错误" },
+            "403": { "type": "object", "description": "权限不足/能力令牌缺失" },
+            "404": { "type": "object", "description": "桥接目标不可用" },
+            "500": { "type": "object", "description": "执行失败" }
+          },
+          "additionalProperties": { "type": "object" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "OperationExtension": {
+      "type": "object",
+      "description": "paths.*.*.x-genton 操作扩展",
+      "required": ["intentActions", "executorType", "securityLevel"],
+      "properties": {
+        "intentActions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "description": "支持的意图动作关键词（自然语言短语，如 '查天气'、'天气怎么样'）"
+        },
+        "executorType": {
+          "type": "string",
+          "const": "dmi",
+          "description": "执行器类型，固定为 dmi"
+        },
+        "securityLevel": {
+          "type": "string",
+          "enum": ["L0", "L1", "L2"],
+          "description": "安全级别：L0=公开无敏感/L1=需声明权限/L2=敏感需用户确认"
+        },
+        "capabilityScope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_:-]{2,}$"
+          },
+          "description": "能力令牌 scope 锚定（如 agent:action:dmi_query），与 A4.2 令牌体系对齐"
+        },
+        "rateLimit": {
+          "type": "object",
+          "properties": {
+            "maxCallsPerMinute": { "type": "integer", "minimum": 1, "maximum": 1000 },
+            "maxBurst": { "type": "integer", "minimum": 1, "maximum": 100 }
+          },
+          "required": ["maxCallsPerMinute"]
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 30000,
+          "default": 5000,
+          "description": "执行超时（毫秒）"
+        },
+        "retryPolicy": {
+          "type": "object",
+          "properties": {
+            "maxRetries": { "type": "integer", "minimum": 0, "maximum": 3 },
+            "retryDelayMs": { "type": "integer", "minimum": 100, "maximum": 5000 }
+          }
+        },
+        "taintPolicy": {
+          "type": "object",
+          "description": "参数 taint 策略（对齐 D2 §6 taint 执行链）",
+          "properties": {
+            "taintableFields": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "可能携带 tainted 值的字段名"
+            },
+            "taintBehavior": {
+              "type": "string",
+              "enum": ["block", "redact", "allow"],
+              "default": "block",
+              "description": "tainted 值处理：block=拒绝请求/redact=脱敏/allow=放行"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ExecutionObject": {
+      "type": "object",
+      "description": "paths.*.*.execution 执行器行为定义（回补 D11 草案字段）",
+      "required": ["bridge"],
+      "properties": {
+        "bridge": {
+          "type": "object",
+          "description": "桥接配置（三选一：system / app / http）",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["system", "app", "http", "intent", "content_provider", "aidl"],
+              "description": "桥接类型"
+            },
+            "target": {
+              "type": "string",
+              "description": "桥接目标标识：\nsystem=系统服务名（notification/calendar/contacts/media/location/telephony/settings）\napp=应用包名（com.example.targetapp）\nhttp=端点 URL（https://api.example.com/v1/weather）\nintent=ComponentName（pkg/.Activity 或 pkg/.Service）\ncontent_provider=Authority（com.example.provider）\naidl=服务名（com.example.IWeatherService）"
+            },
+            "method": {
+              "type": "string",
+              "description": "具体调用方法名：\nsystem=SystemService 方法名（如 NotificationManager.notify）\napp=http=HTTP 方法（GET/POST）\naidl=AIDL 方法名"
+            },
+            "paramsMapping": {
+              "type": "object",
+              "description": "参数映射表：requestBody 字段 → bridge 调用参数",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "targetParam": { "type": "string" },
+                  "transform": {
+                    "type": "string",
+                    "enum": ["direct", "to_int", "to_string", "to_boolean", "to_array", "date_format", "custom"]
+                  },
+                  "transformScript": { "type": "string", "description": "当 transform=custom 时的转换脚本（JavaScript 片段，受限）" }
+                },
+                "required": ["targetParam"]
+              }
+            }
+          },
+          "required": ["type"]
+        },
+        "outputMapping": {
+          "type": "object",
+          "description": "返回值映射：bridge 返回 → DMI response body",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "targetField": { "type": "string" },
+              "transform": {
+                "type": "string",
+                "enum": ["direct", "to_int", "to_string", "to_float", "from_json", "custom"]
+              }
+            },
+            "required": ["targetField"]
+          }
+        },
+        "async": {
+          "type": "boolean",
+          "default": false,
+          "description": "是否异步执行（true=返回 taskId，结果通过 callback 轮询）"
+        },
+        "resultCard": {
+          "type": "object",
+          "description": "执行结果卡片模板（对齐 B3.2 ActionCardData）",
+          "properties": {
+            "titleTemplate": { "type": "string", "description": "卡片标题模板（支持 {{field}} 占位符）" },
+            "summaryTemplate": { "type": "string", "description": "卡片摘要模板" },
+            "cardType": {
+              "type": "integer",
+              "enum": [0, 1, 2, 3, 4],
+              "description": "卡片类型：0=progress / 1=done / 2=needs_attention / 3=undo_available / 4=form"
+            }
+          }
+        },
+        "postExecute": {
+          "type": "object",
+          "description": "执行后动作（成功/失败回调）",
+          "properties": {
+            "onSuccess": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string", "enum": ["notify", "schedule_prep", "learn_suggestion", "store_memory"] },
+                  "config": { "type": "object" }
+                }
+              }
+            },
+            "onFailure": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string", "enum": ["retry", "fallback", "notify_user", "report"] },
+                  "config": { "type": "object" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "existenceRules": {
+    "description": "字段存在性校验规则（对齐 A7.2 DSL C1-C8 编译检查）",
+    "rules": [
+      {
+        "ruleId": "EXIST-001",
+        "field": "info.x-genton.assetType",
+        "condition": "equals('dmi')",
+        "message": "资产类型必须为 'dmi'"
+      },
+      {
+        "ruleId": "EXIST-002",
+        "field": "info.x-genton.publisher",
+        "condition": "matches('^[a-zA-Z][a-zA-Z0-9_]*\\\\.[a-zA-Z][a-zA-Z0-9_.]*$')",
+        "message": "publisher 必须为有效包名格式"
+      },
+      {
+        "ruleId": "EXIST-003",
+        "field": "paths.*.*.x-genton.intentActions",
+        "condition": "minItems(1) && items.length >= 1",
+        "message": "每个操作至少需要一个 intentAction"
+      },
+      {
+        "ruleId": "EXIST-004",
+        "field": "paths.*.*.x-genton.executorType",
+        "condition": "equals('dmi')",
+        "message": "executorType 必须为 'dmi'"
+      },
+      {
+        "ruleId": "EXIST-005",
+        "field": "paths.*.*.execution.bridge.type",
+        "condition": "oneOf(['system','app','http','intent','content_provider','aidl'])",
+        "message": "bridge.type 必须为支持的桥接类型"
+      },
+      {
+        "ruleId": "EXIST-006",
+        "field": "paths.*.*.execution.bridge.target",
+        "condition": "required()",
+        "message": "bridge.target 不能为空"
+      },
+      {
+        "ruleId": "EXIST-007",
+        "field": "paths.*.*.x-genton.securityLevel",
+        "condition": "oneOf(['L0','L1','L2'])",
+        "message": "securityLevel 必须为 L0/L1/L2"
+      },
+      {
+        "ruleId": "EXIST-008",
+        "description": "L2 级别必须声明 capabilityScope",
+        "condition": "when(paths.*.*.x-genton.securityLevel == 'L2') then required(paths.*.*.x-genton.capabilityScope)"
+      },
+      {
+        "ruleId": "EXIST-009",
+        "description": "L2 级别必须声明 taintPolicy",
+        "condition": "when(paths.*.*.x-genton.securityLevel == 'L2') then required(paths.*.*.x-genton.taintPolicy)"
+      }
+    ]
+  }
+}

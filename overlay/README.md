@@ -75,6 +75,8 @@ python tools/aidl_generator.py \
 
 ## 相关文档
 
-- [AIDL 接口清单](../docs/轨道A-接口全景清单.md)
 - [构建指南](../docs/BUILD.md)
-- [A1.3 AIDL 骨架生成任务](../A1里程碑实施计划.md)
+- [开发指南](../docs/DEVELOPMENT.md)
+- [资产 Schema](../docs/schemas/)（DMI / 宏 / 技能）
+- [安全红线检查单](../docs/security/E1.1-安全红线检查单v1.md)
+- [项目主页 README](../README.md)

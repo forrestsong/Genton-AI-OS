@@ -453,6 +453,44 @@ Genton AI OS 是一个开放的契约层项目。智能体原生操作系统的�
 
 ---
 
+## 延伸阅读
+
+`docs/` 目录随仓库分发，是开发者与生态接入的正式文档（CI 脚本与工具直接依赖其中的 schema 与示例）。
+
+**构建与开发**
+- [构建指南](docs/BUILD.md) · [开发指南](docs/DEVELOPMENT.md)
+
+**生态接入（第三方 Agent / DMI / 技能 / 宏）**
+- [三方 Agent 开发包说明](docs/F5.1-三方Agent开发包说明.md) · [三方沙箱合规指引](docs/F5.2-三方沙箱合规指引.md)
+- [DMI 作者指南](docs/DMI_AUTHOR_GUIDE.md) · [DMI 规范](docs/dmi-specification.md)
+- [技能作者指南](docs/SKILL_AUTHOR_GUIDE.md) · [技能语义直连标注](docs/SKILL_SEMANTIC_DIRECT_ANNOTATIONS.md)
+- [宏测试规范](docs/macro-testing-specification.md) · [值域 OTA 协议](docs/value_domain_ota_protocol.md)
+- 资产 Schema：[DMI](docs/schemas/dmi-asset-schema.json) · [宏](docs/schemas/macro-asset-schema.json) · [技能](docs/schemas/skill-asset-schema.json)
+- 示例：[DMI 天气示例](docs/examples/genton-dmi-weather-example.yaml) · [黄金样例](docs/examples/golden-test-example.json)
+
+**安全与合规**
+- [安全红线检查单 v1](docs/security/E1.1-安全红线检查单v1.md) · [密钥分级与生命周期评审](docs/security/E2.1-密钥分级与生命周期评审.md) · [TEE 接入评审](docs/security/E2.2-TEE接入评审.md)
+- [PII 掩码验收基准 v1](docs/security/E3.1-PII掩码验收基准v1.md) · [数据最小化评审](docs/security/E3.2-数据最小化评审.md) · [删除传播评审](docs/security/E3.3-删除传播评审.md)
+- 红队方法论：[基座](docs/security/E5.1-基座红队方法论.md) · [感知 UI](docs/security/E5.2-感知UI红队方法论.md) · [沙箱逃逸](docs/security/E5.3-沙箱逃逸专项.md) · [姿态手势](docs/security/E5.4-姿态手势渗透.md)
+
+**端云协同与决策模型**
+- [CloudBroker 网关设计](docs/cloud/G1.1-CloudBroker网关设计.md) · [决策接口扩展](docs/cloud/G1.1b-CloudBroker决策接口扩展.md) · [模型分级路由与配额](docs/cloud/G1.2-模型分级路由与配额.md)
+- [出端脱敏中间件](docs/cloud/G1.3-出端脱敏中间件.md) · [设备远程证明服务](docs/cloud/G2.1-设备远程证明服务.md) · [票据生命周期与吊销](docs/cloud/G2.2-票据生命周期与吊销.md)
+- [云端删除传播](docs/cloud/G3.1-云端删除传播.md) · [数据留存与地域策略](docs/cloud/G3.2-数据留存与地域策略.md)
+- [联邦微调聚合服务](docs/cloud/G4.1-联邦微调聚合服务.md) · [权重 OTA 管线](docs/cloud/G4.2-权重OTA管线.md) · [出网审计台](docs/cloud/G5.1-出网审计台.md)
+- [本地决策模型集成设计](docs/decision/B5.3-B5.4-决策模型集成设计.md)
+
+**交互与设计规格**
+- [双模式容器](docs/models/D1.1-双模式容器设计文档.md) · [三入口切换](docs/models/D1.2-三入口切换设计文档.md) · [CallGate 接管 UI](docs/models/D7.1-CallGate接管UI设计文档.md) · [动效与可访问性](docs/models/D8.1-动效与可访问性设计文档.md)
+- [S1 操作意图 RL 预测](docs/models/C5.1-S1操作意图RL预测设计文档.md) · [预测门控](docs/models/C5.2-预测门控设计文档.md) · [ASR/TTS/摘要模型](docs/models/C4.4-ASR-TTS-摘要模型设计文档.md)
+- [记忆抽取设计](docs/memory/C3.4-记忆抽取设计文档.md) · [机型校准指南](docs/MACHINE_CALIBRATION_GUIDE.md)
+
+**质量与评测**
+- [真机矩阵基线](docs/quality/H4.1-真机矩阵基线.md) · [性能功耗建档模板](docs/quality/H4.2-性能功耗建档模板.md) · [S7 功耗差分方法](docs/quality/H4.3-S7功耗差分方法.md)
+- [KPI 遥测框架](docs/quality/H5.1-KPI遥测框架.md) · [人因评测方案](docs/quality/H5.2-人因评测方案.md)
+
+---
+
 ## 许可
 
 本项目采用 **MIT 开源许可**，允许任意修改、分发及商业使用。详情参见 [LICENSE](LICENSE) 文件。

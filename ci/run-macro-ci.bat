@@ -8,7 +8,8 @@ REM   multi-format reports
 REM Deps: python 3.8+ (JSON/state/baseline). Device mode needs adb.
 REM Aligned with: ci/macro-ci-config.yaml (thresholds),
 REM   docs/macro-testing-specification.md (golden format),
-REM   reports/A8.1_completion_report.md (setAssetStatus / staged-enable)
+REM   reports/A8.1_完成报告.md (setAssetStatus / staged-enable;
+REM     internal delivery report, not part of the open-source release)
 REM
 REM Usage:
 REM   run-macro-ci.bat [--offline-validate] [--update-baseline]

@@ -220,7 +220,7 @@ The following are implemented modules from Track A (Android deep customization),
 |---|---|---|
 | **Memory System Service** | High (~1047 lines) | Three-tier memory + PII masking + provenance + tiered encryption (AES-GCM) + forgetting cascade; ⚠️ **semantic retrieval is currently text matching** (vector index structure in place, embedding retrieval pending) |
 | **Inference Routing Service** | ⚠️ Framework complete (~1164 lines) | Three-tier routing + KV cache structures + memory management + usage metering implemented; ⚠️ **the inference backend is simulated** (`simulateInference`); NPU delegate and a real runtime are pending |
-| **Decision Service** | ⚠️ Mid | Choice/Bool/Score decision types + flagship SoC capability gating + degradation chain implemented; ⚠️ **the cloud decision call is not yet bound** (currently a placeholder injection point) |
+| **Decision Service** | ⚠️ Mid | Choice/Bool/Score decision types + flagship SoC capability gating + degradation chain implemented; ⚠️ **neither the local model loader nor the cloud call is wired** (`tryLoadLocalModel()` always returns false; the cloud path is a placeholder injection point), so decisions currently run entirely on the rule/cloud degradation chain |
 | **MotionHub Posture Service** | Mid-high | Three tiers (T1/T2/T3) + shake / flip / swipe gestures + sensitive-scenario gating |
 | **Call Gate Service** | Mid-high | Incoming call determination + whitelist + L1/L2/L3 handling + emergency number fail-safe |
 | **Macro Recorder Service** | Mid | Recording → script generation → replay validation |
@@ -321,6 +321,35 @@ m -j$(nproc)
 adb reboot bootloader
 fastboot flashall -w
 ```
+
+#### 5. Model weights and the local decision model (optional; not shipped with the repo or the AOSP tree)
+
+**Neither this repository nor the AOSP source tree contains any model weights** (`.gitignore` excludes weight directories such as `NeoHorse-Jev-4B/`). The system builds and boots with **no models at all** — when a model is absent the system falls back along its degradation chain, which neither blocks the build nor affects the security gates (the policy engine itself makes no model calls).
+
+**Inference models (inference routing service)**
+
+| Item | Value |
+|---|---|
+| Runtime directory | `/system/genton/models/` |
+| Resident tiny model (TIER_LOCAL_TINY) | `qwen2.5-0.5b-q4.gguf` (~300MB) |
+| On-device large model (TIER_LOCAL_LARGE) | `qwen2.5-7b-q4.gguf` (~4GB) |
+
+Placement, either way: put the weights in `genton-layer/vendor/genton/models/` and add `PRODUCT_COPY_FILES` entries to the product makefile; or deliver them to `/system/genton/models/` on the device via an OTA package. **The inference backend is currently simulated** (`simulateInference`), so even with weights in place it will not produce real inference output — wiring a real runtime is follow-up work.
+
+**Local decision model (NeoHorse-Jev-4B, optional)**
+
+Used for intent classification, notification/anti-harassment classification, inference-tier selection and other "typed, probabilistic suggestions". It ships in two editions gated by the device capability table:
+
+| Edition | Condition | Where decisions run |
+|---|---|---|
+| Flagship | `decision_local_capable = true` (Snapdragon 8 Elite Gen 5 / Dimensity 9500 / Exynos 2500) | On-device local inference |
+| General | All other devices | Via `IAgentInferenceRouter` TIER_CLOUD → CloudBroker `/v1/decision` |
+
+- **Capability table**: `genton-layer/vendor/genton/config/device_capability_table_v1.json` with fields `decision_local_capable` / `decision_runtime` / `decision_latency_p95_ms` / `npu_tops`; read at runtime from `/vendor/genton/config/`
+- **Decision thresholds**: `decision_thresholds_v1.json`; read at runtime from `/vendor/genton/config/`, then `/system/etc/genton/`
+- **Runtime switch**: system property `persist.genton.decision.runtime`
+- **Deployment advice**: **do not wire up the decision model on first bring-up.** `DecisionService.tryLoadLocalModel()` is still a placeholder (it unconditionally returns `false`), so the local-model path is not yet functional; decisions then go through the degradation chain (cloud → deterministic rule path) and the system boots and verifies normally. Enabling a real device model package requires: signature verification → NPU/memory load → threshold calibration (thresholds are validated per scenario and must not be borrowed across scenarios)
+- **Weights and compliance**: NeoHorse-Jev-4B is Apache-2.0 and its weights are not distributed with this repository; obtain them from their release channel. Weight update packages must use the same verification as verified boot and roll out in staged batches
 
 ### Development Guide
 

@@ -221,7 +221,7 @@ Genton AI OS 不是又一个封闭的智能体 OS，而是一个**开放的契�
 |---|---|---|
 | **记忆系统服务** | ✅ 高 | 三层记忆 + PII 掩码 + Provenance + 分级加密（AES-GCM）+ 遗忘级联（~1047 行）；⚠️ **语义检索当前为文本匹配**（向量索引结构已就绪，embedding 检索待接入） |
 | **推理路由服务** | ⚠️ 框架完成 | 三级档位路由 + KV 缓存结构 + 内存管理 + 用量计量已实现（~1164 行）；⚠️ **推理后端为模拟实现**（`simulateInference`），NPU delegate 与真实 runtime 待接入 |
-| **决策服务** | ⚠️ 中 | Choice/Bool/Score 三类决策 + 旗舰 SoC 能力位判定 + 降级链已实现；⚠️ **云端决策调用待绑定**（当前为注入点占位） |
+| **决策服务** | ⚠️ 中 | Choice/Bool/Score 三类决策 + 旗舰 SoC 能力位判定 + 降级链已实现；⚠️ **本地模型加载器与云端调用均未接通**（`tryLoadLocalModel()` 恒返回 false、云端为注入点占位），当前统一走规则/云端降级链 |
 | **MotionHub 姿态服务** | ✅ 中高 | 三级档位 (T1/T2/T3) + 摇一摇/翻面/划动手势 + 敏感场景门控 |
 | **通话门服务** | ✅ 中高 | 来电判定 + 白名单 + L1/L2/L3 接管 + 紧急号码保底 + 50ms 超时 fail-safe |
 | **宏录制服务** | ✅ 中 | 录制 → 脚本生成 → 重放校验 |
@@ -339,6 +339,35 @@ m -j$(nproc)
 adb reboot bootloader
 fastboot flashall -w
 ```
+
+#### 5. 模型权重与本地决策模型（可选，不随仓库与 AOSP 树分发）
+
+**本仓库与 AOSP 源码树都不包含任何模型权重**（`.gitignore` 排除 `NeoHorse-Jev-4B/` 等权重目录）。系统在**完全没有模型**的前提下即可构建与启动——模型缺失时按降级链回退，不阻塞构建，也不影响安全门禁（策略引擎本身不含任何模型调用）。
+
+**推理模型（推理路由服务）**
+
+| 项 | 值 |
+|---|---|
+| 运行时目录 | `/system/genton/models/` |
+| 常驻小模型（TIER_LOCAL_TINY） | `qwen2.5-0.5b-q4.gguf`（约 300MB） |
+| 端侧大模型（TIER_LOCAL_LARGE） | `qwen2.5-7b-q4.gguf`（约 4GB） |
+
+放置方式二选一：放入 `genton-layer/vendor/genton/models/` 并在产品 mk 中追加 `PRODUCT_COPY_FILES`；或经 OTA 包写入设备 `/system/genton/models/`。**当前推理后端为模拟实现**（`simulateInference`），即使放入权重也不会产生真实推理输出——接真实 runtime 属后续工作。
+
+**本地决策模型（NeoHorse-Jev-4B，可选）**
+
+用于意图分类、通知/反骚扰分类、推理档位判定等"带概率的类型化建议"。按机型能力位分双版本：
+
+| 版本 | 判定条件 | 决策位置 |
+|---|---|---|
+| 旗舰版 | `decision_local_capable = true`（Snapdragon 8 Elite Gen 5 / 天玑 9500 / Exynos 2500） | 端侧本地推理 |
+| 通用版 | 其余机型 | 经 `IAgentInferenceRouter` 的 TIER_CLOUD → CloudBroker `/v1/decision` |
+
+- **能力位表**：`genton-layer/vendor/genton/config/device_capability_table_v1.json`，字段 `decision_local_capable` / `decision_runtime` / `decision_latency_p95_ms` / `npu_tops`；运行时读 `/vendor/genton/config/`
+- **决策阈值**：`decision_thresholds_v1.json`；运行时依次读 `/vendor/genton/config/`、`/system/etc/genton/`
+- **运行时开关**：系统属性 `persist.genton.decision.runtime`
+- **部署建议**：**首次 bring-up 不要接入决策模型**。当前 `DecisionService.tryLoadLocalModel()` 仍是占位实现（恒定返回 `false`），本地模型路径尚未打通；此时决策统一走降级链（云端 → 确定性规则路径），系统可正常启动与验证。接入真机模型包时需补：签名校验 → NPU/内存加载 → 阈值标定（阈值按场景独立验证，不跨场景借用概率）
+- **权重获取与合规**：NeoHorse-Jev-4B 采用 Apache-2.0，权重不随本仓库分发，请从其发布渠道获取；权重更新包需走与可信启动同款校验并分批灰度
 
 ### 开发指南
 

@@ -1,0 +1,51 @@
+# AI Native OS SELinux 服务上下文映射
+#
+# 将服务名称映射到 SELinux 类型
+#
+# 版本: v1.0
+# 日期: 2026-09-05
+# 依据: WBS A1.4 权限清单落地
+
+# 感知层服务
+com.ainative.perception.IAgentUiTreeService          u:object_r:ainative_ui_tree_service:s0
+com.ainative.perception.IAgentScreenService          u:object_r:ainative_screen_service:s0
+com.ainative.perception.IAgentNotificationService    u:object_r:ainative_notification_service:s0
+
+# 事件流服务
+com.ainative.events.IAgentEventStreamService         u:object_r:ainative_event_stream_service:s0
+
+# 执行层服务
+com.ainative.action.IAgentActionService              u:object_r:ainative_action_service:s0
+
+# 运行时服务
+com.ainative.agent.IAgentRuntimeService              u:object_r:ainative_agent_runtime_service:s0
+
+# 记忆与审计服务
+com.ainative.memory.IAgentMemoryService              u:object_r:ainative_memory_service:s0
+com.ainative.audit.IAgentAuditService                u:object_r:ainative_audit_service:s0
+
+# 语义与上下文服务
+com.ainative.semantics.IEntityQueryService           u:object_r:ainative_entity_service:s0
+com.ainative.context.IAgentContextService            u:object_r:ainative_context_service:s0
+
+# 策略与资产服务
+com.ainative.policy.IPolicyEngine                    u:object_r:ainative_policy_engine_service:s0
+com.ainative.assets.IAgentAssetLibraryService        u:object_r:ainative_asset_library_service:s0
+
+# 推理与沙箱服务
+com.ainative.inference.IAgentInferenceRouter         u:object_r:ainative_inference_router_service:s0
+com.ainative.sandbox.ISandboxManager                 u:object_r:ainative_sandbox_service:s0
+
+# 通话与姿态服务
+com.ainative.call.IAgentCallGateService              u:object_r:ainative_call_gate_service:s0
+com.ainative.motion.IMotionHubService                u:object_r:ainative_motion_hub_service:s0
+
+# UI 层服务
+com.ainative.ui.IAgentSessionService                 u:object_r:ainative_agent_session_service:s0
+com.ainative.ui.IAgentAssistantUi                    u:object_r:ainative_agent_ui_service:s0
+
+# --- WBS 1.4 补齐：以下服务此前无 service_contexts 条目（回落 default_android_service）---
+com.ainative.audit.IAuditService                     u:object_r:ainative_audit_service:s0
+com.ainative.execution.IActionExecutionService       u:object_r:ainative_action_service:s0
+com.ainative.macro.IAgentMacroRecorderService        u:object_r:ainative_action_service:s0
+com.ainative.macro.IMacroValidationService           u:object_r:ainative_action_service:s0

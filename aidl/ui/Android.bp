@@ -1,0 +1,49 @@
+// AI Native OS - UI AIDL Interface Module
+// UI 契约接口：确认宿主、会话桥、上下文泡泡
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.ui",
+    
+    srcs: [
+        "com/ainative/ui/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [
+        "com.ainative.action",    // ActionRequest
+        "com.ainative.agent",     // AgentHandle
+        "com.ainative.context",   // ContextFrame
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//frameworks/base/core/java",
+        "//packages/apps/AINativeBrain",
+        "//packages/apps/SystemUI",  // 会话桥宿主
+    ],
+}

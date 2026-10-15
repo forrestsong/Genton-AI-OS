@@ -1,0 +1,26 @@
+// AI Native OS AIDL 模块 - motion（姿态交互 MotionHub 契约）
+// 补建：主线② W4 合入（overlay 有 AIDL 文件但缺 Android.bp）
+
+aidl_interface {
+    name: "ainative.motion",
+    unstable: true,
+    srcs: [
+        "GestureEvent.aidl",
+        "IMotionGestureListener.aidl",
+        "IMotionHubService.aidl",
+        "MotionTierState.aidl",
+    ],
+    local_include_dir: ".",
+    backend: {
+        java: {
+            sdk_version: "system_current",
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: false,
+        },
+        ndk: {
+            enabled: false,
+        },
+    },
+}

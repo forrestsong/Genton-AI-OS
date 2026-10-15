@@ -1,0 +1,145 @@
+{
+  "skill": {
+    "id": "skill:calendar.create_event",
+    "name": "calendar_create_event",
+    "version": "1.0.0",
+    "category": "calendar",
+    "description": "创建日程前先检测时间冲突，无冲突则创建，有冲突则提示",
+    "publisher": "android.system"
+  },
+  "metadata": {
+    "capability": "agent:action:calendar_write",
+    "riskLevel": 1,
+    "confirmation": "default",
+    "executionMode": "semantic_direct",
+    "semanticTriggers": [
+      "帮我建个日程",
+      "安排一个会议",
+      "新增日历事件"
+    ],
+    "requiredCapabilities": [
+      "agent:action:calendar_write",
+      "agent:action:calendar_read",
+      "agent:action:notify"
+    ],
+    "labels": ["calendar", "condition", "conflict_check"]
+  },
+  "execution": {
+    "mode": "sequential",
+    "timeout": 12000,
+    "steps": [
+      {
+        "id": "check_conflict",
+        "type": "dmi",
+        "config": {
+          "dmiId": "dmi:calendar.query",
+          "operation": "query",
+          "parameters": {
+            "startTime": "$.input.startTime",
+            "endTime": "$.input.endTime",
+            "limit": 5
+          },
+          "timeout": 5000
+        },
+        "outputMapping": {
+          "events": "$.data.events"
+        }
+      },
+      {
+        "id": "decide",
+        "type": "condition",
+        "config": {
+          "condition": {
+            "type": "greater_than",
+            "left": "$.step.check_conflict.data.events.length",
+            "right": 0
+          },
+          "then": [
+            {
+              "id": "notify_conflict",
+              "type": "system",
+              "config": {
+                "service": "notification",
+                "method": "notify",
+                "parameters": {
+                  "title": "时间冲突",
+                  "body": "该时段已有 {{$.step.check_conflict.data.events.length}} 个日程，未创建新日程",
+                  "priority": "high"
+                }
+              }
+            }
+          ],
+          "else": [
+            {
+              "id": "create_event",
+              "type": "dmi",
+              "config": {
+                "dmiId": "dmi:calendar.create",
+                "operation": "create",
+                "parameters": {
+                  "title": "$.input.title",
+                  "startTime": "$.input.startTime",
+                  "endTime": "$.input.endTime",
+                  "location": "$.input.location",
+                  "description": "$.input.description"
+                },
+                "timeout": 5000
+              },
+              "outputMapping": {
+                "eventId": "$.data.eventId"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "errorHandling": {
+      "onStepFailure": "abort",
+      "maxRetries": 0
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "description": "日程标题",
+        "required": true
+      },
+      "startTime": {
+        "type": "integer",
+        "description": "开始时间（Unix 时间戳，毫秒）",
+        "required": true
+      },
+      "endTime": {
+        "type": "integer",
+        "description": "结束时间（Unix 时间戳，毫秒）",
+        "required": true
+      },
+      "location": {
+        "type": "string",
+        "description": "地点（可选）",
+        "required": false
+      },
+      "description": {
+        "type": "string",
+        "description": "备注（可选）",
+        "required": false
+      }
+    },
+    "required": ["title", "startTime", "endTime"]
+  },
+  "returns": {
+    "type": "object",
+    "properties": {
+      "eventId": {
+        "type": "string",
+        "description": "创建成功的日程 ID（冲突时为空）"
+      },
+      "branchExecuted": {
+        "type": "string",
+        "description": "实际执行的分支（then=冲突/else=创建）"
+      }
+    }
+  }
+}

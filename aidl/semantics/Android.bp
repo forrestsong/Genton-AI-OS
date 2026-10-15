@@ -1,0 +1,45 @@
+// AI Native OS - Semantics AIDL Interface Module
+// 语义服务接口：本体查询、实体图、packContext
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.semantics",
+    
+    srcs: [
+        "com/ainative/semantics/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [
+        "com.ainative.memory",  // MemoryEntry
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//packages/apps/AINativeBrain",
+    ],
+}

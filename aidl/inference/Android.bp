@@ -1,0 +1,48 @@
+// AI Native OS - Inference AIDL Interface Module
+// 推理路由接口：端云决策、预算管理、用量计量
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.inference",
+    
+    srcs: [
+        "com/ainative/inference/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [
+        "com.ainative.agent",   // AgentHandle
+        "com.ainative.policy",  // CapabilityToken
+        "com.ainative.audit",   // 计量审计
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//packages/apps/AINativeBrain",
+        "//vendor/ainative/ai-runtime",  // AI Runtime 实现
+    ],
+}

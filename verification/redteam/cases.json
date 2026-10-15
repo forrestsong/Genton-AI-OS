@@ -1,0 +1,191 @@
+{
+  "_comment": "WBS 1.10 红队用例登记册。每条攻击路径必须被登记，且状态必须诚实：covered-static 需指向真实存在的静态门禁；runtime-required 表示需在设备上执行（M1）；open-gap 表示已知未修复，必须挂 WBS 编号，不许静默消失。由 verification/check_1_10_redteam_registry.py 校验。",
+  "version": 1,
+  "cases": [
+    {
+      "id": "RT-01",
+      "title": "内部动作前缀后门",
+      "attack": "调用方把 actionId 命名为 sys.* / cmd.*，期望跳过策略、令牌与审计",
+      "expect": "非白名单或非平台签名调用方被拒（SUBMIT_POLICY_DENIED），且产生审计记录",
+      "status": "covered-static+runtime",
+      "static_check": "check_1_1_no_prefix_bypass.py",
+      "runtime": true,
+      "wbs": "1.1"
+    },
+    {
+      "id": "RT-02",
+      "title": "策略引擎越权调用",
+      "attack": "三方应用直接调用 IPolicyEngine.reloadPolicySet / revokeTokens / reportUserDecision",
+      "expect": "SecurityException（非平台签名/未持 BIND_POLICY_ENGINE）",
+      "status": "runtime-required",
+      "runtime": true,
+      "wbs": "1.3"
+    },
+    {
+      "id": "RT-03",
+      "title": "截屏越权",
+      "attack": "三方应用调用 IAgentScreenService.captureScreen 读取屏幕",
+      "expect": "SecurityException（未持 BIND_SCREEN_SERVICE）",
+      "status": "runtime-required",
+      "runtime": true,
+      "wbs": "1.3"
+    },
+    {
+      "id": "RT-04",
+      "title": "UI 树越权",
+      "attack": "三方应用调用 IAgentUiTreeService.captureUiTree 读取前台界面结构",
+      "expect": "SecurityException（未持 BIND_UI_TREE_SERVICE）",
+      "status": "runtime-required",
+      "runtime": true,
+      "wbs": "1.3"
+    },
+    {
+      "id": "RT-05",
+      "title": "审计注入",
+      "attack": "三方应用调用 IAuditService.record 写入伪造审计事件",
+      "expect": "SecurityException（未持 BIND_AUDIT_SERVICE）",
+      "status": "runtime-required",
+      "runtime": true,
+      "wbs": "1.3"
+    },
+    {
+      "id": "RT-06",
+      "title": "记忆越权读取/删除",
+      "attack": "三方应用调用 IAgentMemoryService.query / forget 读取或删除用户记忆",
+      "expect": "SecurityException（未持 BIND_MEMORY_SERVICE）",
+      "status": "runtime-required",
+      "runtime": true,
+      "wbs": "1.3"
+    },
+    {
+      "id": "RT-07",
+      "title": "伪造 confirmId 自批",
+      "attack": "请求方自行构造 confirmId 调用 reportUserConfirmation 批准自己的高风险动作",
+      "expect": "被拒：confirmId 未经策略引擎 HMAC 签发 / 已过期 / 不在挂起表",
+      "status": "covered-static+runtime",
+      "static_check": "check_1_5_confirmation_chain.py",
+      "runtime": true,
+      "wbs": "1.5a"
+    },
+    {
+      "id": "RT-08",
+      "title": "确认回灌越权（自批）",
+      "attack": "Agent 大脑进程调用 reportUserConfirmation 批准自己的动作",
+      "expect": "被拒：未持有 SUBMIT_USER_DECISION（大脑不持有该权限）",
+      "status": "covered-static+runtime",
+      "static_check": "check_1_5_confirmation_chain.py",
+      "runtime": true,
+      "wbs": "1.5a"
+    },
+    {
+      "id": "RT-09",
+      "title": "确认轰炸 / 钓鱼面板",
+      "attack": "任意进程用（伪造）confirmId 驱动确认面板，诱导用户点击",
+      "expect": "被拒：确认宿主展示前必须委托策略引擎验签；引擎不可用时 fail-secure 拒绝展示",
+      "status": "covered-static+runtime",
+      "static_check": "check_1_5_confirmation_chain.py",
+      "runtime": true,
+      "wbs": "1.5a"
+    },
+    {
+      "id": "RT-10",
+      "title": "重启抹除审计历史",
+      "attack": "kill -9 system_server 或重启设备，期望审计链丢失（掩盖行为）",
+      "expect": "重启后链仍可读、seq 连续、prevHash 相接；断裂被显式记录",
+      "status": "covered-static+runtime",
+      "static_check": "check_1_6_audit_persistence.py",
+      "runtime": true,
+      "wbs": "1.6a"
+    },
+    {
+      "id": "RT-11",
+      "title": "伪造锚点签名",
+      "attack": "自行构造 '别名:哈希' 形式的锚点签名并期望通过验签",
+      "expect": "验签失败（真实 ECDSA 签名校验；无密钥时 fail-closed 拒绝签发）",
+      "status": "covered-static+runtime",
+      "static_check": "check_1_6_audit_persistence.py",
+      "runtime": true,
+      "wbs": "1.6a"
+    },
+    {
+      "id": "RT-12",
+      "title": "假沙箱句柄",
+      "attack": "在隔离未实现时调用 startSandbox，期望拿到 STATUS_OK 与 pid/uid=-1 的句柄并据此外发数据",
+      "expect": "非 OK 状态（fail-closed），不发放句柄",
+      "status": "covered-static+runtime",
+      "static_check": "check_1_8_sandbox_honesty.py",
+      "runtime": true,
+      "wbs": "1.8a"
+    },
+    {
+      "id": "RT-13",
+      "title": "高风险 PII 明文落库",
+      "attack": "写入含证件号/银行卡号/密码的记忆（WORKING 或 SYSTEM 层），期望绕过长期记忆的拒绝策略",
+      "expect": "落库内容为掩码值（[ID_CARD]/[BANK_CARD]/[PASSWORD]），读回不含明文",
+      "status": "covered-static+runtime",
+      "static_check": "check_1_9_memory_pii.py",
+      "runtime": true,
+      "wbs": "1.9a"
+    },
+    {
+      "id": "RT-14",
+      "title": "污点自证（提示注入）",
+      "attack": "Agent 把外部内容放进动作参数但不申报 taintedArgumentKeys，平台即视为干净并放行",
+      "expect": "【当前未修复】平台侧必须能自行推导污点，而不是采信调用方申报",
+      "status": "open-gap",
+      "runtime": false,
+      "wbs": "1.2b",
+      "note": "1.2a 只做到 fail-closed 校验；平台侧污点推导需要感知→LLM→动作参数全链路打标，属独立工作项"
+    },
+    {
+      "id": "RT-15",
+      "title": "两套审计链不一致",
+      "attack": "在隐私仪表盘看到的链路与系统实际记录动作的链路不是同一条，用户被误导",
+      "expect": "【当前未修复】两条链必须合一，或明确告知用户各自范围",
+      "status": "open-gap",
+      "runtime": false,
+      "wbs": "1.6c",
+      "note": "AuditService（已注册、有持久化）与 AgentAuditService（未注册、承载动作审计）并存"
+    },
+    {
+      "id": "RT-16",
+      "title": "沙箱无真实隔离",
+      "attack": "三方 Agent 在无 isolatedProcess/UID 隔离与出网白名单的环境中运行",
+      "expect": "【当前未修复】必须有 isolatedProcess + 独立 UID + netd 出网白名单 + 配额终止",
+      "status": "open-gap",
+      "runtime": false,
+      "wbs": "1.8b",
+      "note": "当前以 fail-closed 拒绝启动兜底，但能力本身不存在"
+    },
+    {
+      "id": "RT-17",
+      "title": "沙箱服务不可复现（幽灵服务）",
+      "attack": "宣称 ok=23 服务注册，但其中若干服务的源码只存在于 patches/，从未并入 overlay，且补丁脚本无法应用",
+      "expect": "【当前未修复】所有被宣称注册的服务源码必须可从仓库复现并编译",
+      "status": "open-gap",
+      "runtime": false,
+      "wbs": "1.8c / 3.1",
+      "note": "与补丁栈重建同批处理"
+    },
+    {
+      "id": "RT-18",
+      "title": "鉴权基线内 88 项未收敛",
+      "attack": "利用尚未加固的 Binder 方法（枚举见 verification/authz_baseline.json）",
+      "expect": "基线只允许减少；出现新增未鉴权方法即 CI FAIL",
+      "status": "covered-static+runtime",
+      "static_check": "check_1_3_binder_authz.py",
+      "runtime": true,
+      "wbs": "1.3"
+    },
+    {
+      "id": "RT-19",
+      "title": "修复未进入构建树（归档 ≠ 镜像）",
+      "attack": "在归档（com.ainative）中修复安全缺陷，但真正被编译的是 WSL 构建树 /root/aosp（已改名为 com.genton）：缺陷在镜像里原样存在，而报告显示『已修复』",
+      "expect": "构建树中的安全不变量必须与归档一致；不一致即 FAIL",
+      "status": "open-gap",
+      "runtime": false,
+      "wbs": "0.2 / 1.1-1.9 移植",
+      "note": "实测：构建树仍有前缀后门（genton/ActionExecutionService.java:503）、假 TEE 签名（:216），无 AgentCallerAuth、无 isGenuinePendingConfirmation、审计无 fsync。门禁 check_build_tree_parity.py 已就位并如实报红。"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "skill": {
+    "id": "skill:telephony.missed_call_autoreply",
+    "name": "telephony_missed_call_autoreply",
+    "version": "1.0.0",
+    "category": "communication",
+    "description": "对未接来电号码发送自动回复短信，已知联系人时带称呼",
+    "publisher": "android.system"
+  },
+  "metadata": {
+    "capability": "agent:action:sms_send",
+    "riskLevel": 2,
+    "confirmation": "always",
+    "executionMode": "semantic_direct",
+    "semanticTriggers": [
+      "给未接来电回条短信",
+      "自动回复刚才的电话",
+      "帮我回复未接来电"
+    ],
+    "requiredCapabilities": [
+      "agent:action:sms_send",
+      "agent:action:contacts_read"
+    ],
+    "labels": ["telephony", "sms", "autoreply"]
+  },
+  "execution": {
+    "mode": "sequential",
+    "timeout": 10000,
+    "steps": [
+      {
+        "id": "find_contact",
+        "type": "dmi",
+        "config": {
+          "dmiId": "dmi:contacts.query",
+          "operation": "query",
+          "parameters": {
+            "query": "$.input.contactName",
+            "limit": 1
+          },
+          "timeout": 3000
+        },
+        "outputMapping": {
+          "contacts": "$.data.contacts"
+        }
+      },
+      {
+        "id": "decide",
+        "type": "condition",
+        "config": {
+          "condition": {
+            "type": "greater_than",
+            "left": "$.step.find_contact.data.contacts.length",
+            "right": 0
+          },
+          "then": [
+            {
+              "id": "reply_known",
+              "type": "dmi",
+              "config": {
+                "dmiId": "dmi:sms.send",
+                "operation": "send",
+                "parameters": {
+                  "phoneNumber": "$.input.phoneNumber",
+                  "message": "{{$.step.find_contact.data.contacts[0].name}}，抱歉刚才没接到电话，稍后回复您"
+                },
+                "timeout": 5000
+              },
+              "outputMapping": {
+                "phoneNumber": "$.data.phoneNumber"
+              }
+            }
+          ],
+          "else": [
+            {
+              "id": "reply_unknown",
+              "type": "dmi",
+              "config": {
+                "dmiId": "dmi:sms.send",
+                "operation": "send",
+                "parameters": {
+                  "phoneNumber": "$.input.phoneNumber",
+                  "message": "抱歉刚才没接到电话，稍后回复您"
+                },
+                "timeout": 5000
+              },
+              "outputMapping": {
+                "phoneNumber": "$.data.phoneNumber"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "errorHandling": {
+      "onStepFailure": "retry",
+      "maxRetries": 1,
+      "retryDelayMs": 1000
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "phoneNumber": {
+        "type": "string",
+        "description": "未接来电号码",
+        "required": true
+      },
+      "contactName": {
+        "type": "string",
+        "description": "来电人姓名（可选，用于个性化称呼）",
+        "required": false
+      }
+    },
+    "required": ["phoneNumber"]
+  },
+  "returns": {
+    "type": "object",
+    "properties": {
+      "phoneNumber": {
+        "type": "string",
+        "description": "已回复的号码"
+      },
+      "branchExecuted": {
+        "type": "string",
+        "description": "实际执行的分支（then=已知联系人/else=陌生号码）"
+      }
+    }
+  }
+}

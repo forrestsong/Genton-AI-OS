@@ -1,0 +1,375 @@
+# ============================================================
+# 策略 DSL 规则目录 v1（权威清单）
+# C1.1 交付物：唯一事实源
+# 版本: 1.0.0
+# 日期: 2026-09-05
+# ============================================================
+# 说明：
+# - notification 域: 10 条规则（2 baseline + 7 user + 1 learn 模式）
+# - call_gate 域: 12 条规则（2 baseline + 9 user + 1 learn 模式）
+# - 授权轴（action 域）规则不在此列，由 D2 动作风险策略定义
+# - 优先级分带: 1000(baseline) / 600-900(sys非baseline) / 300-450(user正向) / 150-250(user DND/聚合) / 90-140(user摘要/折叠)
+# ============================================================
+
+# ============================================================
+# notification 域规则 (10 条)
+# ============================================================
+
+# 1. baseline-deny-protect: 关键通知不可静默
+- id: sys.notify.baseline.critical-native
+  baseline: true
+  domain: notification
+  effect: deny
+  priority: 1000
+  when:
+    event: notification.posted
+    category:
+      - alarm
+      - system_critical
+      - phone_ring_equivalent
+  then:
+    audit: full
+    reason: "关键通知必须原生展示，不得静默或降级"
+
+# 2. baseline-deny-protect: 用户钉选 P0 永原生
+- id: sys.notify.baseline.p0-pinned
+  baseline: true
+  domain: notification
+  effect: deny
+  priority: 1000
+  when:
+    event: notification.posted
+    userPinnedP0: true
+  then:
+    audit: full
+    reason: "用户显式钉选 P0 的通知不得被任何规则降级"
+
+# 3. user 正向: OTP/支付/紧急 → P0
+- id: user.notify.route.bank-otp
+  domain: notification
+  effect: route_p0_native
+  priority: 200
+  when:
+    event: notification.posted
+    senderTrust: TRUSTED_PARTNER
+    category:
+      - otp
+      - payment_result
+      - emergency
+  then:
+    route: P0_NATIVE
+    audit: summary
+    reason: "重要金融通知原生展示"
+
+# 4. user DND/聚合: DND 聚合延后简报
+- id: user.notify.dnd-digest-hold
+  domain: notification
+  effect: route_p1_digest
+  priority: 150
+  when:
+    event: notification.posted
+    context.dndActive: true
+    category:
+      - social_updates
+      - news
+      - app_updates
+  then:
+    route: P1_AGENT_SUMMARY
+    holdUntilDndEnd: true
+    aggregateWindowMs: 3600000
+    summaryModel: local_tiny
+    audit: summary
+    reason: "DND 期间聚合摘要，延后呈现"
+
+# 5. user DND/聚合: App 更新/推广 → P1 + 角标抑制
+- id: user.notify.app-updates-digest
+  domain: notification
+  effect: route_p1_digest
+  priority: 110
+  when:
+    event: notification.posted
+    category:
+      - app_updates
+      - app_update_notice
+  then:
+    route: P1_AGENT_SUMMARY
+    suppressBadge: true
+    summaryModel: local_tiny
+    audit: summary
+    reason: "应用更新摘要展示，抑制角标"
+
+# 6. user 摘要/折叠: 资讯 → P1 摘要
+- id: user.notify.route.news-digest
+  domain: notification
+  effect: route_p1_digest
+  priority: 100
+  when:
+    event: notification.posted
+    category:
+      - news
+    senderTrust: TRUSTED_PARTNER
+  then:
+    route: P1_AGENT_SUMMARY
+    summaryModel: local_tiny
+    audit: summary
+    reason: "新闻资讯摘要卡展示"
+
+# 7. user 摘要/折叠: 广告批量 → P2 + 日配额
+- id: user.notify.bulk-ad-cap
+  domain: notification
+  effect: route_p2_agent_act
+  priority: 95
+  when:
+    event: notification.posted
+    category:
+      - advertising
+      - marketing
+    classifierConfidence: ">= 0.8"
+  then:
+    route: P2_AGENT_HANDLE
+    dailyHandleCap: 10
+    agentAct: fold
+    audit: full
+    reason: "广告批量处理，日配额 10 条"
+
+# 8. user 摘要/折叠: 广告 → P2 折叠
+- id: user.notify.route.ad-fold
+  domain: notification
+  effect: route_p2_agent_act
+  priority: 90
+  when:
+    event: notification.posted
+    category:
+      - account_promo
+      - advertising
+  then:
+    route: P2_AGENT_HANDLE
+    agentAct: fold
+    senderAuthz: one_per_sender
+    audit: full
+    reason: "广告折叠处理，每发送方一次性授权"
+
+# 9. user 摘要/折叠: 激活后的 learn 副本示例（provenance 在审计日志中）
+- id: user.notify.social.learned-a3f5b
+  domain: notification
+  effect: route_p1_digest
+  priority: 105
+  when:
+    event: notification.posted
+    senderDomain: social.example.com
+    category:
+      - social_updates
+  then:
+    route: P1_AGENT_SUMMARY
+    summaryModel: local_tiny
+    audit: full
+    reason: "用户激活的学习规则：社交更新摘要（来源: learn.notify.sender-frequent-p1）"
+
+# 10. learn 模式: 高频非联系人发送方 → P1（待确认）
+- id: learn.notify.sender-frequent-p1
+  domain: notification
+  effect: route_p1_digest
+  priority: 100
+  when:
+    event: notification.posted
+    senderTrust: APP
+    classifierConfidence: ">= 0.7"
+  then:
+    route: P1_AGENT_SUMMARY
+    summaryModel: local_tiny
+    audit: full
+    reason: "学习建议：高频发送方摘要展示"
+  _meta:
+    state: suggestion
+    source: intent_learning
+    needsUserApproval: true
+    proposedPriority: 100
+    confidence: 0.78
+    observationWindow: "7d"
+
+# ============================================================
+# call_gate 域规则 (12 条)
+# ============================================================
+
+# 1. baseline-route: 紧急/系统号码永响铃
+- id: sys.callgate.baseline.emergency
+  baseline: true
+  domain: call_gate
+  effect: route_ring_native
+  priority: 1000
+  when:
+    call: incoming
+    callerIs:
+      - emergency
+      - system
+      - carrier_service
+  then:
+    route: RING_NATIVE
+    audit: full
+    reason: "紧急号码必须响铃，不可拦截"
+
+# 2. baseline-route: 运营商通告仅记录
+- id: sys.callgate.carrier-notice-record
+  baseline: true
+  domain: call_gate
+  effect: route_record_only
+  priority: 600
+  when:
+    call: incoming
+    callerIs: carrier_service
+    numberPrefix: "10086"
+  then:
+    route: RECORD_ONLY
+    digestSuggestion: true
+    audit: summary
+    reason: "运营商通告仅记录不响铃"
+
+# 3. user 正向: 白名单响铃
+- id: user.callgate.ring-whitelist
+  domain: call_gate
+  effect: route_ring_native
+  priority: 300
+  when:
+    call: incoming
+    callerClass: whitelist
+  then:
+    route: RING_NATIVE
+    audit: summary
+    reason: "白名单号码直接响铃"
+
+# 4. user 正向: 联系人响铃（预留，实际由 contacts 实现）
+- id: user.callgate.ring-contact
+  domain: call_gate
+  effect: route_ring_native
+  priority: 290
+  when:
+    call: incoming
+    callerClass: contact
+  then:
+    route: RING_NATIVE
+    audit: summary
+    reason: "联系人号码直接响铃"
+
+# 5. user 正向: 30 天回拨互惠放行
+- id: user.callgate.return-call-reciprocity
+  domain: call_gate
+  effect: route_ring_native
+  priority: 280
+  when:
+    call: incoming
+    callerClass: unknown
+    callerHasRecentOutgoingWithinDays: "<= 30"
+  then:
+    route: RING_NATIVE
+    audit: summary
+    reason: "30 天内回拨互惠放行"
+
+# 6. user DND/聚合: 15min 重复呼叫升级
+- id: user.callgate.vip-repeat-escalate
+  domain: call_gate
+  effect: route_ring_native
+  priority: 260
+  when:
+    call: incoming
+    callerClass: unknown
+    callRepeatedInWindowMs: "<= 900000"
+  then:
+    route: RING_NATIVE
+    audit: full
+    reason: "15 分钟内重复呼叫升级响铃"
+
+# 7. user DND/聚合: DND 非紧急仅记录
+- id: user.callgate.dnd-record
+  domain: call_gate
+  effect: route_record_only
+  priority: 250
+  when:
+    call: incoming
+    context.dndActive: true
+    callerClass: unknown
+  then:
+    route: RECORD_ONLY
+    suggestVoicemail: true
+    audit: summary
+    reason: "DND 期间未知来电仅记录"
+
+# 8. user 摘要/折叠: AI 接管日配额 3 → 超限仅记录
+- id: user.callgate.ai-handle-daily-cap
+  domain: call_gate
+  effect: route_record_only
+  priority: 140
+  when:
+    call: incoming
+    gateMode: L1_SILENT_AI
+    dailyAiHandleUsed: ">= 3"
+  then:
+    route: RECORD_ONLY
+    digestSuggestion: true
+    audit: summary
+    reason: "AI 接管日配额已用完，仅记录"
+
+# 9. user 摘要/折叠: 95xxx 高置信仅记录
+- id: user.callgate.service-prefix-l3
+  domain: call_gate
+  effect: route_record_only
+  priority: 130
+  when:
+    call: incoming
+    numberPrefix: "95"
+    spamScore: ">= 0.6"
+  then:
+    route: RECORD_ONLY
+    digestSuggestion: true
+    audit: summary
+    reason: "疑似营销号码仅记录"
+
+# 10. user 摘要/折叠: 骚扰 ≥0.9 仅记录
+- id: user.callgate.spam-l3
+  domain: call_gate
+  effect: route_record_only
+  priority: 120
+  when:
+    call: incoming
+    spamScore: ">= 0.9"
+  then:
+    route: RECORD_ONLY
+    audit: summary
+    reason: "高置信骚扰电话仅记录"
+
+# 11. user 摘要/折叠: 未知号 L1 AI 接管
+- id: user.callgate.unknown-l1
+  domain: call_gate
+  effect: route_agent_handle
+  priority: 100
+  when:
+    call: incoming
+    callerClass: unknown
+    gateMode: L1_SILENT_AI
+  then:
+    route: AGENT_HANDLE
+    handleMode: L1
+    audioBoundary: local_asr_tee
+    audit: full
+    reason: "AI 静默接管未知来电"
+
+# 12. learn 模式: 常忽略的 95 号段 → L3（待确认）
+- id: learn.callgate.frequent-ignore-95
+  domain: call_gate
+  effect: route_record_only
+  priority: 130
+  when:
+    call: incoming
+    numberPrefix: "95"
+    spamScore: ">= 0.5"
+  then:
+    route: RECORD_ONLY
+    digestSuggestion: true
+    audit: full
+    reason: "学习建议：常忽略的营销号段仅记录"
+  _meta:
+    state: suggestion
+    source: intent_learning
+    needsUserApproval: true
+    proposedPriority: 130
+    confidence: 0.82
+    observationWindow: "14d"

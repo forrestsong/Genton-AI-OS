@@ -1,0 +1,29 @@
+// AI Native OS AIDL 模块
+// 自动生成
+
+aidl_interface {
+    name: "ainative.memory",
+    unstable: true,
+    srcs: [
+        "IAgentMemoryService.aidl",
+        "MemoryEntry.aidl",
+        "MemoryEntryDraft.aidl",
+        "AgentHandle.aidl",
+        "ForgetRequest.aidl",
+        "MemoryQuery.aidl",
+        "ProvenanceInfo.aidl",
+    ],
+    local_include_dir: ".",
+    backend: {
+        java: {
+            sdk_version: "system_current",
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: false,
+        },
+        ndk: {
+            enabled: false,
+        },
+    },
+}

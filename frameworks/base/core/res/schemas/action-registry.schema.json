@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ainative.os/schemas/action-registry.schema.json",
+  "title": "AI Native OS Action Registry Schema",
+  "description": "Schema for action registry entries in AI Native OS",
+  "type": "object",
+  "required": ["version", "actions"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Registry version",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "generatedAt": {
+      "type": "integer",
+      "description": "Generation timestamp (Unix milliseconds)"
+    },
+    "actions": {
+      "type": "array",
+      "description": "Array of action registry entries",
+      "items": {
+        "$ref": "#/definitions/actionEntry"
+      }
+    }
+  },
+  "definitions": {
+    "actionEntry": {
+      "type": "object",
+      "required": [
+        "name",
+        "displayName",
+        "executorId",
+        "riskLevel",
+        "requiredCapability",
+        "inputSchema",
+        "outputSchema",
+        "auditEventType"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique action name (namespace.action format)",
+          "pattern": "^[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$",
+          "examples": ["ui.tap", "app.launch", "notification.reply"]
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable action name for UI display",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "executorId": {
+          "type": "string",
+          "description": "Executor identifier",
+          "enum": [
+            "activity",
+            "input",
+            "device_control",
+            "notification",
+            "clipboard",
+            "telephony",
+            "system",
+            "skill",
+            "dmi",
+            "macro"
+          ]
+        },
+        "riskLevel": {
+          "type": "integer",
+          "description": "Risk level: 0=low, 1=medium, 2=high",
+          "enum": [0, 1, 2]
+        },
+        "requiredCapability": {
+          "type": "string",
+          "description": "Required capability token",
+          "pattern": "^agent\\.[a-z][a-z0-9_]*$",
+          "examples": ["agent.input_inject", "agent.launch_activity"]
+        },
+        "inputSource": {
+          "type": "object",
+          "description": "Parameter source restrictions (optional)",
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["trusted", "user", "any"]
+          }
+        },
+        "inputSchema": {
+          "type": "object",
+          "description": "JSON Schema for input parameters",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "object"
+            },
+            "required": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "properties": {
+              "type": "object"
+            }
+          }
+        },
+        "outputSchema": {
+          "type": "object",
+          "description": "JSON Schema for output result",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "object"
+            },
+            "properties": {
+              "type": "object"
+            }
+          }
+        },
+        "auditEventType": {
+          "type": "string",
+          "description": "Audit event type name",
+          "pattern": "^action\\.[a-z][a-z0-9_]*$",
+          "examples": ["action.ui_tap", "action.launch"]
+        },
+        "requiresConfirmationRoles": {
+          "type": "array",
+          "description": "Confirmation role requirements (optional)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed action description (optional)",
+          "maxLength": 500
+        },
+        "deprecated": {
+          "type": "boolean",
+          "description": "Whether the action is deprecated",
+          "default": false
+        },
+        "replacedBy": {
+          "type": "string",
+          "description": "Replacement action name (if deprecated)",
+          "pattern": "^[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$"
+        }
+      },
+      "if": {
+        "properties": {
+          "deprecated": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": ["replacedBy"]
+      }
+    }
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "version": "1.0",
+  "generatedAt": 1725609600000,
+  "actions": [
+    {
+      "name": "ui.tap",
+      "displayName": "点击界面元素",
+      "executorId": "input",
+      "riskLevel": 1,
+      "requiredCapability": "agent.input_inject",
+      "inputSchema": {
+        "type": "object",
+        "required": ["nodeId"],
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "最新 UiSnapshot 中的稳定节点 id"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["click", "longClick"],
+            "default": "click",
+            "description": "点击模式"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "hitNodeId": {
+            "type": "string",
+            "description": "实际点击的节点ID"
+          }
+        }
+      },
+      "auditEventType": "action.ui_tap",
+      "description": "在UI树中点击指定节点，支持普通点击和长按"
+    },
+    {
+      "name": "ui.type",
+      "displayName": "输入文本",
+      "executorId": "input",
+      "riskLevel": 1,
+      "requiredCapability": "agent.input_inject",
+      "inputSource": {
+        "text": "user"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["nodeId", "text"],
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "输入框节点ID"
+          },
+          "text": {
+            "type": "string",
+            "description": "要输入的文本内容"
+          },
+          "clearExisting": {
+            "type": "boolean",
+            "default": false,
+            "description": "是否清除现有文本"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "typed": {
+            "type": "boolean",
+            "description": "是否成功输入"
+          }
+        }
+      },
+      "auditEventType": "action.ui_type",
+      "description": "在指定输入框中输入文本，text参数只接受USER来源"
+    },
+    {
+      "name": "ui.swipe",
+      "displayName": "滑动操作",
+      "executorId": "input",
+      "riskLevel": 0,
+      "requiredCapability": "agent.input_inject",
+      "inputSchema": {
+        "type": "object",
+        "required": ["startNodeId", "direction"],
+        "properties": {
+          "startNodeId": {
+            "type": "string",
+            "description": "起始节点ID"
+          },
+          "direction": {
+            "type": "string",
+            "enum": ["up", "down", "left", "right"],
+            "description": "滑动方向"
+          },
+          "distance": {
+            "type": "integer",
+            "default": 200,
+            "description": "滑动距离（像素）"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "completed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "auditEventType": "action.ui_swipe",
+      "description": "在UI上执行滑动手势"
+    },
+    {
+      "name": "app.launch",
+      "displayName": "启动应用界面",
+      "executorId": "activity",
+      "riskLevel": 1,
+      "requiredCapability": "agent.launch_activity",
+      "inputSchema": {
+        "type": "object",
+        "required": ["packageName"],
+        "properties": {
+          "packageName": {
+            "type": "string",
+            "description": "应用包名"
+          },
+          "activityName": {
+            "type": "string",
+            "description": "Activity名称（可选，省略则使用默认入口）"
+          },
+          "extras": {
+            "type": "object",
+            "description": "Intent extras（可选）"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "startedActivity": {
+            "type": "string",
+            "description": "实际启动的Activity"
+          },
+          "taskId": {
+            "type": "integer",
+            "description": "任务ID"
+          }
+        }
+      },
+      "auditEventType": "action.launch",
+      "description": "启动指定应用的Activity"
+    },
+    {
+      "name": "app.switch",
+      "displayName": "切换到应用",
+      "executorId": "activity",
+      "riskLevel": 0,
+      "requiredCapability": "agent.launch_activity",
+      "inputSchema": {
+        "type": "object",
+        "required": ["packageName"],
+        "properties": {
+          "packageName": {
+            "type": "string",
+            "description": "应用包名"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "switched": {
+            "type": "boolean"
+          }
+        }
+      },
+      "auditEventType": "action.app_switch",
+      "description": "切换到已在后台运行的应用"
+    },
+    {
+      "name": "notification.reply",
+      "displayName": "回复通知",
+      "executorId": "notification",
+      "riskLevel": 2,
+      "requiredCapability": "agent.notification_access",
+      "inputSource": {
+        "replyText": "user"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["notificationKey", "replyText"],
+        "properties": {
+          "notificationKey": {
+            "type": "string",
+            "description": "通知唯一标识"
+          },
+          "replyText": {
+            "type": "string",
+            "description": "回复内容"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "sent": {
+            "type": "boolean",
+            "description": "是否成功发送"
+          }
+        }
+      },
+      "auditEventType": "action.notification_reply",
+      "requiresConfirmationRoles": ["USER"],
+      "description": "回复通知消息，强制用户确认"
+    },
+    {
+      "name": "notification.dismiss",
+      "displayName": "清除通知",
+      "executorId": "notification",
+      "riskLevel": 0,
+      "requiredCapability": "agent.notification_access",
+      "inputSchema": {
+        "type": "object",
+        "required": ["notificationKey"],
+        "properties": {
+          "notificationKey": {
+            "type": "string",
+            "description": "通知唯一标识"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "dismissed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "auditEventType": "action.notification_dismiss",
+      "description": "清除指定通知"
+    },
+    {
+      "name": "device.volume_set",
+      "displayName": "设置音量",
+      "executorId": "device_control",
+      "riskLevel": 0,
+      "requiredCapability": "agent.device_control",
+      "inputSchema": {
+        "type": "object",
+        "required": ["streamType", "level"],
+        "properties": {
+          "streamType": {
+            "type": "string",
+            "enum": ["music", "ring", "alarm", "notification"],
+            "description": "音频流类型"
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "音量等级（0-100）"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "applied": {
+            "type": "boolean"
+          }
+        }
+      },
+      "auditEventType": "action.volume_set",
+      "description": "设置设备音量"
+    },
+    {
+      "name": "system.open_settings",
+      "displayName": "打开系统设置",
+      "executorId": "system",
+      "riskLevel": 0,
+      "requiredCapability": "agent.system_access",
+      "inputSchema": {
+        "type": "object",
+        "required": ["settingsPage"],
+        "properties": {
+          "settingsPage": {
+            "type": "string",
+            "enum": ["wifi", "bluetooth", "display", "sound", "apps", "battery"],
+            "description": "设置页面"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "opened": {
+            "type": "boolean"
+          }
+        }
+      },
+      "auditEventType": "action.open_settings",
+      "description": "打开指定的系统设置页面"
+    },
+    {
+      "name": "clipboard.copy",
+      "displayName": "复制到剪贴板",
+      "executorId": "clipboard",
+      "riskLevel": 1,
+      "requiredCapability": "agent.clipboard_access",
+      "inputSource": {
+        "text": "user"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "要复制的文本"
+          },
+          "label": {
+            "type": "string",
+            "description": "剪贴板标签（可选）"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "copied": {
+            "type": "boolean"
+          }
+        }
+      },
+      "auditEventType": "action.clipboard_copy",
+      "description": "将文本复制到系统剪贴板"
+    }
+  ]
+}

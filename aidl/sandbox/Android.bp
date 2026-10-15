@@ -1,0 +1,44 @@
+// AI Native OS - Sandbox AIDL Interface Module
+// 沙箱执行接口：Isolate、资源限制、SELinux 边界
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.sandbox",
+    
+    srcs: [
+        "com/ainative/sandbox/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//packages/apps/AINativeBrain",
+        "//packages/apps/SystemUI",
+    ],
+}

@@ -1,0 +1,315 @@
+{
+  "suiteId": "calib_regression_mt6897_p1",
+  "schemaVersion": "1.0",
+  "updatedAt": "2026-09-10",
+  "profileRef": "../profiles/mt6897_p1.json",
+  "status": "pending_device_run",
+  "notes": "中端 P1 黄金集：无 AON 岛 → T2 深睡档与滑动手势裁剪，对应门控用例的黄金值为 false 且 onUnsupported=skip（真机应记为跳过，不得计入失败）。执行运行器（H4.1 真机矩阵基线）未就绪，故 status=pending_device_run。",
+  "cases": [
+    {
+      "caseId": "coordinate.round_trip",
+      "category": "coordinate",
+      "title": "万分比↔像素 往返映射容差",
+      "priority": "high",
+      "params": { "normalizedBase": 10000 },
+      "assertion": {
+        "metric": "roundTripTolerancePx",
+        "op": "le",
+        "value": 1,
+        "source": "display.coordinateSpace.normalizedBase"
+      }
+    },
+    {
+      "caseId": "replay.hybrid.same_device",
+      "category": "replay",
+      "title": "混合策略·同机型重放成功率",
+      "priority": "high",
+      "params": { "strategy": 1, "deviceRelation": "same_device" },
+      "assertion": {
+        "metric": "successRate",
+        "op": "ge",
+        "value": 0.99,
+        "source": "macro.successRateTarget.sameDevice"
+      }
+    },
+    {
+      "caseId": "replay.hybrid.cross_device",
+      "category": "replay",
+      "title": "混合策略·跨机型重放成功率",
+      "priority": "high",
+      "params": { "strategy": 1, "deviceRelation": "cross_device" },
+      "assertion": {
+        "metric": "successRate",
+        "op": "ge",
+        "value": 0.95,
+        "source": "macro.successRateTarget.crossDevice"
+      }
+    },
+    {
+      "caseId": "replay.hybrid.cross_version",
+      "category": "replay",
+      "title": "混合策略·跨版本重放成功率",
+      "priority": "medium",
+      "params": { "strategy": 1, "deviceRelation": "cross_version" },
+      "assertion": {
+        "metric": "successRate",
+        "op": "ge",
+        "value": 0.85,
+        "source": "macro.successRateTarget.crossVersion"
+      }
+    },
+    {
+      "caseId": "timing.command_to_visible",
+      "category": "timing",
+      "title": "命令→可见 P95",
+      "priority": "high",
+      "params": { "target": "commandToVisible" },
+      "assertion": {
+        "metric": "p95LatencyMs",
+        "op": "le",
+        "value": 100,
+        "source": "timing.targets.commandToVisibleP95Ms"
+      }
+    },
+    {
+      "caseId": "timing.inject_fallback",
+      "category": "timing",
+      "title": "注入兜底 P95",
+      "priority": "high",
+      "params": { "target": "injectFallback" },
+      "assertion": {
+        "metric": "p95LatencyMs",
+        "op": "le",
+        "value": 300,
+        "source": "timing.targets.injectFallbackP95Ms"
+      }
+    },
+    {
+      "caseId": "timing.capture_to_perception",
+      "category": "timing",
+      "title": "捕获→首感知 P95",
+      "priority": "medium",
+      "params": { "target": "captureToPerception" },
+      "assertion": {
+        "metric": "p95LatencyMs",
+        "op": "le",
+        "value": 80,
+        "source": "timing.targets.captureToPerceptionP95Ms"
+      }
+    },
+    {
+      "caseId": "downsample.capture_factor",
+      "category": "downsample",
+      "title": "捕获降采样默认倍率",
+      "priority": "medium",
+      "params": { "stage": "capture" },
+      "assertion": {
+        "metric": "captureDownsampleFactor",
+        "op": "eq",
+        "value": 0.5,
+        "source": "render.captureDownsample.defaultFactor"
+      }
+    },
+    {
+      "caseId": "downsample.min_capture_factor",
+      "category": "downsample",
+      "title": "捕获降采样最小倍率（低端机可下探）",
+      "priority": "high",
+      "params": { "stage": "capture" },
+      "assertion": {
+        "metric": "captureDownsampleFactor",
+        "op": "eq",
+        "value": 0.25,
+        "source": "render.captureDownsample.minFactor"
+      }
+    },
+    {
+      "caseId": "downsample.injection_frame_rate",
+      "category": "downsample",
+      "title": "注入期帧率上限",
+      "priority": "medium",
+      "params": { "stage": "injection" },
+      "assertion": {
+        "metric": "injectionFrameRateCapFps",
+        "op": "le",
+        "value": 30,
+        "source": "render.injectionFrameRateCapFps"
+      }
+    },
+    {
+      "caseId": "dmi_gate.notification_notify",
+      "category": "dmi_gate",
+      "title": "DMI 门控·通知",
+      "priority": "high",
+      "params": { "toolName": "dmi.notification.notify" },
+      "assertion": {
+        "metric": "dmiBridgeState",
+        "op": "eq",
+        "value": "implemented",
+        "source": "dmiAvailability.registryRef#dmi.notification.notify"
+      }
+    },
+    {
+      "caseId": "dmi_gate.calendar_query",
+      "category": "dmi_gate",
+      "title": "DMI 门控·日历查询",
+      "priority": "high",
+      "params": { "toolName": "dmi.calendar.query" },
+      "assertion": {
+        "metric": "dmiBridgeState",
+        "op": "eq",
+        "value": "implemented",
+        "source": "dmiAvailability.registryRef#dmi.calendar.query"
+      }
+    },
+    {
+      "caseId": "dmi_gate.calendar_create",
+      "category": "dmi_gate",
+      "title": "DMI 门控·日历创建",
+      "priority": "medium",
+      "params": { "toolName": "dmi.calendar.create" },
+      "assertion": {
+        "metric": "dmiBridgeState",
+        "op": "eq",
+        "value": "implemented",
+        "source": "dmiAvailability.registryRef#dmi.calendar.create"
+      }
+    },
+    {
+      "caseId": "dmi_gate.contacts_query",
+      "category": "dmi_gate",
+      "title": "DMI 门控·联系人查询",
+      "priority": "medium",
+      "params": { "toolName": "dmi.contacts.query" },
+      "assertion": {
+        "metric": "dmiBridgeState",
+        "op": "eq",
+        "value": "implemented",
+        "source": "dmiAvailability.registryRef#dmi.contacts.query"
+      }
+    },
+    {
+      "caseId": "dmi_gate.telephony_call",
+      "category": "dmi_gate",
+      "title": "DMI 门控·拨号",
+      "priority": "medium",
+      "params": { "toolName": "dmi.telephony.call" },
+      "assertion": {
+        "metric": "dmiBridgeState",
+        "op": "eq",
+        "value": "implemented",
+        "source": "dmiAvailability.registryRef#dmi.telephony.call"
+      }
+    },
+    {
+      "caseId": "dmi_gate.sms_send",
+      "category": "dmi_gate",
+      "title": "DMI 门控·短信发送",
+      "priority": "medium",
+      "params": { "toolName": "dmi.sms.send" },
+      "assertion": {
+        "metric": "dmiBridgeState",
+        "op": "eq",
+        "value": "implemented",
+        "source": "dmiAvailability.registryRef#dmi.sms.send"
+      }
+    },
+    {
+      "caseId": "s7_gate.sensor_hub_aon",
+      "category": "s7_gate",
+      "title": "姿态门控·AON 岛",
+      "priority": "high",
+      "onUnsupported": "skip",
+      "assertion": {
+        "metric": "aonIsland",
+        "op": "eq",
+        "value": false,
+        "source": "s7.sensorHub.aonIsland"
+      }
+    },
+    {
+      "caseId": "s7_gate.tier_foreground",
+      "category": "s7_gate",
+      "title": "姿态门控·T1 亮屏前台",
+      "priority": "high",
+      "onUnsupported": "skip",
+      "params": { "tier": "foreground" },
+      "assertion": {
+        "metric": "motionTierEnabled",
+        "op": "eq",
+        "value": true,
+        "source": "s7.tiers.foreground.enabled"
+      }
+    },
+    {
+      "caseId": "s7_gate.tier_deep_sleep",
+      "category": "s7_gate",
+      "title": "姿态门控·T2 深睡事件（本机型裁剪）",
+      "priority": "high",
+      "onUnsupported": "skip",
+      "params": { "tier": "deepSleep" },
+      "assertion": {
+        "metric": "motionTierEnabled",
+        "op": "eq",
+        "value": false,
+        "source": "s7.tiers.deepSleep.enabled"
+      }
+    },
+    {
+      "caseId": "s7_gate.tier_sensitive_stop",
+      "category": "s7_gate",
+      "title": "姿态门控·T3 敏感全停",
+      "priority": "high",
+      "onUnsupported": "skip",
+      "params": { "tier": "sensitiveStop" },
+      "assertion": {
+        "metric": "motionTierEnabled",
+        "op": "eq",
+        "value": true,
+        "source": "s7.tiers.sensitiveStop.enabled"
+      }
+    },
+    {
+      "caseId": "s7_gate.gesture_shake",
+      "category": "s7_gate",
+      "title": "姿态门控·摇一摇",
+      "priority": "high",
+      "onUnsupported": "skip",
+      "params": { "gesture": "shake" },
+      "assertion": {
+        "metric": "gestureSupported",
+        "op": "eq",
+        "value": true,
+        "source": "s7.gestures.shake.supported"
+      }
+    },
+    {
+      "caseId": "s7_gate.gesture_flip",
+      "category": "s7_gate",
+      "title": "姿态门控·翻转",
+      "priority": "medium",
+      "onUnsupported": "skip",
+      "params": { "gesture": "flip" },
+      "assertion": {
+        "metric": "gestureSupported",
+        "op": "eq",
+        "value": true,
+        "source": "s7.gestures.flip.supported"
+      }
+    },
+    {
+      "caseId": "s7_gate.gesture_swipe",
+      "category": "s7_gate",
+      "title": "姿态门控·滑动（本机型裁剪）",
+      "priority": "medium",
+      "onUnsupported": "skip",
+      "params": { "gesture": "swipe" },
+      "assertion": {
+        "metric": "gestureSupported",
+        "op": "eq",
+        "value": false,
+        "source": "s7.gestures.swipe.supported"
+      }
+    }
+  ]
+}

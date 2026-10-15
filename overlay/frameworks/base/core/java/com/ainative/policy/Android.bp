@@ -1,0 +1,33 @@
+// AI Native OS AIDL 模块
+// 自动生成
+
+aidl_interface {
+    name: "ainative.policy",
+    unstable: true,
+    srcs: [
+        "AgentHandle.aidl",
+        "CapabilityRequest.aidl",
+        "CapabilityToken.aidl",
+        "IPolicyEngine.aidl",
+        "IPolicyListener.aidl",
+        "IntentEvaluationRequest.aidl",
+        "PolicyDecision.aidl",
+        "PolicyRuleView.aidl",
+        "PolicyStats.aidl",
+        "TaintMapEntry.aidl",
+        "TokenRevocationInfo.aidl",
+    ],
+    local_include_dir: ".",
+    backend: {
+        java: {
+            sdk_version: "system_current",
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: false,
+        },
+        ndk: {
+            enabled: false,
+        },
+    },
+}

@@ -1,0 +1,31 @@
+// AI Native OS AIDL 模块 — com.ainative.decision（B5.3 本地决策模型服务）
+// 旗舰版/通用版双后端：本地推理（旗舰 SoC）/ 云端决策（CloudBroker /v1/decision）
+// 契约草案见 docs/decision/B5.3-B5.4-决策模型集成设计.md
+
+aidl_interface {
+    name: "ainative.decision",
+
+    // 首次构建，不需要版本控制（与 ainative.action 一致，避免 aidl_api 冻结目录）
+    unstable: true,
+
+    srcs: [
+        "DecisionRequest.aidl",
+        "DecisionResult.aidl",
+        "IAgentDecisionService.aidl",
+    ],
+
+    local_include_dir: ".",
+
+    backend: {
+        java: {
+            sdk_version: "system_current",
+            enabled: true,
+        },
+        cpp: {
+            enabled: false,
+        },
+        ndk: {
+            enabled: false,
+        },
+    },
+}

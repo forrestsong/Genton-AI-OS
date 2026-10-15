@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ainative.os/schemas/action-registry.v1.json",
+  "title": "Agent Native OS Action Registry Schema",
+  "description": "动作注册表 JSON Schema（A3.1 动作注册表）- 定义系统中所有可执行动作的契约",
+  "type": "object",
+  "required": ["version", "actions"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "注册表版本（语义化版本）"
+    },
+    "actions": {
+      "type": "array",
+      "description": "动作清单",
+      "items": {
+        "$ref": "#/definitions/Action"
+      },
+      "minItems": 1
+    }
+  },
+  "definitions": {
+    "Action": {
+      "type": "object",
+      "required": ["name", "displayName", "executorId", "riskLevel", "requiredCapability", "inputSchema", "outputSchema", "auditEventType"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$",
+          "description": "唯一动作名（命名空间格式，如 ui.tap、app.launch）"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "人类可读名称（用于审计和确认流展示）"
+        },
+        "executorId": {
+          "type": "string",
+          "enum": ["activity", "input", "query", "device_control", "notification", "clipboard", "telephony", "settings", "system"],
+          "description": "归属执行器类型"
+        },
+        "riskLevel": {
+          "type": "integer",
+          "enum": [0, 1, 2],
+          "description": "风险等级：0=low（免确认）、1=medium（可配置）、2=high（强制确认）"
+        },
+        "requiredCapability": {
+          "type": "string",
+          "pattern": "^agent\\.[a-z_]+$",
+          "description": "需要的能力令牌（对齐能力注册表，如 agent.input_inject）"
+        },
+        "requiresConfirmationRoles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "可选：强制确认角色（覆盖风险等级默认策略）"
+        },
+        "inputSource": {
+          "type": "object",
+          "description": "参数来源要求（taint 防护）",
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["trusted", "user", "any"]
+          }
+        },
+        "inputSchema": {
+          "type": "object",
+          "required": ["type", "properties"],
+          "properties": {
+            "type": {
+              "const": "object"
+            },
+            "required": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "properties": {
+              "type": "object",
+              "minProperties": 1
+            }
+          },
+          "description": "输入参数 JSON Schema"
+        },
+        "outputSchema": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "object"
+            }
+          },
+          "description": "输出结果 JSON Schema"
+        },
+        "auditEventType": {
+          "type": "string",
+          "pattern": "^action\\.[a-z_]+$",
+          "description": "审计事件类型名（须在审计 schema 中存在）"
+        },
+        "description": {
+          "type": "string",
+          "description": "可选：动作详细说明"
+        },
+        "deprecated": {
+          "type": "boolean",
+          "description": "可选：标记为废弃"
+        },
+        "replacedBy": {
+          "type": "string",
+          "description": "可选：废弃时推荐的替代动作"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

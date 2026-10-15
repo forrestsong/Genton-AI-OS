@@ -1,0 +1,48 @@
+// AI Native OS - Call AIDL Interface Module
+// 通话门控接口：CallGate、RealWorld 验证、紧急号码白名单
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.call",
+    
+    srcs: [
+        "com/ainative/call/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [
+        "com.ainative.agent",   // AgentHandle
+        "com.ainative.policy",  // 策略决策
+        "com.ainative.ui",      // 确认宿主
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//frameworks/base/telecomm",  // Telecom 集成
+        "//packages/apps/AINativeBrain",
+    ],
+}

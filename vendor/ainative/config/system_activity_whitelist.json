@@ -1,0 +1,28 @@
+{
+  "$schema": "../../../registry/action-registry.schema.json",
+  "version": "1.0.0",
+  "description": "系统活动白名单：允许 Agent 启动非导出（exported=false）系统组件的显式列表。",
+  "whitelist": [
+    "com.android.settings/.SubSettings",
+    "com.android.settings/.wifi.WifiSettings",
+    "com.android.settings/.wifi.WifiSettings2",
+    "com.android.settings/.bluetooth.BluetoothSettings",
+    "com.android.settings/.DisplaySettings",
+    "com.android.settings/.SoundSettings",
+    "com.android.settings/.NotificationSettings",
+    "com.android.settings/.LocationSettings",
+    "com.android.settings/.SecuritySettings",
+    "com.android.settings/.PrivacySettings",
+    "com.android.settings/.DateTimeSettings",
+    "com.android.settings/.LanguageSettings",
+    "com.android.settings/.StorageSettings",
+    "com.android.settings/.BatterySettings",
+    "com.android.settings/.AppsSettings",
+    "com.android.settings/.DeviceInfoSettings"
+  ],
+  "notes": [
+    "此白名单仅适用于系统签名应用（com.android.settings 等）。",
+    "第三方应用的非导出组件一律拒绝（防越权）。",
+    "添加新组件前需经安全评审（红线检查单 E2.3）。"
+  ]
+}

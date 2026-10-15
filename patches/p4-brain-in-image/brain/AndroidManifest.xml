@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.genton.brain">
+
+    <!-- 平台签名权限 -->
+    <!-- [P4] 前台服务权限（BrainBootstrapService 常驻前台，Android 14+ 强制要求） -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+    <uses-permission android:name="android.permission.MANAGE_USERS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="com.genton.permission.AGENT_RUNTIME" />
+    <uses-permission android:name="com.genton.permission.SUBSCRIBE_EVENTS" />
+    
+    <!-- 会话桥权限 -->
+    <permission
+        android:name="com.genton.permission.BIND_AGENT_UI"
+        android:protectionLevel="signature|privileged"
+        android:label="@string/perm_bind_agent_ui_label"
+        android:description="@string/perm_bind_agent_ui_desc" />
+
+    <permission android:name="com.genton.permission.BIND_AUDIT_SERVICE" android:protectionLevel="signature|privileged" android:label="Genton 审计服务绑定" />
+    <permission android:name="com.genton.permission.BIND_POLICY_ENGINE" android:protectionLevel="signature|privileged" android:label="Genton 策略引擎绑定" />
+    <permission android:name="com.genton.permission.BIND_SCREEN_SERVICE" android:protectionLevel="signature|privileged" android:label="Genton 屏幕服务绑定" />
+    <permission android:name="com.genton.permission.BIND_UI_TREE_SERVICE" android:protectionLevel="signature|privileged" android:label="Genton UI 树服务绑定" />
+    <permission android:name="com.genton.permission.BIND_MEMORY_SERVICE" android:protectionLevel="signature|privileged" android:label="Genton 记忆服务绑定" />
+    <permission android:name="com.genton.permission.MANAGE_SANDBOX" android:protectionLevel="signature|privileged" android:label="Genton 沙箱管理" />
+    <permission android:name="com.genton.permission.SUBMIT_USER_DECISION" android:protectionLevel="signature|privileged" android:label="Genton 用户决策回灌" />
+    <application
+        android:name=".BrainApplication"
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_brain"
+        android:allowBackup="false"
+        android:persistent="true"
+        android:process=":main">
+
+        <!-- B1.1 启动自检服务 -->
+        <service
+            android:foregroundServiceType="specialUse"
+            android:name=".lifecycle.BrainBootstrapService"
+            android:exported="false"
+            android:enabled="true" />
+
+        <!-- B1.1 崩溃恢复服务 -->
+        <service
+            android:name=".lifecycle.CrashRecoveryService"
+            android:exported="false"
+            android:enabled="true" />
+
+        <!-- B3.1 会话服务（大脑侧实现） -->
+        <service
+            android:name=".session.AgentSessionBinderService"
+            android:exported="true"
+            android:permission="com.genton.permission.BIND_AGENT_UI">
+            <intent-filter>
+                <action android:name="com.genton.agent.IAgentSessionService" />
+            </intent-filter>
+        </service>
+
+        <!-- B1.2 事件流监听器 -->
+        <receiver
+            android:name=".event.EventStreamListener"
+            android:exported="false"
+            android:enabled="true" />
+
+    </application>
+
+</manifest>

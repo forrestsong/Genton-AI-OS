@@ -1,0 +1,50 @@
+# AI Native OS SELinux 文件上下文定义
+#
+# 定义 AI Native 相关文件和目录的 SELinux 标签
+#
+# 版本: v1.0
+# 日期: 2026-09-05
+# 依据: WBS A1.4 权限清单落地
+
+# ========================================
+# 系统数据目录
+# ========================================
+
+# AI Native 数据根目录
+/data/system/ainative(/.*)?                             u:object_r:ainative_data_file:s0
+
+# 审计日志目录
+/data/system/ainative/audit(/.*)?                       u:object_r:ainative_data_file:s0
+
+# 记忆数据库目录
+/data/system/ainative/memory(/.*)?                      u:object_r:ainative_data_file:s0
+
+# Checkpoint 目录
+/data/system/ainative/checkpoints(/.*)?                 u:object_r:ainative_data_file:s0
+
+# 策略包目录
+/data/system/ainative/policy(/.*)?                      u:object_r:ainative_data_file:s0
+
+# ========================================
+# 系统框架库
+# ========================================
+
+# AI Native AIDL 库
+/system/framework/com\.ainative\..*\.jar                u:object_r:system_file:s0
+
+# ========================================
+# 大脑应用目录
+# ========================================
+
+# 大脑 APK
+/system/priv-app/AINativeBrain(/.*)?                    u:object_r:system_file:s0
+
+# 大脑数据目录
+/data/data/com\.ainative\.brain(/.*)?                   u:object_r:ainative_data_file:s0
+
+# ========================================
+# NPU/GPU 设备 (如果需要特殊标签)
+# ========================================
+
+# NPU 设备节点
+# /dev/npu.*                                            u:object_r:gpu_device:s0

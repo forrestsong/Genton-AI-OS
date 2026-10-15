@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AI Native OS - SystemUI Privileged Permissions -->
+<permissions>
+    <privapp-permissions package="com.android.systemui.ainative">
+        <!-- 状态栏权限 -->
+        <permission name="android.permission.STATUS_BAR"/>
+        <permission name="android.permission.STATUS_BAR_SERVICE"/>
+        
+        <!-- 系统窗口权限 -->
+        <permission name="android.permission.SYSTEM_ALERT_WINDOW"/>
+        <permission name="android.permission.INTERNAL_SYSTEM_WINDOW"/>
+        
+        <!-- 屏幕捕获权限（A2.2 帧捕获服务） -->
+        <permission name="android.permission.READ_FRAME_BUFFER"/>
+        <permission name="android.permission.CAPTURE_VIDEO_OUTPUT"/>
+        
+        <!-- 多用户权限 -->
+        <permission name="android.permission.INTERACT_ACROSS_USERS"/>
+        <permission name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
+        
+        <!-- 无障碍服务权限（A2.4 Accessibility回退通道） -->
+        <permission name="android.permission.BIND_ACCESSIBILITY_SERVICE"/>
+        
+        <!-- 设置权限 -->
+        <permission name="android.permission.WRITE_SECURE_SETTINGS"/>
+        <permission name="android.permission.WRITE_SETTINGS"/>
+        
+        <!-- 输入注入权限（A3.5 系统侧执行器） -->
+        <permission name="android.permission.INJECT_EVENTS"/>
+        
+        <!-- 包管理权限 -->
+        <permission name="android.permission.QUERY_ALL_PACKAGES"/>
+        
+        <!-- 通知权限 -->
+        <permission name="android.permission.ACCESS_NOTIFICATIONS"/>
+    </privapp-permissions>
+</permissions>

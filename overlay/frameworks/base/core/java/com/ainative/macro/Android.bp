@@ -1,0 +1,23 @@
+// Macro AIDL Interface
+
+aidl_interface {
+    name: "ainative.macro",
+    unstable: true,
+    
+    srcs: [
+        "*.aidl",
+    ],
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: false,
+        },
+        ndk: {
+            enabled: false,
+        },
+    },
+}

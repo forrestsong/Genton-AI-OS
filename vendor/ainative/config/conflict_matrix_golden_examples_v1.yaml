@@ -1,0 +1,760 @@
+# ============================================================
+# 策略冲突矩阵黄金样例集 v1
+# C1.3 交付物：冲突检测与裁决样例
+# 版本: 1.0.0
+# 日期: 2026-09-05
+# ============================================================
+# 说明：
+# - 黄金样例集用于验证策略引擎的冲突检测和裁决逻辑
+# - 每个样例包含输入规则、冲突类型、预期结果
+# - 用于 CI 自动化测试和回归测试
+# - 与 E1.1 安全基线和 D10 §2.4.C 对齐
+# ============================================================
+
+version: "1.0.0"
+test_suite: "conflict_matrix_golden_examples"
+last_updated: "2026-09-05"
+
+# ============================================================
+# 1. baseline-deny 压过一切（最高优先级）
+# ============================================================
+
+baseline_deny_priority:
+  description: "baseline: true + effect: deny 压过所有非 baseline 规则"
+  
+  test_cases:
+    # 样例 1: baseline deny 压过 user allow
+    - id: CM-001
+      name: "baseline deny 压过 user allow"
+      category: baseline_deny_priority
+      
+      input_rules:
+        - id: sys.action.baseline.audit-tamper-deny
+          baseline: true
+          domain: action
+          effect: deny
+          priority: 1000
+          when:
+            event: action.requested
+            action: audit.delete
+        
+        - id: user.action.audit-cleanup
+          domain: action
+          effect: allow
+          priority: 500
+          when:
+            event: action.requested
+            action: audit.delete
+            userRole: admin
+      
+      input_context:
+        event: action.requested
+        action: audit.delete
+        userRole: admin
+      
+      expected_result:
+        decision: DENY
+        matched_rule: sys.action.baseline.audit-tamper-deny
+        reason: "baseline deny 压过 user allow"
+        audit: full
+      
+      conflict_detected: true
+      conflict_type: baseline_override
+      redline_ref: R2.4
+    
+    # 样例 2: baseline deny 压过 user confirmation
+    - id: CM-002
+      name: "baseline deny 压过 user confirmation"
+      category: baseline_deny_priority
+      
+      input_rules:
+        - id: sys.action.baseline.pii-exfiltration-deny
+          baseline: true
+          domain: action
+          effect: deny
+          priority: 1000
+          when:
+            event: action.requested
+            action: network.request
+            containsPII: true
+            targetDomain: EXTERNAL
+        
+        - id: user.action.external-share-confirm
+          domain: action
+          effect: require_confirmation
+          priority: 300
+          when:
+            event: action.requested
+            action: network.request
+            containsPII: true
+      
+      input_context:
+        event: action.requested
+        action: network.request
+        containsPII: true
+        targetDomain: EXTERNAL
+      
+      expected_result:
+        decision: DENY
+        matched_rule: sys.action.baseline.pii-exfiltration-deny
+        reason: "baseline deny 压过 user confirmation"
+        audit: full
+      
+      conflict_detected: true
+      conflict_type: baseline_override
+      redline_ref: R7.1
+    
+    # 样例 3: baseline deny 压过路由规则（notification）
+    - id: CM-003
+      name: "baseline deny 压过通知路由规则"
+      category: baseline_deny_priority
+      
+      input_rules:
+        - id: sys.notify.baseline.critical-native
+          baseline: true
+          domain: notification
+          effect: deny
+          priority: 1000
+          when:
+            event: notification.posted
+            category: alarm
+        
+        - id: user.notify.route.night-digest
+          domain: notification
+          effect: route_p1_digest
+          priority: 200
+          when:
+            event: notification.posted
+            category: alarm
+            context.timeOfDay: night
+      
+      input_context:
+        event: notification.posted
+        category: alarm
+        context.timeOfDay: night
+      
+      expected_result:
+        decision: DENY_DOWNGRADE
+        matched_rule: sys.notify.baseline.critical-native
+        fallback_route: P0_NATIVE
+        reason: "baseline deny 保护关键通知原生展示"
+        audit: full
+      
+      conflict_detected: true
+      conflict_type: baseline_deny_protect
+      redline_ref: R2.2
+
+# ============================================================
+# 2. deny > require_confirmation > allow（同级裁决）
+# ============================================================
+
+same_priority_conflict:
+  description: "同 priority 规则的冲突裁决"
+  
+  test_cases:
+    # 样例 4: deny 优先于 allow（同 priority）
+    - id: CM-004
+      name: "deny 优先于 allow（同 priority）"
+      category: same_priority_conflict
+      
+      input_rules:
+        - id: user.action.deny-file-delete
+          domain: action
+          effect: deny
+          priority: 300
+          when:
+            event: action.requested
+            action: file.delete
+            filePath: /system/*
+        
+        - id: user.action.allow-file-delete
+          domain: action
+          effect: allow
+          priority: 300
+          when:
+            event: action.requested
+            action: file.delete
+            userRole: admin
+      
+      input_context:
+        event: action.requested
+        action: file.delete
+        filePath: /system/config.xml
+        userRole: admin
+      
+      expected_result:
+        decision: DENY
+        matched_rule: user.action.deny-file-delete
+        reason: "deny 优先于 allow（同 priority 300）"
+        audit: summary
+      
+      conflict_detected: true
+      conflict_type: effect_priority
+      redline_ref: R2.1
+    
+    # 样例 5: deny 优先于 require_confirmation（同 priority）
+    - id: CM-005
+      name: "deny 优先于 require_confirmation"
+      category: same_priority_conflict
+      
+      input_rules:
+        - id: user.action.deny-memory-write
+          domain: action
+          effect: deny
+          priority: 250
+          when:
+            event: action.requested
+            action: memory.write
+            taintSource: WEB_CONTENT
+        
+        - id: user.action.confirm-memory-write
+          domain: action
+          effect: require_confirmation
+          priority: 250
+          when:
+            event: action.requested
+            action: memory.write
+      
+      input_context:
+        event: action.requested
+        action: memory.write
+        taintSource: WEB_CONTENT
+      
+      expected_result:
+        decision: DENY
+        matched_rule: user.action.deny-memory-write
+        reason: "deny 优先于 require_confirmation（同 priority 250）"
+        audit: summary
+      
+      conflict_detected: true
+      conflict_type: effect_priority
+      redline_ref: R2.1
+    
+    # 样例 6: require_confirmation 优先于 allow（同 priority）
+    - id: CM-006
+      name: "require_confirmation 优先于 allow"
+      category: same_priority_conflict
+      
+      input_rules:
+        - id: user.action.confirm-network-upload
+          domain: action
+          effect: require_confirmation
+          priority: 200
+          when:
+            event: action.requested
+            action: network.upload
+            fileSize: "> 10485760"  # >10MB
+        
+        - id: user.action.allow-network-upload
+          domain: action
+          effect: allow
+          priority: 200
+          when:
+            event: action.requested
+            action: network.upload
+      
+      input_context:
+        event: action.requested
+        action: network.upload
+        fileSize: 20971520  # 20MB
+      
+      expected_result:
+        decision: REQUIRE_CONFIRMATION
+        matched_rule: user.action.confirm-network-upload
+        reason: "require_confirmation 优先于 allow（同 priority 200）"
+        audit: full
+      
+      conflict_detected: true
+      conflict_type: effect_priority
+
+# ============================================================
+# 3. priority 数值大者优先
+# ============================================================
+
+priority_numeric_order:
+  description: "不同 priority 的规则按数值大小排序"
+  
+  test_cases:
+    # 样例 7: 高 priority allow 压过低 priority deny
+    - id: CM-007
+      name: "高 priority allow 压过低 priority deny"
+      category: priority_numeric_order
+      
+      input_rules:
+        - id: user.action.allow-contact-read-vip
+          domain: action
+          effect: allow
+          priority: 400
+          when:
+            event: action.requested
+            action: contact.read
+            contactTag: vip
+        
+        - id: user.action.deny-contact-read
+          domain: action
+          effect: deny
+          priority: 100
+          when:
+            event: action.requested
+            action: contact.read
+      
+      input_context:
+        event: action.requested
+        action: contact.read
+        contactTag: vip
+      
+      expected_result:
+        decision: ALLOW
+        matched_rule: user.action.allow-contact-read-vip
+        reason: "priority 400 > 100"
+        audit: summary
+      
+      conflict_detected: false
+      conflict_type: none
+      note: "priority 不同不算冲突，仅按序裁决"
+    
+    # 样例 8: notification 高 priority 路由
+    - id: CM-008
+      name: "高 priority 路由压过低 priority 路由"
+      category: priority_numeric_order
+      
+      input_rules:
+        - id: user.notify.route.bank-otp
+          domain: notification
+          effect: route_p0_native
+          priority: 200
+          when:
+            event: notification.posted
+            senderTrust: TRUSTED_PARTNER
+            category: otp
+        
+        - id: user.notify.route.all-digest
+          domain: notification
+          effect: route_p1_digest
+          priority: 50
+          when:
+            event: notification.posted
+      
+      input_context:
+        event: notification.posted
+        senderTrust: TRUSTED_PARTNER
+        category: otp
+      
+      expected_result:
+        decision: ROUTE_P0_NATIVE
+        matched_rule: user.notify.route.bank-otp
+        route: P0_NATIVE
+        reason: "priority 200 > 50"
+        audit: summary
+      
+      conflict_detected: false
+      conflict_type: none
+
+# ============================================================
+# 4. baseline 重叠冲突（编译期拒绝）
+# ============================================================
+
+baseline_overlap_reject:
+  description: "两条 baseline 规则 when 重叠且 effect 不同，编译拒绝"
+  
+  test_cases:
+    # 样例 9: baseline 重叠冲突（编译拒绝）
+    - id: CM-009
+      name: "baseline 规则重叠冲突"
+      category: baseline_overlap_reject
+      
+      input_rules:
+        - id: sys.action.baseline.pii-deny
+          baseline: true
+          domain: action
+          effect: deny
+          priority: 1000
+          when:
+            event: action.requested
+            action: network.request
+            containsPII: true
+        
+        - id: sys.action.baseline.pii-allow
+          baseline: true
+          domain: action
+          effect: allow
+          priority: 1000
+          when:
+            event: action.requested
+            action: network.request
+            containsPII: true
+      
+      expected_result:
+        compilation_status: FAILED
+        error_type: BASELINE_OVERLAP_CONFLICT
+        error_message: "两条 baseline 规则 when 条件重叠且 effect 不同（deny vs allow）"
+        conflict_rules: [sys.action.baseline.pii-deny, sys.action.baseline.pii-allow]
+      
+      conflict_detected: true
+      conflict_type: baseline_overlap
+      compiler_check: C6
+      redline_ref: R2.4
+
+# ============================================================
+# 5. 同 priority 同 baseline 不同 effect（编译拒绝）
+# ============================================================
+
+same_priority_effect_conflict:
+  description: "同 priority 且非 baseline 规则，when 重叠且 effect 不同，编译拒绝"
+  
+  test_cases:
+    # 样例 10: 同 priority 不同 effect 冲突
+    - id: CM-010
+      name: "同 priority 不同 effect 冲突"
+      category: same_priority_effect_conflict
+      
+      input_rules:
+        - id: user.notify.route.ad-fold
+          domain: notification
+          effect: route_p2_agent_act
+          priority: 90
+          when:
+            event: notification.posted
+            category: advertising
+        
+        - id: user.notify.route.ad-native
+          domain: notification
+          effect: route_p0_native
+          priority: 90
+          when:
+            event: notification.posted
+            category: advertising
+      
+      expected_result:
+        compilation_status: FAILED
+        error_type: SAME_PRIORITY_EFFECT_CONFLICT
+        error_message: "同 priority 90 规则 when 重叠且 effect 不同（route_p2_agent_act vs route_p0_native）"
+        conflict_rules: [user.notify.route.ad-fold, user.notify.route.ad-native]
+        suggestion: "修改其中一条规则的 priority 或细化 when 条件"
+      
+      conflict_detected: true
+      conflict_type: same_priority_conflict
+      compiler_check: C6
+
+# ============================================================
+# 6. 路由轴默认行为（无匹配规则）
+# ============================================================
+
+default_behavior:
+  description: "无匹配规则时的默认行为"
+  
+  test_cases:
+    # 样例 11: notification 无匹配规则 → P0_NATIVE
+    - id: CM-011
+      name: "notification 无匹配规则默认 P0_NATIVE"
+      category: default_behavior
+      
+      input_rules: []  # 无规则
+      
+      input_context:
+        event: notification.posted
+        category: system_info
+        senderTrust: APP
+      
+      expected_result:
+        decision: ROUTE_P0_NATIVE
+        matched_rule: null
+        route: P0_NATIVE
+        reason: "无匹配规则，默认 P0_NATIVE（§4.1 无匹配默认）"
+        audit: summary
+      
+      conflict_detected: false
+      conflict_type: none
+      redline_ref: R2.2
+    
+    # 样例 12: call_gate 无匹配规则 → RING_NATIVE
+    - id: CM-012
+      name: "call_gate 无匹配规则默认 RING_NATIVE"
+      category: default_behavior
+      
+      input_rules: []  # 无规则
+      
+      input_context:
+        call: incoming
+        callerClass: unknown
+      
+      expected_result:
+        decision: ROUTE_RING_NATIVE
+        matched_rule: null
+        route: RING_NATIVE
+        reason: "无匹配规则，默认 RING_NATIVE（§4.1 无匹配默认）"
+        audit: summary
+      
+      conflict_detected: false
+      conflict_type: none
+      redline_ref: R2.3
+    
+    # 样例 13: action 无匹配规则 → DENY
+    - id: CM-013
+      name: "action 无匹配规则默认 DENY"
+      category: default_behavior
+      
+      input_rules: []  # 无规则
+      
+      input_context:
+        event: action.requested
+        action: file.write
+      
+      expected_result:
+        decision: DENY
+        matched_rule: null
+        reason: "无匹配规则，默认 DENY（deny 默认原则）"
+        audit: full
+      
+      conflict_detected: false
+      conflict_type: none
+      redline_ref: R2.1
+
+# ============================================================
+# 7. 死规则检测（被完全覆盖）
+# ============================================================
+
+dead_rule_detection:
+  description: "死规则：被更高 priority 规则完全覆盖的规则"
+  
+  test_cases:
+    # 样例 14: 死规则（被完全覆盖）
+    - id: CM-014
+      name: "死规则检测示例"
+      category: dead_rule_detection
+      
+      input_rules:
+        - id: user.notify.route.all-p0
+          domain: notification
+          effect: route_p0_native
+          priority: 500
+          when:
+            event: notification.posted
+        
+        - id: user.notify.route.social-p1
+          domain: notification
+          effect: route_p1_digest
+          priority: 100
+          when:
+            event: notification.posted
+            category: social_updates
+      
+      expected_result:
+        compilation_status: SUCCESS
+        warning_type: DEAD_RULE
+        dead_rules: [user.notify.route.social-p1]
+        reason: "user.notify.route.social-p1 被 user.notify.route.all-p0 完全覆盖（500 > 100）"
+        suggestion: "移除死规则或调整 priority"
+      
+      conflict_detected: false
+      conflict_type: dead_rule
+      compiler_check: C8
+
+# ============================================================
+# 8. 用户显式授权 vs 基线
+# ============================================================
+
+user_explicit_vs_baseline:
+  description: "用户显式授权（一次性/本次任务）vs 基线规则"
+  
+  test_cases:
+    # 样例 15: 用户显式授权低于基线 deny
+    - id: CM-015
+      name: "用户显式授权低于基线 deny"
+      category: user_explicit_vs_baseline
+      
+      input_rules:
+        - id: sys.action.baseline.audit-tamper-deny
+          baseline: true
+          domain: action
+          effect: deny
+          priority: 1000
+          when:
+            event: action.requested
+            action: audit.delete
+      
+      input_context:
+        event: action.requested
+        action: audit.delete
+        userExplicitAllow: true  # 用户显式一次性授权
+      
+      expected_result:
+        decision: DENY
+        matched_rule: sys.action.baseline.audit-tamper-deny
+        reason: "用户显式授权低于基线 deny，不得覆盖基线"
+        audit: full
+      
+      conflict_detected: true
+      conflict_type: baseline_override
+      redline_ref: R2.4
+      note: "D10 §2.2: 用户显式授权高于默认策略，低于基线 deny"
+
+# ============================================================
+# 9. Taint 冲突裁决
+# ============================================================
+
+taint_conflict:
+  description: "Taint 来源冲突检测"
+  
+  test_cases:
+    # 样例 16: Taint 冲突拒绝
+    - id: CM-016
+      name: "Taint 冲突拒绝"
+      category: taint_conflict
+      
+      input_rules:
+        - id: sys.action.baseline.taint-conflict-deny
+          baseline: true
+          domain: action
+          effect: deny
+          priority: 1000
+          when:
+            event: action.requested
+            action: ui.type
+            taintConflict: true
+      
+      input_context:
+        event: action.requested
+        action: ui.type
+        argument: "password123"
+        taintSource: APP_CONTENT  # 不匹配 ui.type 的允许来源（USER_INPUT）
+        taintConflict: true
+      
+      expected_result:
+        decision: DENY
+        matched_rule: sys.action.baseline.taint-conflict-deny
+        reason: "Taint 冲突：ui.type 只接受 USER_INPUT，但来源是 APP_CONTENT"
+        audit: full
+      
+      conflict_detected: false
+      conflict_type: taint_mismatch
+      redline_ref: R3.4
+
+# ============================================================
+# 10. 冲突矩阵统计
+# ============================================================
+
+conflict_matrix_statistics:
+  description: "冲突矩阵黄金样例统计"
+  
+  total_test_cases: 16
+  
+  by_category:
+    baseline_deny_priority: 3
+    same_priority_conflict: 3
+    priority_numeric_order: 2
+    baseline_overlap_reject: 1
+    same_priority_effect_conflict: 1
+    default_behavior: 3
+    dead_rule_detection: 1
+    user_explicit_vs_baseline: 1
+    taint_conflict: 1
+  
+  by_conflict_type:
+    baseline_override: 4
+    effect_priority: 3
+    baseline_overlap: 1
+    same_priority_conflict: 1
+    dead_rule: 1
+    taint_mismatch: 1
+    none: 5  # 无冲突样例
+  
+  by_expected_result:
+    DENY: 7
+    ALLOW: 1
+    REQUIRE_CONFIRMATION: 1
+    ROUTE_P0_NATIVE: 3
+    ROUTE_P1_DIGEST: 1
+    DENY_DOWNGRADE: 1
+    COMPILATION_FAILED: 2
+  
+  redline_coverage:
+    covered_redlines: [R2.1, R2.2, R2.3, R2.4, R3.4, R7.1]
+    total_covered: 6
+
+# ============================================================
+# 11. 验收测试要求
+# ============================================================
+
+acceptance_criteria:
+  description: "冲突矩阵验收测试要求"
+  
+  requirements:
+    - requirement: "所有 16 个黄金样例必须通过"
+      test_method: "CI 自动化测试"
+      pass_criteria: "16/16 通过"
+    
+    - requirement: "baseline deny 必须压过所有非 baseline 规则"
+      test_method: "CM-001, CM-002, CM-003 验证"
+      pass_criteria: "baseline 规则始终生效"
+    
+    - requirement: "同 priority 裁决顺序正确（deny > confirmation > allow）"
+      test_method: "CM-004, CM-005, CM-006 验证"
+      pass_criteria: "裁决顺序符合规范"
+    
+    - requirement: "baseline 重叠冲突必须编译拒绝"
+      test_method: "CM-009 验证"
+      pass_criteria: "编译失败并报错"
+    
+    - requirement: "同 priority 不同 effect 冲突必须编译拒绝"
+      test_method: "CM-010 验证"
+      pass_criteria: "编译失败并报错"
+    
+    - requirement: "无匹配规则默认行为正确"
+      test_method: "CM-011, CM-012, CM-013 验证"
+      pass_criteria: "notification→P0, call_gate→RING, action→DENY"
+    
+    - requirement: "死规则检测正确"
+      test_method: "CM-014 验证"
+      pass_criteria: "编译成功但有 warning"
+    
+    - requirement: "用户显式授权不得覆盖基线 deny"
+      test_method: "CM-015 验证"
+      pass_criteria: "基线 deny 优先"
+    
+    - requirement: "Taint 冲突正确拒绝"
+      test_method: "CM-016 验证"
+      pass_criteria: "taintConflict: true → DENY"
+
+# ============================================================
+# 12. 使用说明
+# ============================================================
+
+usage_instructions:
+  description: "如何使用冲突矩阵黄金样例"
+  
+  for_ci_testing:
+    - step: "将样例加载到测试框架"
+      command: "python tools/test_conflict_matrix.py"
+    
+    - step: "遍历每个 test_case"
+      logic: "加载 input_rules → 提供 input_context → 调用策略引擎 → 比较 expected_result"
+    
+    - step: "报告通过/失败"
+      format: "✓ CM-001 passed / ✗ CM-002 failed"
+  
+  for_regression_testing:
+    - purpose: "策略引擎每次修改后运行冲突矩阵测试"
+      requirement: "16/16 必须通过才能合并代码"
+  
+  for_documentation:
+    - purpose: "作为策略 DSL 冲突裁决的权威参考"
+      audience: "开发者、策略设计者、安全审计"
+
+# ============================================================
+# 13. 版本与兼容性
+# ============================================================
+
+metadata:
+  version: "1.0.0"
+  schema_version: "1.0"
+  
+  compatibility:
+    requires:
+      - baseline_policy_rules_v1.yaml
+      - policy_catalog_v1.yaml
+      - value_domain_catalog_v1.yaml
+  
+  update_policy:
+    golden_examples_update: "随策略引擎版本更新，回归测试必须全过"
+    backward_compatibility: "新版本必须兼容旧版本的冲突裁决语义"

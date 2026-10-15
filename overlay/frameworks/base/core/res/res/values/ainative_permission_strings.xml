@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  AI Native OS 权限描述字符串
+  
+  为 Genton 权限提供用户可读的标签和描述（权限声明见 GentonBrain manifest）。
+-->
+<resources>
+    <!-- 感知层权限 -->
+    <string name="perm_bind_ui_tree_label">Bind to UI Tree Service</string>
+    <string name="perm_bind_ui_tree_desc">Allows binding to the Agent UI Tree Service to read structured interface information.</string>
+    
+    <string name="perm_bind_screen_label">Bind to Screen Capture Service</string>
+    <string name="perm_bind_screen_desc">Allows binding to the Agent Screen Capture Service to obtain screen frames.</string>
+    
+    <string name="perm_manage_notifications_label">Manage Notifications for Agent</string>
+    <string name="perm_manage_notifications_desc">Allows reading, filtering, clearing, and replying to notifications on behalf of the Agent.</string>
+
+    <!-- 事件流权限 -->
+    <string name="perm_subscribe_events_label">Subscribe to System Event Stream</string>
+    <string name="perm_subscribe_events_desc">Allows subscribing to system-wide event stream including notifications, foreground changes, telephony, and other system events. Restricted to platform-signed applications.</string>
+
+    <!-- 执行层权限 -->
+    <string name="perm_bind_action_label">Bind to Action Execution Service</string>
+    <string name="perm_bind_action_desc">Allows binding to the Agent Action Execution Service to submit and monitor action requests.</string>
+
+    <!-- 运行时权限 -->
+    <string name="perm_bind_agent_runtime_label">Bind to Agent Runtime Service</string>
+    <string name="perm_bind_agent_runtime_desc">Allows binding to the Agent Control Block (ACB) Service for agent registration, state management, and capability tokens.</string>
+
+    <!-- 记忆与审计权限 -->
+    <string name="perm_bind_memory_label">Bind to Memory Service</string>
+    <string name="perm_bind_memory_desc">Allows binding to the Agent Memory Service to store and retrieve agent memories.</string>
+    
+    <string name="perm_bind_audit_label">Bind to Audit Service</string>
+    <string name="perm_bind_audit_desc">Allows binding to the Agent Audit Service to record and verify audit events.</string>
+
+    <!-- 语义与上下文权限 -->
+    <string name="perm_query_entity_label">Query Semantic Entities</string>
+    <string name="perm_query_entity_desc">Allows querying the semantic entity ontology and knowledge graph.</string>
+    
+    <string name="perm_bind_context_label">Bind to Context Service</string>
+    <string name="perm_bind_context_desc">Allows binding to the Agent Context Service to subscribe to context frames.</string>
+
+    <!-- 策略与资产权限 -->
+    <string name="perm_bind_policy_label">Bind to Policy Engine</string>
+    <string name="perm_bind_policy_desc">Allows binding to the Policy Engine for capability token issuance and policy evaluation.</string>
+    
+    <string name="perm_bind_asset_label">Bind to Asset Library</string>
+    <string name="perm_bind_asset_desc">Allows binding to the Agent Asset Library to register and query skills, DMI, and macros.</string>
+
+    <!-- 推理与沙箱权限 -->
+    <string name="perm_bind_inference_label">Bind to Inference Router</string>
+    <string name="perm_bind_inference_desc">Allows binding to the Inference Router Service for model routing decisions.</string>
+    
+    <string name="perm_manage_sandbox_label">Manage Agent Sandbox</string>
+    <string name="perm_manage_sandbox_desc">Allows managing agent sandbox instances for third-party agents.</string>
+
+    <!-- 通话与姿态权限 -->
+    <string name="perm_bind_call_gate_label">Bind to CallGate Service</string>
+    <string name="perm_bind_call_gate_desc">Allows binding to the CallGate Service for call classification and interception.</string>
+    
+    <string name="perm_bind_motion_hub_label">Bind to MotionHub Service</string>
+    <string name="perm_bind_motion_hub_desc">Allows binding to the MotionHub Service for gesture and posture detection.</string>
+
+    <!-- UI 层权限 -->
+    <string name="perm_bind_agent_ui_label">Bind Agent UI Interface</string>
+    <string name="perm_bind_agent_ui_desc">Allows SystemUI to bind to Agent brain for UI command channel. Restricted to system UI process.</string>
+    
+    <string name="perm_agent_session_label">Provide Agent Session Service</string>
+    <string name="perm_agent_session_desc">Allows Agent brain application to provide session service to SystemUI. Restricted to platform-signed brain application.</string>
+</resources>

@@ -1,0 +1,47 @@
+// AI Native OS - Context AIDL Interface Module
+// 上下文服务接口：ContextFrame、热缓存、TOP_UI_SUMMARY
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.context",
+    
+    srcs: [
+        "com/ainative/context/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [
+        "com.ainative.perception",  // UiSnapshot
+        "com.ainative.events",      // SystemEvent
+        "com.ainative.agent",       // AgentHandle
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//packages/apps/AINativeBrain",
+    ],
+}

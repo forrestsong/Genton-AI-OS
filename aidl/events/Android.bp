@@ -1,0 +1,46 @@
+// AI Native OS - Events AIDL Interface Module
+// 事件流接口：9 组事件源、令牌桶、订阅治理
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.events",
+    
+    srcs: [
+        "com/ainative/events/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [
+        "com.ainative.agent",  // AgentHandle
+        "com.ainative.policy", // 授权检查
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//packages/apps/AINativeBrain",
+    ],
+}

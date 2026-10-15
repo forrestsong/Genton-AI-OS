@@ -1,0 +1,211 @@
+# AI Native OS - 宏资产 CI 配置
+# 
+# 对应任务: F1.2 宏资产CI校验流水线
+
+pipeline:
+  name: "Macro Asset Validation Pipeline"
+  version: "1.0.0"
+  description: "自动化测试宏资产，失败时自动停用"
+
+# 触发条件
+trigger:
+  # Git 提交触发
+  on_commit:
+    branches:
+      - main
+      - develop
+    paths:
+      - "macros/**"
+      - "tests/macro/**"
+  
+  # 定时触发
+  on_schedule:
+    - cron: "0 2 * * *"  # 每天凌晨2点
+      description: "每日回归测试"
+    - cron: "0 */4 * * *"  # 每4小时
+      description: "增量测试"
+  
+  # 手动触发
+  on_demand: true
+
+# 流水线阶段
+stages:
+  # Stage 1: 环境准备
+  - name: "Setup"
+    description: "准备测试环境"
+    steps:
+      - name: "Check Device Connection"
+        action: "adb devices"
+        required: true
+        
+      - name: "Clear Test Data"
+        action: "adb shell rm -rf /sdcard/ainative/test_*"
+        
+      - name: "Sync Test Assets"
+        action: "adb push tests/macro /sdcard/ainative/tests/"
+  
+  # Stage 2: 加载宏资产
+  - name: "Load Macros"
+    description: "查询所有已注册的宏"
+    action: "query_all_macros"
+    output: "macro_list"
+    
+  # Stage 3: 运行测试
+  - name: "Run Tests"
+    description: "执行所有宏的测试用例"
+    action: "run_all_tests"
+    parallel: true
+    max_parallel: 5
+    timeout_ms: 300000  # 5分钟总超时
+    retry:
+      max_attempts: 2
+      delay_ms: 1000
+    
+  # Stage 4: 失败率检查
+  - name: "Check Failure Rate"
+    description: "检测失败率并自动停用"
+    action: "check_auto_disable"
+    thresholds:
+      consecutive_failures: 3      # 连续失败次数
+      failure_rate: 0.7            # 失败率阈值 (70%)
+      min_samples: 5               # 最小样本数
+    auto_disable: true
+    
+  # Stage 5: 生成报告
+  - name: "Generate Reports"
+    description: "生成多格式测试报告"
+    action: "export_reports"
+    formats:
+      - type: "json"
+        output: "report.json"
+      - type: "html"
+        output: "report.html"
+      - type: "junit_xml"
+        output: "junit.xml"
+    artifacts:
+      path: "/sdcard/ainative/test_reports"
+      retention_days: 30
+      
+  # Stage 6: 通知
+  - name: "Notify"
+    description: "发送测试结果通知"
+    action: "send_notification"
+    channels:
+      - type: "email"
+        recipients:
+          - "dev-team@example.com"
+        on_failure_only: true
+        
+      - type: "webhook"
+        url: "https://ci.example.com/webhooks/macro-test"
+        method: "POST"
+        headers:
+          Authorization: "Bearer ${CI_TOKEN}"
+        
+      - type: "slack"
+        webhook_url: "${SLACK_WEBHOOK_URL}"
+        channel: "#ai-native-ci"
+
+# 测试配置
+test_config:
+  # 黄金样例配置
+  golden_tests:
+    enabled: true
+    path: "tests/macro/golden"
+    required_pass_rate: 1.0  # 黄金样例必须100%通过
+    
+  # 冒烟测试配置
+  smoke_tests:
+    enabled: true
+    path: "tests/macro/smoke"
+    timeout_ms: 10000
+    
+  # 回归测试配置
+  regression_tests:
+    enabled: true
+    path: "tests/macro/regression"
+    baseline: "last_successful_run"
+
+# 自动停用配置
+auto_disable:
+  enabled: true
+  
+  # 停用策略
+  strategies:
+    - name: "consecutive_failures"
+      threshold: 3
+      description: "连续3次失败"
+      
+    - name: "high_failure_rate"
+      threshold: 0.7
+      min_samples: 5
+      description: "失败率≥70% (样本数≥5)"
+  
+  # 停用后行为
+  on_disable:
+    # 回灌到资产库
+    update_asset_library: true
+    reason: "auto_disabled_by_ci"
+    
+    # 发送通知
+    notify:
+      - type: "email"
+        recipients:
+          - "macro-owner@example.com"
+        subject: "宏资产自动停用: ${MACRO_NAME}"
+        
+    # 创建 Issue (可选)
+    create_issue: false
+
+# 报告配置
+reports:
+  output_dir: "/sdcard/ainative/test_reports"
+  retention_days: 30
+  
+  # 报告内容
+  include:
+    - summary
+    - detailed_results
+    - failure_analysis
+    - screenshots
+    - ui_snapshots
+    - execution_logs
+  
+  # 报告格式
+  formats:
+    json:
+      pretty_print: true
+      
+    html:
+      template: "templates/test_report.html"
+      include_charts: true
+      
+    junit_xml:
+      merge_suites: true
+
+# 环境变量
+environment:
+  ANDROID_HOME: "${ANDROID_SDK_ROOT}"
+  ADB_PATH: "${ANDROID_HOME}/platform-tools/adb"
+  TEST_DATA_DIR: "/sdcard/ainative/tests"
+  REPORT_DIR: "/sdcard/ainative/test_reports"
+
+# 资源限制
+resources:
+  max_execution_time_ms: 600000  # 10分钟
+  max_memory_mb: 512
+  max_concurrent_tests: 10
+
+# 日志配置
+logging:
+  level: "INFO"
+  output: "ci.log"
+  include_timestamps: true
+  
+# 清理策略
+cleanup:
+  on_success:
+    - "remove_temp_files"
+  on_failure:
+    - "preserve_logs"
+    - "preserve_screenshots"

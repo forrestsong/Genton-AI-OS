@@ -1,0 +1,119 @@
+# AI Native OS SELinux 服务类型定义
+#
+# 定义 AI Native 系统服务的 SELinux 类型
+#
+# 版本: v1.0
+# 日期: 2026-09-05
+# 依据: WBS A1.4 权限清单落地
+
+# ========================================
+# 感知层服务类型
+# ========================================
+
+# UI 树服务
+type ainative_ui_tree_service, system_api_service, system_server_service, service_manager_type;
+
+# 屏幕捕获服务
+type ainative_screen_service, system_api_service, system_server_service, service_manager_type;
+
+# 通知管理服务
+type ainative_notification_service, system_api_service, system_server_service, service_manager_type;
+
+# ========================================
+# 事件流服务类型
+# ========================================
+
+# 事件流服务 (SUBSCRIBE_EVENTS 权限对应)
+type ainative_event_stream_service, system_api_service, system_server_service, service_manager_type;
+
+# ========================================
+# 执行层服务类型
+# ========================================
+
+# 动作执行服务
+type ainative_action_service, system_api_service, system_server_service, service_manager_type;
+
+# ========================================
+# 运行时服务类型
+# ========================================
+
+# Agent 运行时服务 (ACB)
+type ainative_agent_runtime_service, system_api_service, system_server_service, service_manager_type;
+
+# ========================================
+# 记忆与审计服务类型
+# ========================================
+
+# 记忆服务
+type ainative_memory_service, system_api_service, system_server_service, service_manager_type;
+
+# 审计服务
+type ainative_audit_service, system_api_service, system_server_service, service_manager_type;
+
+# ========================================
+# 语义与上下文服务类型
+# ========================================
+
+# 本体查询服务
+type ainative_entity_service, system_api_service, system_server_service, service_manager_type;
+
+# 上下文服务
+type ainative_context_service, system_api_service, system_server_service, service_manager_type;
+
+# ========================================
+# 策略与资产服务类型
+# ========================================
+
+# 策略引擎服务
+type ainative_policy_engine_service, system_api_service, system_server_service, service_manager_type;
+
+# 资产库服务
+type ainative_asset_library_service, system_api_service, system_server_service, service_manager_type;
+
+# ========================================
+# 推理与沙箱服务类型
+# ========================================
+
+# 推理路由服务
+type ainative_inference_router_service, system_api_service, system_server_service, service_manager_type;
+
+# 沙箱管理服务
+type ainative_sandbox_service, system_api_service, system_server_service, service_manager_type;
+
+# ========================================
+# 通话与姿态服务类型
+# ========================================
+
+# CallGate 服务
+type ainative_call_gate_service, system_api_service, system_server_service, service_manager_type;
+
+# MotionHub 服务
+type ainative_motion_hub_service, system_api_service, system_server_service, service_manager_type;
+
+# ========================================
+# UI 层服务类型
+# ========================================
+
+# Agent 会话服务 (大脑侧)
+type ainative_agent_session_service, system_api_service, service_manager_type;
+
+# Agent UI 命令服务 (SystemUI 侧)
+type ainative_agent_ui_service, system_api_service, service_manager_type;
+
+
+# ========================================
+# 数据目录类型（AOSP 要求 /data/ 下类型带 data_file_type 属性）
+# ========================================
+type ainative_data_file, file_type, data_file_type, core_data_file_type;
+
+# 主线2 补充：新接入 SystemServer 注册的服务类型
+type ainative_action_execution_service, system_api_service, system_server_service, service_manager_type;
+# [P0] 该服务由 SystemUI(system_app) 注册，非 system_server，
+#      故不带 system_server_service 属性（否则触发 neverallow）。
+type ainative_confirmation_host_service, system_api_service, service_manager_type;
+type ainative_macro_recorder_service, system_api_service, system_server_service, service_manager_type;
+type ainative_macro_validation_service, system_api_service, system_server_service, service_manager_type;
+
+# [P5] 补齐未注册服务的类型
+type ainative_query_service, system_api_service, system_server_service, service_manager_type;
+type ainative_sandbox_gateway_service, system_api_service, system_server_service, service_manager_type;

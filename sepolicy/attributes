@@ -1,0 +1,19 @@
+# AI Native OS - SELinux 属性定义
+# 定义新的安全属性
+
+# AI Native OS 服务域属性
+attribute ainative_domain;
+
+# 添加所有服务到该属性
+typeattribute ainative_service ainative_domain;
+typeattribute ainative_audit ainative_domain;
+typeattribute ainative_policy ainative_domain;
+typeattribute ainative_inference ainative_domain;
+typeattribute ainative_call ainative_domain;
+typeattribute ainative_motion ainative_domain;
+
+# AI Native OS 数据文件属性
+attribute ainative_data_file_type;
+typeattribute ainative_audit_data_file ainative_data_file_type;
+typeattribute ainative_policy_data_file ainative_data_file_type;
+typeattribute ainative_brain_app_data_file ainative_data_file_type;

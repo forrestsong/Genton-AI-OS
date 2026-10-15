@@ -1,0 +1,50 @@
+// AI Native OS - SystemUI Module
+android_app {
+    name: "AINativeSystemUI",
+    
+    srcs: [
+        "src/**/*.java",
+    ],
+    
+    resource_dirs: [
+        "res",
+    ],
+    
+    static_libs: [
+        "androidx.core_core",
+        "androidx.appcompat_appcompat",
+        "androidx.recyclerview_recyclerview",
+        "androidx.constraintlayout_constraintlayout",
+        "com.google.android.material_material",
+    ],
+    
+    libs: [
+        "framework",
+        "framework-res",
+    ],
+    
+    platform_apis: true,
+    system_ext_specific: true,
+    privileged: true,
+    certificate: "platform",
+    
+    optimize: {
+        enabled: false,
+    },
+    
+    dex_preopt: {
+        enabled: false,
+    },
+    
+    required: [
+        "privapp_whitelist_com.android.systemui.ainative.xml",
+    ],
+}
+
+// Privileged permissions whitelist
+prebuilt_etc {
+    name: "privapp_whitelist_com.android.systemui.ainative.xml",
+    sub_dir: "permissions",
+    src: "privapp-permissions-ainative-systemui.xml",
+    filename_from_src: true,
+}

@@ -1,0 +1,6 @@
+{
+  "_comment": "WBS 1.4 已知缺口基线：只允许减少，不允许新增。修复后重新生成。",
+  "known_gaps": {
+    "com.ainative.ui.IAgentConfirmationHost": "ainative_ui_service 已声明但无 add/find allow 接线；新增策略需 AOSP 编译验证（M1），本批不擅自改动无法编译验证的策略"
+  }
+}

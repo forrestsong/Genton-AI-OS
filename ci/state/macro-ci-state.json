@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "counters": {
+    "macro:media.volume_normalize": {
+      "consecutiveFailures": 0,
+      "streakStartMs": 0,
+      "lastRunMs": 1791217902249
+    },
+    "macro:weather.open_today": {
+      "consecutiveFailures": 0,
+      "streakStartMs": 0,
+      "lastRunMs": 1791217902249
+    }
+  }
+}

@@ -1,0 +1,435 @@
+{
+  "version": "1.0.0",
+  "actions": [
+    {
+      "name": "ui.tap",
+      "displayName": "点击界面元素",
+      "executorId": "input",
+      "riskLevel": 1,
+      "requiredCapability": "agent.input_inject",
+      "_meta": {
+        "modelToolName": "tap_ui_element"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["nodeId"],
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "最新 UiSnapshot 中的稳定节点 id"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["click", "longClick"],
+            "default": "click"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "hitNodeId": {
+            "type": "string"
+          }
+        }
+      },
+      "auditEventType": "action.ui_tap",
+      "description": "点击 UI 树中的节点（带过期校验与 overlay 复查）"
+    },
+    {
+      "name": "ui.long_tap",
+      "displayName": "长按界面元素",
+      "executorId": "input",
+      "riskLevel": 1,
+      "requiredCapability": "agent.input_inject",
+      "_meta": {
+        "modelToolName": "long_press_ui_element"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["nodeId"],
+        "properties": {
+          "nodeId": {
+            "type": "string"
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 5000,
+            "default": 1000
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "hitNodeId": {
+            "type": "string"
+          }
+        }
+      },
+      "auditEventType": "action.ui_long_tap"
+    },
+    {
+      "name": "ui.swipe",
+      "displayName": "滑动手势",
+      "executorId": "input",
+      "riskLevel": 0,
+      "requiredCapability": "agent.input_inject",
+      "_meta": {
+        "modelToolName": "swipe_screen"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["startNodeId", "direction"],
+        "properties": {
+          "startNodeId": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string",
+            "enum": ["up", "down", "left", "right"]
+          },
+          "distance": {
+            "type": "integer",
+            "minimum": 50,
+            "maximum": 2000,
+            "default": 500
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.ui_swipe"
+    },
+    {
+      "name": "ui.type",
+      "displayName": "输入文本",
+      "executorId": "input",
+      "riskLevel": 1,
+      "requiredCapability": "agent.input_inject",
+      "_meta": {
+        "modelToolName": "type_text"
+      },
+      "inputSource": {
+        "text": "user"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["nodeId", "text"],
+        "properties": {
+          "nodeId": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "clearFirst": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.ui_type",
+      "description": "输入文本到输入框（text 参数仅接受 USER 来源）"
+    },
+    {
+      "name": "ui.key",
+      "displayName": "按键操作",
+      "executorId": "input",
+      "riskLevel": 0,
+      "requiredCapability": "agent.input_inject",
+      "_meta": {
+        "modelToolName": "press_key"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["key"],
+        "properties": {
+          "key": {
+            "type": "string",
+            "enum": ["back", "home", "recents", "enter", "delete"]
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.ui_key"
+    },
+    {
+      "name": "app.launch",
+      "displayName": "启动应用界面",
+      "executorId": "activity",
+      "riskLevel": 1,
+      "requiredCapability": "agent.launch_activity",
+      "_meta": {
+        "modelToolName": "launch_app"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["packageName"],
+        "properties": {
+          "packageName": {
+            "type": "string"
+          },
+          "activityName": {
+            "type": "string",
+            "description": "省略则由系统按默认入口解析"
+          },
+          "intentAction": {
+            "type": "string"
+          },
+          "intentData": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "startedActivity": {
+            "type": "string"
+          }
+        }
+      },
+      "auditEventType": "action.launch"
+    },
+    {
+      "name": "app.foreground",
+      "displayName": "切换应用到前台",
+      "executorId": "activity",
+      "riskLevel": 0,
+      "requiredCapability": "agent.launch_activity",
+      "_meta": {
+        "modelToolName": "bring_app_to_foreground"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["packageName"],
+        "properties": {
+          "packageName": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.foreground"
+    },
+    {
+      "name": "notification.clear",
+      "displayName": "清除通知",
+      "executorId": "notification",
+      "riskLevel": 0,
+      "requiredCapability": "agent.manage_notifications",
+      "_meta": {
+        "modelToolName": "clear_notification"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["notificationId"],
+        "properties": {
+          "notificationId": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.notification_clear"
+    },
+    {
+      "name": "notification.reply",
+      "displayName": "回复通知",
+      "executorId": "notification",
+      "riskLevel": 2,
+      "requiredCapability": "agent.manage_notifications",
+      "_meta": {
+        "modelToolName": "reply_to_notification"
+      },
+      "inputSource": {
+        "text": "user"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["notificationId", "text"],
+        "properties": {
+          "notificationId": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.notification_reply",
+      "description": "回复通知（high 风险，需用户确认）"
+    },
+    {
+      "name": "clipboard.set",
+      "displayName": "设置剪贴板",
+      "executorId": "clipboard",
+      "riskLevel": 1,
+      "requiredCapability": "agent.clipboard_access",
+      "_meta": {
+        "modelToolName": "set_clipboard"
+      },
+      "inputSource": {
+        "text": "user"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "sensitive": {
+            "type": "boolean",
+            "default": false,
+            "description": "敏感内容标记（限制历史记录）"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.clipboard_set"
+    },
+    {
+      "name": "settings.open",
+      "displayName": "打开系统设置",
+      "executorId": "settings",
+      "riskLevel": 0,
+      "requiredCapability": "agent.launch_activity",
+      "_meta": {
+        "modelToolName": "open_settings"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["panel"],
+        "properties": {
+          "panel": {
+            "type": "string",
+            "enum": ["wifi", "bluetooth", "display", "sound", "apps", "battery", "storage"]
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.settings_open"
+    },
+    {
+      "name": "device.volume",
+      "displayName": "调节音量",
+      "executorId": "device_control",
+      "riskLevel": 0,
+      "requiredCapability": "agent.device_control",
+      "_meta": {
+        "modelToolName": "adjust_volume"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["direction"],
+        "properties": {
+          "direction": {
+            "type": "string",
+            "enum": ["up", "down", "mute"]
+          },
+          "stream": {
+            "type": "string",
+            "enum": ["media", "ring", "notification", "alarm"],
+            "default": "media"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.device_volume"
+    },
+    {
+      "name": "device.brightness",
+      "displayName": "调节亮度",
+      "executorId": "device_control",
+      "riskLevel": 0,
+      "requiredCapability": "agent.device_control",
+      "_meta": {
+        "modelToolName": "adjust_brightness"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["level"],
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.device_brightness"
+    },
+    {
+      "name": "telephony.accept_call",
+      "displayName": "接听电话",
+      "executorId": "telephony",
+      "riskLevel": 2,
+      "requiredCapability": "agent.telephony_control",
+      "_meta": {
+        "modelToolName": "accept_call"
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "callId": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.telephony_accept",
+      "description": "接听来电（high 风险，需用户确认）"
+    },
+    {
+      "name": "sys.prewarm_app",
+      "displayName": "预热应用进程",
+      "executorId": "system",
+      "riskLevel": 0,
+      "requiredCapability": "agent.system_internal",
+      "_meta": {
+        "modelToolName": "prewarm_app"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": ["packageName"],
+        "properties": {
+          "packageName": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "auditEventType": "action.sys_prewarm",
+      "description": "内部动作：预热应用进程（S1 预测）"
+    }
+  ]
+}

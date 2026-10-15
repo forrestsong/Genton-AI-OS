@@ -1,0 +1,712 @@
+# ============================================================
+# 策略 DSL 值域知识库 v1
+# C1.2 交付物：枚举集、号段规则、比较串语义
+# 版本: 1.0.0
+# 日期: 2026-09-05
+# ============================================================
+# 说明：
+# - 本文件定义策略 DSL 中所有值域的合法值集合
+# - 随 PolicyPack 版本化，确保编译期校验离线可用
+# - 与 C1.1 规则目录 v1 对齐
+# ============================================================
+
+version: "1.0.0"
+last_updated: "2026-09-05"
+
+# C6.4 新增：版本元数据（用于 OTA 联动）
+metadata:
+  schema_version: "1.0"  # 值域知识库 schema 版本
+  
+  # 分类器版本绑定（C4.2 通知分类器）
+  classifier_version:
+    notification_classifier: "1.0.0"  # NotificationClassifier 模型版本
+    spam_scorer: "1.0.0"              # SpamScorer 模型版本
+  
+  # 兼容性要求
+  min_policy_engine_version: "1.0.0"  # 最低策略引擎版本
+  min_dsl_compiler_version: "1.0.0"   # 最低 DSL 编译器版本
+  
+  # OTA 更新元数据
+  update_channel: "stable"            # 更新通道（stable/beta/dev）
+  incremental_update: false           # 是否支持增量更新
+  rollback_version: null              # 回滚目标版本（空表示无回滚）
+  
+  # 签名和完整性
+  checksum_sha256: ""                 # 值域知识库文件 SHA256（打包时生成）
+  signature: ""                       # 平台签名（打包时生成）
+
+# ============================================================
+# 1. notification 域值域
+# ============================================================
+
+notification:
+  # 1.1 category 枚举（通知分类）
+  category:
+    description: "通知类别枚举，用于分类和路由决策"
+    type: enum
+    values:
+      # 关键类（baseline 保护）
+      - value: alarm
+        display_name: "闹钟/提醒"
+        priority: critical
+        baseline_protected: true
+        description: "闹钟、日历提醒等时间触发通知"
+      
+      - value: system_critical
+        display_name: "系统关键"
+        priority: critical
+        baseline_protected: true
+        description: "系统级关键通知（安全警告、系统故障等）"
+      
+      - value: phone_ring_equivalent
+        display_name: "电话铃声等效"
+        priority: critical
+        baseline_protected: true
+        description: "与电话铃声等效的即时通信通知"
+      
+      # 金融类（高优先级）
+      - value: otp
+        display_name: "一次性密码"
+        priority: high
+        description: "验证码、OTP 等身份验证通知"
+      
+      - value: payment_result
+        display_name: "支付结果"
+        priority: high
+        description: "支付成功/失败、交易通知"
+      
+      - value: emergency
+        display_name: "紧急通知"
+        priority: high
+        description: "紧急事件通知"
+      
+      # 社交类
+      - value: social_updates
+        display_name: "社交动态"
+        priority: medium
+        description: "社交媒体更新、评论、点赞等"
+      
+      - value: message
+        display_name: "即时消息"
+        priority: medium
+        description: "即时通讯应用消息"
+      
+      # 信息类
+      - value: news
+        display_name: "新闻资讯"
+        priority: low
+        description: "新闻推送、资讯更新"
+      
+      - value: app_updates
+        display_name: "应用更新"
+        priority: low
+        description: "应用版本更新通知"
+      
+      - value: app_update_notice
+        display_name: "应用更新通告"
+        priority: low
+        description: "应用更新公告、新功能介绍"
+      
+      # 营销类
+      - value: advertising
+        display_name: "广告"
+        priority: low
+        description: "广告推送"
+      
+      - value: marketing
+        display_name: "营销推广"
+        priority: low
+        description: "营销活动、促销信息"
+      
+      - value: account_promo
+        display_name: "账号推广"
+        priority: low
+        description: "账号推广、关注建议"
+      
+      # 其他
+      - value: system_info
+        display_name: "系统信息"
+        priority: medium
+        description: "系统通知（非关键）"
+      
+      - value: service_notice
+        display_name: "服务通知"
+        priority: medium
+        description: "服务相关通知"
+
+  # 1.2 senderTrust 枚举（发送方信任级别）
+  senderTrust:
+    description: "发送方信任级别枚举"
+    type: enum
+    values:
+      - value: SYSTEM_APP
+        display_name: "系统应用"
+        trust_level: 100
+        description: "系统签名应用，最高信任"
+      
+      - value: TRUSTED_PARTNER
+        display_name: "可信合作伙伴"
+        trust_level: 80
+        description: "经过认证的可信第三方（银行、运营商等）"
+      
+      - value: VERIFIED_APP
+        display_name: "已认证应用"
+        trust_level: 60
+        description: "通过应用市场认证的应用"
+      
+      - value: APP
+        display_name: "普通应用"
+        trust_level: 40
+        description: "用户安装的普通第三方应用"
+      
+      - value: UNKNOWN
+        display_name: "未知"
+        trust_level: 0
+        description: "未知或未分类来源"
+
+  # 1.3 event 枚举（通知事件）
+  event:
+    description: "通知域事件类型"
+    type: enum
+    values:
+      - value: notification.posted
+        description: "通知发布事件"
+      
+      - value: notification.updated
+        description: "通知更新事件"
+      
+      - value: notification.cancelled
+        description: "通知取消事件"
+
+  # 1.4 route 枚举（路由目标）
+  route:
+    description: "通知路由目标"
+    type: enum
+    values:
+      - value: P0_NATIVE
+        display_name: "P0 原生展示"
+        description: "原生通知栏展示，最高优先级"
+      
+      - value: P1_AGENT_SUMMARY
+        display_name: "P1 Agent 摘要"
+        description: "Agent 摘要卡片展示"
+      
+      - value: P2_AGENT_HANDLE
+        display_name: "P2 Agent 处理"
+        description: "Agent 自动处理（折叠/归档）"
+
+  # 1.5 agentAct 枚举（Agent 动作）
+  agentAct:
+    description: "Agent 自动处理动作"
+    type: enum
+    values:
+      - value: fold
+        display_name: "折叠"
+        description: "折叠通知，可在历史中查看"
+      
+      - value: archive
+        display_name: "归档"
+        description: "归档通知，移出主视图"
+      
+      - value: dismiss
+        display_name: "忽略"
+        description: "静默忽略，不记录"
+
+  # 1.6 summaryModel 枚举（摘要模型）
+  summaryModel:
+    description: "摘要生成模型"
+    type: enum
+    values:
+      - value: local_tiny
+        display_name: "本地轻量模型"
+        description: "本地 tiny 模型（<20M 参数）"
+      
+      - value: local_small
+        display_name: "本地小模型"
+        description: "本地 small 模型（~50M 参数）"
+      
+      - value: cloud_large
+        display_name: "云端大模型"
+        description: "云端大模型（需联网）"
+
+# ============================================================
+# 2. call_gate 域值域
+# ============================================================
+
+call_gate:
+  # 2.1 callerClass 枚举（来电分类）
+  callerClass:
+    description: "来电号码分类"
+    type: enum
+    values:
+      - value: emergency
+        display_name: "紧急号码"
+        priority: critical
+        baseline_protected: true
+        description: "110/119/120 等紧急号码"
+        examples: ["110", "119", "120", "122"]
+      
+      - value: system
+        display_name: "系统号码"
+        priority: critical
+        baseline_protected: true
+        description: "系统保留号码"
+      
+      - value: carrier_service
+        display_name: "运营商服务"
+        priority: high
+        description: "运营商客服、通知号码"
+        examples: ["10086", "10010", "10000"]
+      
+      - value: whitelist
+        display_name: "白名单"
+        priority: high
+        description: "用户白名单号码"
+      
+      - value: contact
+        display_name: "联系人"
+        priority: medium
+        description: "通讯录中的联系人"
+      
+      - value: verified_business
+        display_name: "认证企业"
+        priority: medium
+        description: "经过运营商认证的企业号码"
+      
+      - value: unknown
+        display_name: "未知号码"
+        priority: low
+        description: "未在任何白名单中的号码"
+
+  # 2.2 callerIs 枚举（来电标识）
+  callerIs:
+    description: "来电身份标识（用于 baseline 规则）"
+    type: enum
+    values:
+      - value: emergency
+        description: "紧急号码"
+      
+      - value: system
+        description: "系统号码"
+      
+      - value: carrier_service
+        description: "运营商服务号码"
+
+  # 2.3 call 事件枚举
+  call:
+    description: "通话事件类型"
+    type: enum
+    values:
+      - value: incoming
+        description: "来电事件"
+      
+      - value: outgoing
+        description: "去电事件"
+      
+      - value: missed
+        description: "未接来电事件"
+
+  # 2.4 route 枚举（呼叫路由）
+  route:
+    description: "呼叫路由目标"
+    type: enum
+    values:
+      - value: RING_NATIVE
+        display_name: "原生响铃"
+        description: "正常响铃，用户手动接听"
+      
+      - value: AGENT_HANDLE
+        display_name: "Agent 接管"
+        description: "Agent 自动接听处理"
+      
+      - value: RECORD_ONLY
+        display_name: "仅记录"
+        description: "静默记录，不响铃"
+      
+      - value: VOICEMAIL
+        display_name: "语音留言"
+        description: "转接语音留言"
+
+  # 2.5 gateMode 枚举（门禁模式）
+  gateMode:
+    description: "通话门禁模式"
+    type: enum
+    values:
+      - value: DISABLED
+        display_name: "关闭"
+        description: "门禁功能关闭，所有来电正常响铃"
+      
+      - value: L1_SILENT_AI
+        display_name: "L1 静默 AI"
+        description: "AI 静默接管，本地 ASR"
+      
+      - value: L2_CONFIRM_DIGEST
+        display_name: "L2 确认摘要"
+        description: "摘要后用户确认是否转接"
+      
+      - value: L3_RECORD_ONLY
+        display_name: "L3 仅记录"
+        description: "仅记录不响铃"
+
+  # 2.6 handleMode 枚举（接管模式）
+  handleMode:
+    description: "Agent 接管处理模式"
+    type: enum
+    values:
+      - value: L1
+        display_name: "L1 静默接管"
+        description: "本地 ASR + 关键信息提取"
+      
+      - value: L2
+        display_name: "L2 摘要确认"
+        description: "生成摘要后用户确认"
+      
+      - value: L3
+        display_name: "L3 仅记录"
+        description: "记录号码不接听"
+
+  # 2.7 audioBoundary 枚举（音频边界）
+  audioBoundary:
+    description: "音频处理边界"
+    type: enum
+    values:
+      - value: local_asr_tee
+        display_name: "本地 ASR Tee"
+        description: "本地 ASR，音频不出设备"
+      
+      - value: cloud_asr
+        display_name: "云端 ASR"
+        description: "云端 ASR，音频脱敏后上传"
+
+# ============================================================
+# 3. 号码号段规则库
+# ============================================================
+
+number_prefix_rules:
+  description: "号码前缀规则库"
+  
+  # 3.1 中国号码号段
+  china:
+    # 紧急号码
+    emergency:
+      - prefix: "110"
+        description: "报警电话"
+        callerClass: emergency
+      - prefix: "119"
+        description: "火警电话"
+        callerClass: emergency
+      - prefix: "120"
+        description: "急救电话"
+        callerClass: emergency
+      - prefix: "122"
+        description: "交通事故报警"
+        callerClass: emergency
+    
+    # 运营商服务
+    carrier:
+      - prefix: "10086"
+        description: "中国移动客服"
+        callerClass: carrier_service
+      - prefix: "10010"
+        description: "中国联通客服"
+        callerClass: carrier_service
+      - prefix: "10000"
+        description: "中国电信客服"
+        callerClass: carrier_service
+      - prefix: "10096"
+        description: "中国广电客服"
+        callerClass: carrier_service
+    
+    # 服务号段（95xxx）
+    service_95:
+      - prefix: "95"
+        description: "服务号段（银行、保险、客服等）"
+        risk_level: medium
+        common_spam: true
+        note: "需结合 spamScore 判断"
+    
+    # 营销号段
+    marketing:
+      - prefix: "400"
+        description: "企业客服热线"
+        risk_level: low
+      - prefix: "950"
+        description: "营销号段"
+        risk_level: medium
+        common_spam: true
+      - prefix: "951"
+        description: "营销号段"
+        risk_level: medium
+        common_spam: true
+
+# ============================================================
+# 4. 发送方域规则
+# ============================================================
+
+sender_domain_rules:
+  description: "发送方域名规则"
+  
+  # 4.1 可信域名白名单
+  trusted_domains:
+    - domain: "*.bank.com"
+      senderTrust: TRUSTED_PARTNER
+      category_hint: ["otp", "payment_result"]
+      description: "银行类域名"
+    
+    - domain: "*.gov.cn"
+      senderTrust: TRUSTED_PARTNER
+      category_hint: ["system_info", "service_notice"]
+      description: "政府机构域名"
+    
+    - domain: "sms.10086.cn"
+      senderTrust: TRUSTED_PARTNER
+      category_hint: ["service_notice"]
+      description: "中国移动官方短信"
+  
+  # 4.2 社交平台域名
+  social_domains:
+    - domain: "social.example.com"
+      senderTrust: VERIFIED_APP
+      category_hint: ["social_updates", "message"]
+      description: "示例社交平台"
+
+# ============================================================
+# 5. 比较串运算符规范
+# ============================================================
+
+comparison_operators:
+  description: "比较串运算符语义定义"
+  note: "用于数值门限字段（spamScore, classifierConfidence 等）"
+  
+  operators:
+    - operator: ">="
+      description: "大于等于"
+      example: ">= 0.9"
+      semantic: "值 >= 阈值"
+    
+    - operator: "<="
+      description: "小于等于"
+      example: "<= 30"
+      semantic: "值 <= 阈值"
+    
+    - operator: ">"
+      description: "大于"
+      example: "> 0.5"
+      semantic: "值 > 阈值"
+    
+    - operator: "<"
+      description: "小于"
+      example: "< 100"
+      semantic: "值 < 阈值"
+    
+    - operator: "=="
+      description: "等于"
+      example: "== 3"
+      semantic: "值 == 阈值"
+  
+  # 5.1 数值门限字段定义
+  numeric_threshold_fields:
+    - field: spamScore
+      description: "骚扰评分（0.0 - 1.0）"
+      type: float
+      range: [0.0, 1.0]
+      unit: "概率值"
+      examples:
+        - value: ">= 0.9"
+          description: "高置信骚扰"
+        - value: ">= 0.6"
+          description: "中等置信骚扰"
+        - value: ">= 0.3"
+          description: "低置信骚扰"
+    
+    - field: classifierConfidence
+      description: "分类器置信度（0.0 - 1.0）"
+      type: float
+      range: [0.0, 1.0]
+      unit: "概率值"
+      examples:
+        - value: ">= 0.8"
+          description: "高置信分类"
+        - value: ">= 0.7"
+          description: "中等置信分类"
+    
+    - field: dailyAiHandleUsed
+      description: "AI 接管日使用次数"
+      type: integer
+      range: [0, null]
+      unit: "次数"
+      examples:
+        - value: ">= 3"
+          description: "已用完配额（配额 3 次）"
+    
+    - field: callerHasRecentOutgoingWithinDays
+      description: "最近 N 天内有去电记录"
+      type: integer
+      range: [0, 365]
+      unit: "天"
+      examples:
+        - value: "<= 30"
+          description: "30 天内回拨互惠"
+    
+    - field: callRepeatedInWindowMs
+      description: "窗口时间内重复呼叫"
+      type: integer
+      range: [0, null]
+      unit: "毫秒"
+      examples:
+        - value: "<= 900000"
+          description: "15 分钟内重复呼叫（900000ms = 15min）"
+    
+    - field: aggregateWindowMs
+      description: "聚合窗口时长"
+      type: integer
+      range: [0, null]
+      unit: "毫秒"
+      examples:
+        - value: "3600000"
+          description: "1 小时聚合窗口"
+    
+    - field: dailyHandleCap
+      description: "日处理配额"
+      type: integer
+      range: [1, null]
+      unit: "次数"
+      examples:
+        - value: "10"
+          description: "每日最多处理 10 条"
+
+# ============================================================
+# 6. audit 枚举（审计级别）
+# ============================================================
+
+audit_levels:
+  description: "审计日志级别"
+  
+  values:
+    - value: none
+      display_name: "无审计"
+      description: "不记录审计日志（baseline/高风险禁用）"
+      restriction: "baseline 和高风险 effect 禁止使用"
+    
+    - value: summary
+      display_name: "摘要审计"
+      description: "记录摘要信息（规则 ID、匹配结果、时间戳）"
+    
+    - value: full
+      display_name: "完整审计"
+      description: "记录完整信息（规则 ID、匹配结果、输入上下文、时间戳）"
+
+# ============================================================
+# 7. context 上下文字段
+# ============================================================
+
+context_fields:
+  description: "context.* 上下文字段定义"
+  
+  fields:
+    - field: context.dndActive
+      type: boolean
+      description: "DND（勿扰模式）是否激活"
+      source: "系统设置"
+    
+    - field: context.foregroundApp
+      type: string
+      description: "当前前台应用包名"
+      source: "系统状态"
+    
+    - field: context.screenOn
+      type: boolean
+      description: "屏幕是否点亮"
+      source: "系统状态"
+    
+    - field: context.timeOfDay
+      type: string
+      description: "时段（morning/afternoon/evening/night）"
+      source: "系统时间"
+      values: ["morning", "afternoon", "evening", "night"]
+    
+    - field: context.batteryLevel
+      type: integer
+      description: "电池电量百分比（0-100）"
+      source: "系统状态"
+      range: [0, 100]
+
+# ============================================================
+# 8. effect 动词表
+# ============================================================
+
+effect_verbs:
+  description: "effect 动词及其适用域"
+  
+  # 8.1 授权轴（action 域）
+  action_domain:
+    - effect: allow
+      description: "允许动作执行"
+    
+    - effect: deny
+      description: "拒绝动作执行"
+    
+    - effect: require_confirmation
+      description: "需要用户确认"
+  
+  # 8.2 通知路由轴（notification 域）
+  notification_domain:
+    - effect: route_p0_native
+      description: "路由到 P0 原生展示"
+      route: P0_NATIVE
+    
+    - effect: route_p1_digest
+      description: "路由到 P1 Agent 摘要"
+      route: P1_AGENT_SUMMARY
+    
+    - effect: route_p2_agent_act
+      description: "路由到 P2 Agent 处理"
+      route: P2_AGENT_HANDLE
+    
+    - effect: deny
+      description: "拒绝降级（baseline 专用）"
+      note: "仅用于 baseline 规则"
+  
+  # 8.3 通话路由轴（call_gate 域）
+  call_gate_domain:
+    - effect: route_ring_native
+      description: "原生响铃"
+      route: RING_NATIVE
+    
+    - effect: route_agent_handle
+      description: "Agent 接管"
+      route: AGENT_HANDLE
+    
+    - effect: route_record_only
+      description: "仅记录"
+      route: RECORD_ONLY
+
+# ============================================================
+# 9. 版本与扩展
+# ============================================================
+
+metadata:
+  version: "1.0.0"
+  schema_version: "1.0"
+  
+  # 兼容性
+  compatibility:
+    min_policy_engine_version: "1.0.0"
+    min_compiler_version: "1.0.0"
+  
+  # 扩展点
+  extensions:
+    description: "自定义扩展值域（需在此注册）"
+    custom_category:
+      enabled: false
+      note: "自定义 category 需安全审查"
+    
+    custom_sender_domain:
+      enabled: true
+      note: "用户可添加自定义域名规则"
+  
+  # 更新策略
+  update_policy:
+    distribution: "随 PolicyPack OTA 更新"
+    offline_fallback: "使用内置默认值域"
+    version_check: "编译器检查版本兼容性"

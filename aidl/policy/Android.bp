@@ -1,0 +1,47 @@
+// AI Native OS - Policy AIDL Interface Module
+// 策略引擎接口：两阶段求值、令牌签发、确认决策
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.policy",
+    
+    srcs: [
+        "com/ainative/policy/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [
+        "com.ainative.agent",  // AgentHandle
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//frameworks/base/core/java",
+        "//packages/apps/AINativeBrain",
+        "//packages/apps/SystemUI",  // 路由决策消费
+    ],
+}

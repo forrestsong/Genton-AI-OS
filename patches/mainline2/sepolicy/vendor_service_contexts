@@ -1,0 +1,53 @@
+# AI Native OS - 服务上下文定义
+# 将服务名称映射到 SELinux 类型
+
+# ============================================
+# 14 个系统服务
+# ============================================
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_uitree                u:object_r:ainative_perception_service:s0
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_screen                u:object_r:ainative_perception_service:s0
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_notification          u:object_r:ainative_perception_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_action                u:object_r:ainative_action_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_runtime               u:object_r:ainative_agent_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_memory                u:object_r:ainative_memory_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_audit                 u:object_r:ainative_audit_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_semantics             u:object_r:ainative_semantics_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_events                u:object_r:ainative_events_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_context               u:object_r:ainative_context_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_policy                u:object_r:ainative_policy_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_assets                u:object_r:ainative_assets_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_ui                    u:object_r:ainative_ui_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_inference             u:object_r:ainative_inference_service:s0
+
+ainative_sandbox               u:object_r:ainative_sandbox_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_call                  u:object_r:ainative_call_service:s0
+
+# [主线2修复] 引用已停用 vendor sepolicy 类型
+# ainative_motion                u:object_r:ainative_motion_service:s0

@@ -1,0 +1,31 @@
+// AI Native OS AIDL 模块 - call（CallGate 通话门控契约）
+// 补建：主线② W4 合入（AIDL 源：aidl/com/ainative/call，overlay 此前缺失）
+
+aidl_interface {
+    name: "ainative.call",
+    unstable: true,
+    srcs: [
+        "CallDescriptor.aidl",
+        "CallSessionHandle.aidl",
+        "CallSummary.aidl",
+        "CallVerdict.aidl",
+        "GateMode.aidl",
+        "IAgentCallGateListener.aidl",
+        "IAgentCallGateService.aidl",
+        "TranscriptDelta.aidl",
+        "WhitelistEntry.aidl",
+    ],
+    local_include_dir: ".",
+    backend: {
+        java: {
+            sdk_version: "system_current",
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: false,
+        },
+        ndk: {
+            enabled: false,
+        },
+    },
+}

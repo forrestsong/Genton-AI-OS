@@ -1,0 +1,42 @@
+package com.ainative.macro;
+
+/**
+ * MacroScript
+ *
+ * Executable script generated from a MacroRecording.
+ * Fields aligned with AgentMacroRecorderService.java / AgentMacroValidationService.java.
+ */
+parcelable MacroScript {
+    // Macro ID (used by test/CI pipelines)
+    String macroId;
+
+    // Macro name
+    String name;
+
+    // Macro description
+    @nullable String description;
+
+    // Script version (SemVer)
+    @nullable String version;
+
+    // Associated intent action
+    @nullable String intentAction;
+
+    // Serialized steps (JSON string of MacroStep[])
+    String stepsJson;
+
+    // Creation timestamp (ms)
+    long createdAt;
+
+    // Last update timestamp (ms)
+    long updatedAt;
+
+    // Recording source ("user" / "imported" / ...)
+    @nullable String recordedBy;
+
+    // Validation status ("draft" / "validated" / "failed" / ...)
+    @nullable String validationStatus;
+
+    // Validation info (JSON string)
+    @nullable String validationInfo;
+}

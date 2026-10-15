@@ -1,0 +1,21 @@
+{
+  "_comment": "WBS 3.2 构建配置基线。known_gaps：真正无法从本仓库解析的引用（只允许减少）。conflict_policy：同名 .mk 多副本时**必须显式声明哪一份为准**——不许存在未声明的二义性。declared winner 需要人工确认（见 D5）。",
+  "version": 1,
+  "known_gaps": {
+    "patches/mainline2/device/aosp_cpday10.mk::device/ainative/cpday10/device.mk": "设备树 device.mk 不在归档内（原构建机上）；需人工提供，或从主线2 交付物恢复。不得凭空生成——编造构建配置比缺失更危险。"
+  },
+  "conflict_policy": {
+    "ainative_overlay.mk": {
+      "winner": "patches/p4-brain-in-image/product/ainative_overlay.mk",
+      "reason": "按 D5 修订后的判据（功能正确性）：只有 P4 版本启用了 PRODUCT_PACKAGES += AINativeBrain，并保留了 SystemUI 的 privapp 路径行。原『容量最大』判据会选中 inference-integration（2463 B，仅大 2 字节），而那 2 字节恰恰是注释掉大脑的说明。",
+      "pending_decision": "已裁决（D5 修订：功能判据）",
+      "decision_note": "构建树实测支持该判据：emu64x 镜像的 priv-app 里确有 GentonBrain，而 cpday10 没有 —— 启用/不启用大脑是真实差异，文件大小不是。"
+    },
+    "AndroidProducts.mk": {
+      "winner": "patches/inference-integration/device/AndroidProducts.mk",
+      "reason": "patches/ 范围内仅此一份（另一份在 vendor/ainative/build/，不在补丁栈内）；按 D5 归入 inference-integration 批次。",
+      "pending_decision": "已按 D5 决定",
+      "decision_note": "该文件在补丁栈内不存在冲突；跨 trees 的冲突由 3.2 检查器单独报告。"
+    }
+  }
+}

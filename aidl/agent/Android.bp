@@ -1,0 +1,47 @@
+// AI Native OS - Agent AIDL Interface Module
+// Agent 运行时接口：ACB、会话管理、预算控制
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.agent",
+    
+    srcs: [
+        "com/ainative/agent/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [
+        "com.ainative.policy",  // CapabilityToken
+        "com.ainative.action",  // ActionRequest
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//frameworks/base/core/java",
+        "//packages/apps/AINativeBrain",
+    ],
+}

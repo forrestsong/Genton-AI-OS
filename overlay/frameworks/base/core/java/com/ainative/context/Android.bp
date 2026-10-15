@@ -1,0 +1,25 @@
+// AI Native OS AIDL 模块
+// 自动生成
+
+aidl_interface {
+    name: "ainative.context",
+    unstable: true,
+    srcs: [
+        "IAgentContextService.aidl",
+        "AgentHandle.aidl",
+        "IAgentContextListener.aidl",
+    ],
+    local_include_dir: ".",
+    backend: {
+        java: {
+            sdk_version: "system_current",
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: false,
+        },
+        ndk: {
+            enabled: false,
+        },
+    },
+}

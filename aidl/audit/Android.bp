@@ -1,0 +1,43 @@
+// AI Native OS - Audit AIDL Interface Module
+// 审计服务接口：哈希链、活性流、viewerRole 脱敏
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.audit",
+    
+    srcs: [
+        "com/ainative/audit/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//frameworks/base/core/java",
+        "//packages/apps/AINativeBrain",
+        "//packages/apps/Settings",  // 隐私仪表盘
+    ],
+}

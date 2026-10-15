@@ -1,0 +1,57 @@
+// AI Native Brain Application
+// Agent 大脑特权应用
+
+android_app {
+    name: "AINativeBrain",
+    
+    srcs: [
+        "src/**/*.kt",
+        "src/**/*.java",
+    ],
+    
+    resource_dirs: ["res"],
+    
+    certificate: "platform",
+    privileged: true,
+    platform_apis: true,
+    
+    static_libs: [
+        "kotlin-stdlib",
+        "kotlinx-coroutines-android",
+        "androidx.core_core-ktx",
+        "androidx.appcompat_appcompat",
+        // [主线2 修复] ControlRenderer 等使用 com.google.android.material.textfield.*
+        "com.google.android.material_material",
+        // [P4] PII 掩码（com.ainative.privacy 源码此前从未编译）
+        "ainative.privacy",
+        // [P4] TFLite（SummaryInferenceEngine / RLInferenceEngine 使用）
+        "tensorflowlite_java",
+    ],
+    
+    // 依赖 framework（包含 com.ainative.* AIDL 接口）
+    libs: [
+        "framework",
+    ],
+    
+    optimize: {
+        enabled: false,
+    },
+    
+    dex_preopt: {
+        enabled: false,
+    },
+    
+    owner: "ainative",
+    
+    required: [
+        "permissions_com.ainative.brain.xml",
+    ],
+}
+
+// 权限配置
+prebuilt_etc {
+    name: "permissions_com.ainative.brain.xml",
+    src: "permissions_com.ainative.brain.xml",
+    sub_dir: "permissions",
+    filename_from_src: true,
+}

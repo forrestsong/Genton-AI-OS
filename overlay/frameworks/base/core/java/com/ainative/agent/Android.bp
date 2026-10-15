@@ -1,0 +1,29 @@
+// AI Native OS Agent Runtime AIDL Interface
+aidl_interface {
+    name: "ainative.agent",
+    
+    // 首次构建，不需要版本控制
+    unstable: true,
+    
+    srcs: [
+        "IAgentRuntimeService.aidl",
+        "AgentRegistration.aidl",
+        "AgentHandle.aidl",
+        "CapabilityToken.aidl",
+    ],
+    
+    // 移除 local_include_dir，使用默认的 AIDL import 解析
+    
+    backend: {
+        java: {
+            sdk_version: "system_current",
+            enabled: true,
+        },
+        cpp: {
+            enabled: false,
+        },
+        ndk: {
+            enabled: false,
+        },
+    },
+}

@@ -1,0 +1,26 @@
+// AI Native OS AIDL 模块
+// 自动生成
+
+aidl_interface {
+    name: "ainative.audit",
+    unstable: true,
+    srcs: [
+        "IAgentAuditService.aidl",
+        "AuditEvent.aidl",
+        "ChainStatus.aidl",
+        "AuditQuery.aidl",
+    ],
+    local_include_dir: ".",
+    backend: {
+        java: {
+            sdk_version: "system_current",
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: false,
+        },
+        ndk: {
+            enabled: false,
+        },
+    },
+}

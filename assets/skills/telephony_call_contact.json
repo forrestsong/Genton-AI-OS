@@ -1,0 +1,121 @@
+{
+  "skill": {
+    "id": "skill:telephony.call_contact",
+    "name": "telephony_call_contact",
+    "version": "1.0.0",
+    "category": "communication",
+    "description": "按联系人姓名查找号码并拨打电话，未找到时通过通知提示",
+    "publisher": "android.system"
+  },
+  "metadata": {
+    "capability": "agent:action:call",
+    "riskLevel": 2,
+    "confirmation": "always",
+    "executionMode": "semantic_direct",
+    "semanticTriggers": [
+      "打电话给张三",
+      "帮我呼叫联系人",
+      "拨打李四的电话"
+    ],
+    "requiredCapabilities": [
+      "agent:action:call",
+      "agent:action:contacts_read",
+      "agent:action:notify"
+    ],
+    "labels": ["telephony", "contacts", "call"]
+  },
+  "execution": {
+    "mode": "sequential",
+    "timeout": 10000,
+    "steps": [
+      {
+        "id": "find_contact",
+        "type": "dmi",
+        "config": {
+          "dmiId": "dmi:contacts.query",
+          "operation": "query",
+          "parameters": {
+            "query": "$.input.contactName",
+            "limit": 1
+          },
+          "timeout": 3000
+        },
+        "outputMapping": {
+          "contacts": "$.data.contacts"
+        }
+      },
+      {
+        "id": "decide",
+        "type": "condition",
+        "config": {
+          "condition": {
+            "type": "greater_than",
+            "left": "$.step.find_contact.data.contacts.length",
+            "right": 0
+          },
+          "then": [
+            {
+              "id": "dial",
+              "type": "dmi",
+              "config": {
+                "dmiId": "dmi:telephony.call",
+                "operation": "call",
+                "parameters": {
+                  "phoneNumber": "$.step.find_contact.data.contacts[0].phoneNumbers[0].number",
+                  "videoCall": false
+                },
+                "timeout": 3000
+              },
+              "outputMapping": {
+                "phoneNumber": "$.data.phoneNumber"
+              }
+            }
+          ],
+          "else": [
+            {
+              "id": "notify_not_found",
+              "type": "system",
+              "config": {
+                "service": "notification",
+                "method": "notify",
+                "parameters": {
+                  "title": "未找到联系人",
+                  "body": "未找到联系人：{{$.input.contactName}}",
+                  "priority": "normal"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "errorHandling": {
+      "onStepFailure": "abort",
+      "maxRetries": 0
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "contactName": {
+        "type": "string",
+        "description": "联系人姓名",
+        "required": true
+      }
+    },
+    "required": ["contactName"]
+  },
+  "returns": {
+    "type": "object",
+    "properties": {
+      "phoneNumber": {
+        "type": "string",
+        "description": "拨出的号码（未找到时为空）"
+      },
+      "branchExecuted": {
+        "type": "string",
+        "description": "实际执行的分支（then=已拨号/else=未找到）"
+      }
+    }
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ainative.os/schemas/sandbox-manifest.schema.json",
+  "title": "AI Native OS 三方 Agent 沙箱清单（SandboxManifest）",
+  "description": "F5.1 三方 Agent SDK 的 SandboxManifest 契约。字段对齐 D14《第三方Agent接入面接口草案》§2 与 B6.1 沙箱宿主校验流程。清单解析后，系统校验：signature_ref 与 APK 签名匹配、能力合法、域名格式、预算合理；用户首启逐项授权（deny 默认）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sandbox_agent"],
+  "properties": {
+    "$schema": { "type": "string", "description": "可选：schema 引用（不参与运行时解析）" },
+    "x-ainative-template": {
+      "type": "object",
+      "description": "模板注释块（仅模板使用，运行时应剥离；fieldDoc 不参与解析）",
+      "properties": {
+        "templateVersion": { "type": "string" },
+        "title": { "type": "string" },
+        "taskRef": { "type": "string" },
+        "doc": { "type": "string" },
+        "fieldDoc": { "type": "object" }
+      }
+    },
+    "sandbox_agent": { "$ref": "#/definitions/sandboxAgent" }
+  },
+  "definitions": {
+    "sandboxAgent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "name", "developer", "version", "signature_ref",
+        "sandboxed", "requested_capabilities", "memory_scope",
+        "network_domains", "budgets"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_.-]+$",
+          "description": "Agent 唯一 ID（<pkg>.agent 形式）"
+        },
+        "name": { "type": "string", "description": "面向用户显示名" },
+        "developer": { "type": "string", "description": "开发者/组织标识" },
+        "version": { "type": "integer", "minimum": 1, "description": "清单版本（能力变化必须自增）" },
+        "signature_ref": {
+          "type": "string",
+          "description": "APK 签名引用（sha256- 前缀指纹或占位符，系统校验）"
+        },
+        "sandboxed": { "type": "boolean", "const": true, "description": "固定 true（ACB 强制）" },
+        "model": { "$ref": "#/definitions/modelConfig" },
+        "requested_capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/requestedCapability" },
+          "description": "能力申请清单（逐项授权）"
+        },
+        "memory_scope": { "type": "string", "const": "own_only", "description": "记忆范围：只读写自身分区" },
+        "network_domains": {
+          "type": "array",
+          "items": { "type": "string", "description": "域名，格式如 api.example.com" },
+          "minItems": 1,
+          "description": "出网白名单（netd 强制）"
+        },
+        "budgets": { "$ref": "#/definitions/budgets" },
+        "capability_ttl_ms": { "type": "integer", "minimum": 0, "description": "授权会话级 TTL（毫秒）" },
+        "sandbox_resources": { "$ref": "#/definitions/sandboxResources" }
+      }
+    },
+    "modelConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "endpoints": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/modelEndpoint" }
+        }
+      }
+    },
+    "modelEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "protocol"],
+      "properties": {
+        "domain": { "type": "string", "description": "模型端点域名（必须也在 network_domains）" },
+        "protocol": { "type": "string", "enum": ["https"], "description": "仅 https" },
+        "attestation": {
+          "type": "string",
+          "enum": ["not_required", "required"],
+          "description": "端点远程证明要求（D14 开放问题1；当前信任清单域名）"
+        }
+      }
+    },
+    "requestedCapability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability", "risk", "purpose"],
+      "properties": {
+        "capability": {
+          "type": "string",
+          "description": "能力标识，须命中策略引擎能力清单（如 agent.input_inject / events.read / agent.memory.own / agent.ui.read_masked）"
+        },
+        "risk": { "type": "string", "enum": ["low", "medium", "high"], "description": "风险档位（high 一律走确认流）" },
+        "purpose": { "type": "string", "description": "用途说明（授权 UI 展示）" },
+        "types": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "事件订阅子集（capability=events.read 时使用）"
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cost_per_day_usd", "max_walltime_ms_per_task"],
+      "properties": {
+        "cost_per_day_usd": { "type": "number", "minimum": 0 },
+        "max_walltime_ms_per_task": { "type": "integer", "minimum": 0 },
+        "max_calls_per_hour": { "type": "integer", "minimum": 0, "description": "网关调用次数/小时（B6.1 默认 100）" }
+      }
+    },
+    "sandboxResources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cpu_percent": { "type": "number", "description": "CPU 配额百分比（B6.1 默认 10）" },
+        "memory_mb": { "type": "integer", "description": "内存上限 MB（B6.1 默认 256）" }
+      }
+    }
+  }
+}

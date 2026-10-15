@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-10-05T16:31:42Z",
+  "baseline": {
+    "macro:media.volume_normalize": {
+      "version": "1.0.0",
+      "firstSeenAt": "2026-10-05T16:23:15Z",
+      "lastSeenAt": "2026-10-05T16:31:42Z",
+      "status": "stable"
+    },
+    "macro:weather.open_today": {
+      "version": "1.2.0",
+      "firstSeenAt": "2026-10-05T16:23:15Z",
+      "lastSeenAt": "2026-10-05T16:31:42Z",
+      "status": "stable"
+    }
+  }
+}

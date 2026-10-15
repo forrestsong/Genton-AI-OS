@@ -1,0 +1,30 @@
+package com.ainative.macro;
+
+/**
+ * MacroStep
+ *
+ * A single interaction step recorded in a macro session.
+ * Fields aligned with AgentMacroRecorderService.java implementation.
+ */
+parcelable MacroStep {
+    // Step sequence index (unique within the recording, starting at 0)
+    int stepIndex;
+
+    // Step type: tap / swipe / input_text / wait / assert_element / screenshot
+    String stepType;
+
+    // Step parameters (JSON string)
+    @nullable String parameters;
+
+    // Delay from the previous step (milliseconds)
+    long delayMs;
+
+    // Step description (for debugging)
+    @nullable String description;
+
+    // UI snapshot reference (optional)
+    @nullable String uiSnapshotRef;
+
+    // Timestamp (relative to recording start, milliseconds)
+    long timestamp;
+}

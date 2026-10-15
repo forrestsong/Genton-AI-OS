@@ -1,0 +1,47 @@
+// AI Native OS - Motion AIDL Interface Module
+// 姿态交互接口：MotionHub、手势检测、三级档位
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.motion",
+    
+    srcs: [
+        "com/ainative/motion/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [
+        "com.ainative.events",  // 手势事件
+        "com.ainative.policy",  // 敏感场景门控
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//frameworks/native/services/sensorservice",  // 传感器集成
+        "//packages/apps/AINativeBrain",
+    ],
+}

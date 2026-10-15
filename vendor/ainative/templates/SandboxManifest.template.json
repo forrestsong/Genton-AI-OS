@@ -1,0 +1,83 @@
+{
+  "$schema": "https://ainative.os/schemas/sandbox-manifest.schema.json",
+  "x-ainative-template": {
+    "templateVersion": "1.0",
+    "title": "AI Native OS 三方 Agent 沙箱清单模板（SandboxManifest）",
+    "taskRef": "F5.1 / D14",
+    "doc": "本文件是严格 JSON，供 SandboxManifest 校验器解析。字段注释集中在 x-ainative-template.fieldDoc 中（不会参与运行时解析）；所有占位值以 <> 标注，接入时替换。",
+    "fieldDoc": {
+      "sandbox_agent.id": "Agent 全局唯一 ID，格式 <pkg>.agent（如 com.example.gptmate.agent），必须与 APK 包名对应",
+      "sandbox_agent.name": "面向用户的显示名（首启授权 UI 与隐私仪表盘展示）",
+      "sandbox_agent.developer": "开发者/组织标识（如 com.example），用于审计归类",
+      "sandbox_agent.version": "清单版本（整数），每次能力声明变化必须自增；对齐 ACB 会话版本绑定",
+      "sandbox_agent.signature_ref": "APK 签名引用（系统校验用）。发布前填写 APK 签名证书指纹；未定稿可留 sha256-<PLACEHOLDER> 并在联调阶段替换",
+      "sandbox_agent.sandboxed": "固定为 true，ACB 注册强制项（D3 sandboxed 字段）；false 会被拒绝",
+      "sandbox_agent.model.endpoints": "远端模型端点白名单（只能用自己的远端模型，系统本地模型不开放）",
+      "sandbox_agent.model.endpoints[].domain": "出网域名（必须同时出现在 network_domains）",
+      "sandbox_agent.model.endpoints[].protocol": "协议，目前仅 https",
+      "sandbox_agent.model.endpoints[].attestation": "是否要求端点远程证明：not_required=不要求（D14 开放问题1，当前信任清单域名）/ required=要求 attestation（A5 增强）",
+      "sandbox_agent.requested_capabilities": "能力申请清单（逐项向用户申请，deny 默认，用户首启逐项确认，可随时撤销）",
+      "sandbox_agent.requested_capabilities[].capability": "能力标识，必须命中策略引擎能力清单（A7.1 基线），如 agent.input_inject / events.read / agent.memory.own / agent.ui.read_masked",
+      "sandbox_agent.requested_capabilities[].risk": "风险档位 low/medium/high（对齐 B6.2：high 一律走确认流）",
+      "sandbox_agent.requested_capabilities[].purpose": "用途说明（授权 UI 展示，必须如实描述）",
+      "sandbox_agent.requested_capabilities[].types": "可选：事件订阅子集（capability=events.read 时，对齐事件流包过滤，如 notification.posted）",
+      "sandbox_agent.memory_scope": "记忆范围，固定 own_only：只读写自身记忆分区；系统记忆/他人实体不可见（对齐 D14 权限矩阵与 B6.2 OP_MEMORY_OWN）",
+      "sandbox_agent.network_domains": "出网域名白名单（netd iptables 强制执行，白名单外一律断网；对齐 D14 §2 与 B6.1 configureNetworkWhitelist）",
+      "sandbox_agent.budgets": "预算限制（宿主代管强制，超限自动终止沙箱）",
+      "sandbox_agent.budgets.cost_per_day_usd": "单日成本上限（美元）",
+      "sandbox_agent.budgets.max_walltime_ms_per_task": "单任务墙钟时长上限（毫秒）",
+      "sandbox_agent.budgets.max_calls_per_hour": "网关调用次数上限/小时（B6.1 默认 100）",
+      "sandbox_agent.capability_ttl_ms": "能力授权会话级 TTL（毫秒），过期后需重新授权（B6.1 授权模型：会话级 TTL）",
+      "sandbox_agent.sandbox_resources": "可选：资源配额（cgroup），缺省用宿主默认（CPU 10% / 内存 256MB）",
+      "sandbox_agent.sandbox_resources.cpu_percent": "CPU 配额百分比",
+      "sandbox_agent.sandbox_resources.memory_mb": "内存上限（MB），超限 OOM kill"
+    }
+  },
+  "sandbox_agent": {
+    "id": "com.example.gptmate.agent",
+    "name": "GPT 小助手",
+    "developer": "com.example",
+    "version": 1,
+    "signature_ref": "sha256-<APK_SIGNATURE_FINGERPRINT>",
+    "sandboxed": true,
+    "model": {
+      "endpoints": [
+        {
+          "domain": "api.example.com",
+          "protocol": "https",
+          "attestation": "not_required"
+        }
+      ]
+    },
+    "requested_capabilities": [
+      {
+        "capability": "agent.input_inject",
+        "risk": "low",
+        "purpose": "代操作简单界面（点击/滑动）"
+      },
+      {
+        "capability": "events.read",
+        "risk": "low",
+        "purpose": "通知摘要",
+        "types": ["notification.posted"]
+      },
+      {
+        "capability": "agent.memory.own",
+        "risk": "medium",
+        "purpose": "读写自身记忆分区（own_only）"
+      }
+    ],
+    "memory_scope": "own_only",
+    "network_domains": ["api.example.com"],
+    "budgets": {
+      "cost_per_day_usd": 0.1,
+      "max_walltime_ms_per_task": 60000,
+      "max_calls_per_hour": 100
+    },
+    "capability_ttl_ms": 86400000,
+    "sandbox_resources": {
+      "cpu_percent": 10,
+      "memory_mb": 256
+    }
+  }
+}

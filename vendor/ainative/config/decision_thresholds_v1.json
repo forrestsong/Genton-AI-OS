@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "version": "v1.0.0",
+  "description": "决策适配器阈值表 v1（B5.4 交付物）——按场景独立验证，不跨场景借用概率",
+  "generated": "2026-10-05",
+  "principle": "每个适配器一条阈值记录；Noul P(true) / Score 期望分不跨场景借用；低置信 fail-safe 到显式路径；阈值在独立评估集上设定（NLL/Brier/ECE 随评测补）",
+  "adapters": [
+    {
+      "scenario": "intent_classify",
+      "type": "choice",
+      "threshold": 0.85,
+      "compare": "max_prob_ge",
+      "eval_set_ref": "intent_local_task_v1",
+      "fail_safe": "upgrade_complex_task_or_ask_clarify",
+      "consumer": "B2.1",
+      "updated": "2026-10-05"
+    },
+    {
+      "scenario": "tool_select",
+      "type": "choice",
+      "threshold": 0.8,
+      "compare": "max_prob_ge",
+      "eval_set_ref": "tool_select_task_v1",
+      "fail_safe": "resolve_chain_dmi_macro_l2",
+      "consumer": "B2.2/4.8",
+      "updated": "2026-10-05"
+    },
+    {
+      "scenario": "notification_category",
+      "type": "choice",
+      "threshold": 0.75,
+      "compare": "advertising_prob_ge",
+      "eval_set_ref": "notification_cat_v1",
+      "fail_safe": "explicit_p0_or_p1_no_silent",
+      "consumer": "4.11-S6a",
+      "updated": "2026-10-05"
+    },
+    {
+      "scenario": "callgate_spam",
+      "type": "score",
+      "threshold": 1.5,
+      "compare": "expected_score_ge",
+      "eval_set_ref": "callgate_spam_v1",
+      "fail_safe": "fallback_ring_native",
+      "consumer": "4.11-S6b",
+      "updated": "2026-10-05"
+    },
+    {
+      "scenario": "tier_route",
+      "type": "choice",
+      "threshold": 0.9,
+      "compare": "max_prob_ge",
+      "eval_set_ref": "tier_route_v1",
+      "fail_safe": "default_local_tiny_or_rule",
+      "consumer": "A9.1",
+      "updated": "2026-10-05"
+    },
+    {
+      "scenario": "s1_predict",
+      "type": "choice",
+      "threshold": 0.7,
+      "compare": "max_prob_ge",
+      "eval_set_ref": "s1_predict_v1",
+      "fail_safe": "no_prefetch_miss_rate_lt_2pct",
+      "consumer": "C5.1",
+      "updated": "2026-10-05"
+    },
+    {
+      "scenario": "learn_adopt",
+      "type": "noul",
+      "threshold": 0.75,
+      "compare": "p_true_ge",
+      "eval_set_ref": "learn_adopt_v1",
+      "fail_safe": "no_learn_candidate",
+      "consumer": "C2.x",
+      "updated": "2026-10-05"
+    },
+    {
+      "scenario": "policy_semantic_when",
+      "type": "noul",
+      "threshold": 0.9,
+      "compare": "p_true_ge",
+      "eval_set_ref": "policy_when_v1",
+      "fail_safe": "condition_not_match_fail_safe_deny",
+      "consumer": "A7.1-optional",
+      "updated": "2026-10-05"
+    },
+    {
+      "scenario": "result_selfcheck",
+      "type": "score",
+      "threshold": 1.0,
+      "compare": "expected_score_lt",
+      "eval_set_ref": "result_selfcheck_v1",
+      "fail_safe": "trigger_b2_4_selfcheck_dual_channel",
+      "consumer": "B2.4",
+      "updated": "2026-10-05"
+    },
+    {
+      "scenario": "memo_naming",
+      "type": "noul",
+      "threshold": 0.6,
+      "compare": "p_true_ge",
+      "eval_set_ref": "memo_naming_v1",
+      "fail_safe": "default_naming_location_date_time_m4a",
+      "consumer": "S7-memo",
+      "updated": "2026-10-05"
+    }
+  ],
+  "latency_budgets": {
+    "flagship_local": { "p95_ms": 100, "note": "NPU 推理；CPU 降级 150ms" },
+    "universal_cloud": { "p95_ms": 300, "note": "端到端含证明/网络；断线降级规则路径" }
+  },
+  "deployment_principle": "旗舰版（第五代骁龙8至尊版/天玑9500/Exynos 2500）本地推理；通用版（其余机型）经 CloudBroker /v1/decision 云端决策 API"
+}

@@ -1,0 +1,270 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ainative.os/schemas/action-registry.v1.json",
+  "title": "AI Native OS Action Registry Schema",
+  "description": "动作注册表 Schema - 定义执行层可执行单元的结构化描述",
+  "version": "1.0.0",
+  
+  "type": "object",
+  "required": ["version", "executors", "actions"],
+  
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema 引用"
+    },
+    
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "注册表版本（语义化版本）"
+    },
+    
+    "description": {
+      "type": "string",
+      "description": "注册表描述"
+    },
+    
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "生成时间戳"
+    },
+    
+    "executors": {
+      "type": "array",
+      "description": "执行器清单",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/Executor"
+      }
+    },
+    
+    "actions": {
+      "type": "array",
+      "description": "动作清单",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/Action"
+      }
+    },
+    
+    "_meta": {
+      "type": "object",
+      "description": "元数据（编译期统计、合规检查等）"
+    }
+  },
+  
+  "definitions": {
+    "Executor": {
+      "type": "object",
+      "required": ["id", "name", "implementation"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "执行器唯一 ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "执行器显示名称"
+        },
+        "implementation": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*\\.[A-Z][a-zA-Z0-9]*$",
+          "description": "执行器实现类全限定名"
+        },
+        "description": {
+          "type": "string",
+          "description": "执行器描述"
+        }
+      }
+    },
+    
+    "Action": {
+      "type": "object",
+      "required": [
+        "name",
+        "displayName",
+        "executorId",
+        "riskLevel",
+        "requiredCapability",
+        "inputSchema",
+        "outputSchema",
+        "auditEventType"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$",
+          "description": "动作唯一名称（命名空间.动作）"
+        },
+        
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "人类可读显示名（用于审计和确认流）"
+        },
+        
+        "executorId": {
+          "type": "string",
+          "description": "归属执行器 ID（必须存在于 executors 清单）"
+        },
+        
+        "riskLevel": {
+          "type": "integer",
+          "enum": [0, 1, 2],
+          "description": "风险等级：0=low, 1=medium, 2=high"
+        },
+        
+        "riskLevelName": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "风险等级名称（与 riskLevel 对应）"
+        },
+        
+        "requiredCapability": {
+          "type": "string",
+          "pattern": "^agent\\.[a-z][a-z0-9_]*$",
+          "description": "需要的能力令牌名（对齐能力注册表）"
+        },
+        
+        "requiresConfirmationRoles": {
+          "type": "array",
+          "description": "强制确认角色（空=按风险默认）",
+          "items": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          }
+        },
+        
+        "description": {
+          "type": "string",
+          "description": "动作详细描述"
+        },
+        
+        "inputSchema": {
+          "type": "object",
+          "description": "输入参数 JSON Schema",
+          "required": ["type", "properties"],
+          "properties": {
+            "type": {
+              "const": "object"
+            },
+            "required": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "properties": {
+              "type": "object"
+            }
+          }
+        },
+        
+        "inputSource": {
+          "type": "object",
+          "description": "参数来源约束（键=参数名，值=来源等级）",
+          "patternProperties": {
+            ".*": {
+              "type": "string",
+              "enum": ["trusted", "user", "any"]
+            }
+          }
+        },
+        
+        "outputSchema": {
+          "type": "object",
+          "description": "输出结果 JSON Schema",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "object"
+            },
+            "properties": {
+              "type": "object"
+            }
+          }
+        },
+        
+        "auditEventType": {
+          "type": "string",
+          "pattern": "^action\\.[a-z][a-z0-9_]*$",
+          "description": "审计事件类型名（须在 audit-event schema 中定义）"
+        },
+        
+        "executionConstraints": {
+          "type": "object",
+          "description": "执行约束（执行器特定）",
+          "properties": {
+            "maxStaleTimeMs": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "最大过期时间（UI 快照相关动作）"
+            },
+            "requireFreshSnapshot": {
+              "type": "boolean",
+              "description": "是否需要最新快照"
+            },
+            "checkOverlay": {
+              "type": "boolean",
+              "description": "是否检查可疑 overlay（防 tapjacking）"
+            },
+            "sensitiveInput": {
+              "type": "boolean",
+              "description": "是否为敏感输入（强化来源校验）"
+            },
+            "requireUserConfirmation": {
+              "type": "boolean",
+              "description": "是否强制用户确认"
+            },
+            "checkExported": {
+              "type": "boolean",
+              "description": "是否检查组件导出状态"
+            },
+            "systemWhitelist": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "系统白名单（非导出但允许启动）"
+            },
+            "requireNotificationAccess": {
+              "type": "boolean",
+              "description": "是否需要通知访问权限"
+            },
+            "readOnlyPages": {
+              "type": "boolean",
+              "description": "是否仅访问只读页面"
+            }
+          }
+        },
+        
+        "_meta": {
+          "type": "object",
+          "description": "元数据（工具映射、版本等）",
+          "properties": {
+            "version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$"
+            },
+            "modelToolName": {
+              "type": "string",
+              "description": "对应的模型工具名（强制 1:1 映射）"
+            },
+            "toolSchemaMatch": {
+              "type": "boolean",
+              "description": "工具 Schema 是否已校验匹配"
+            },
+            "securityNote": {
+              "type": "string",
+              "description": "安全注意事项"
+            },
+            "note": {
+              "type": "string",
+              "description": "备注"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,430 @@
+{
+  "version": "1.0.0",
+  "description": "Internal actions registry for AI Native OS system operations",
+  "actions": [
+    {
+      "name": "sys.prewarm_app",
+      "description": "预热应用进程，提前启动应用减少冷启动延迟",
+      "category": "PERFORMANCE_OPTIMIZATION",
+      "executor": "internal",
+      "priority": "HIGH",
+      "audit_level": "SYSTEM_ONLY",
+      "parameters": [
+        {
+          "name": "package_name",
+          "type": "string",
+          "required": true,
+          "description": "要预热的应用包名"
+        },
+        {
+          "name": "component_name",
+          "type": "string",
+          "required": false,
+          "description": "指定Activity组件名（可选）"
+        },
+        {
+          "name": "warm_level",
+          "type": "string",
+          "required": false,
+          "default": "process",
+          "enum": ["process", "activity", "full"],
+          "description": "预热级别：process=进程启动，activity=Activity创建，full=完整渲染"
+        }
+      ],
+      "input_sources": {
+        "package_name": "TRUSTED",
+        "component_name": "TRUSTED",
+        "warm_level": "TRUSTED"
+      }
+    },
+    {
+      "name": "sys.set_render_policy",
+      "description": "设置系统渲染策略，优化动作执行期间的性能",
+      "category": "PERFORMANCE_OPTIMIZATION",
+      "executor": "internal",
+      "priority": "HIGH",
+      "audit_level": "SYSTEM_ONLY",
+      "parameters": [
+        {
+          "name": "policy",
+          "type": "string",
+          "required": true,
+          "enum": ["normal", "performance", "battery_saver", "action_optimized"],
+          "description": "渲染策略模式"
+        },
+        {
+          "name": "duration_ms",
+          "type": "integer",
+          "required": false,
+          "description": "持续时间（毫秒），超时后自动恢复normal"
+        },
+        {
+          "name": "scope",
+          "type": "string",
+          "required": false,
+          "default": "global",
+          "enum": ["global", "session", "task"],
+          "description": "策略作用范围"
+        }
+      ],
+      "input_sources": {
+        "policy": "TRUSTED",
+        "duration_ms": "TRUSTED",
+        "scope": "TRUSTED"
+      }
+    },
+    {
+      "name": "sys.schedule_prep",
+      "description": "任务预调度，为即将执行的任务做准备",
+      "category": "PERFORMANCE_OPTIMIZATION",
+      "executor": "internal",
+      "priority": "HIGH",
+      "audit_level": "SYSTEM_ONLY",
+      "parameters": [
+        {
+          "name": "task_id",
+          "type": "string",
+          "required": true,
+          "description": "任务ID"
+        },
+        {
+          "name": "prep_actions",
+          "type": "array",
+          "required": true,
+          "description": "准备动作列表（prewarm/prefetch等）"
+        },
+        {
+          "name": "deadline_ms",
+          "type": "integer",
+          "required": false,
+          "description": "准备截止时间（毫秒）"
+        }
+      ],
+      "input_sources": {
+        "task_id": "TRUSTED",
+        "prep_actions": "TRUSTED",
+        "deadline_ms": "TRUSTED"
+      }
+    },
+    {
+      "name": "policy.activate_suggestion",
+      "description": "激活learn建议规则，将建议转为正式策略",
+      "category": "POLICY_MANAGEMENT",
+      "executor": "internal",
+      "priority": "NORMAL",
+      "audit_level": "FULL",
+      "parameters": [
+        {
+          "name": "suggestion_id",
+          "type": "string",
+          "required": true,
+          "description": "建议ID（learn.开头）"
+        },
+        {
+          "name": "scope",
+          "type": "string",
+          "required": true,
+          "enum": ["user", "device", "temporary"],
+          "description": "激活范围"
+        },
+        {
+          "name": "expiry_days",
+          "type": "integer",
+          "required": false,
+          "description": "有效期（天），null表示永久"
+        },
+        {
+          "name": "user_approved",
+          "type": "boolean",
+          "required": true,
+          "description": "用户是否明确批准"
+        }
+      ],
+      "input_sources": {
+        "suggestion_id": "TRUSTED",
+        "scope": "USER",
+        "expiry_days": "USER",
+        "user_approved": "USER"
+      }
+    },
+    {
+      "name": "policy.deactivate_rule",
+      "description": "停用策略规则",
+      "category": "POLICY_MANAGEMENT",
+      "executor": "internal",
+      "priority": "NORMAL",
+      "audit_level": "FULL",
+      "parameters": [
+        {
+          "name": "rule_id",
+          "type": "string",
+          "required": true,
+          "description": "规则ID"
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": true,
+          "enum": ["user_request", "conflict", "expired", "security"],
+          "description": "停用原因"
+        },
+        {
+          "name": "permanent",
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "description": "是否永久停用"
+        }
+      ],
+      "input_sources": {
+        "rule_id": "TRUSTED",
+        "reason": "TRUSTED",
+        "permanent": "USER"
+      }
+    },
+    {
+      "name": "policy.reload_policy_set",
+      "description": "重载策略集（热更新）",
+      "category": "POLICY_MANAGEMENT",
+      "executor": "internal",
+      "priority": "CRITICAL",
+      "audit_level": "FULL",
+      "parameters": [
+        {
+          "name": "policy_pack_path",
+          "type": "string",
+          "required": true,
+          "description": "策略包路径"
+        },
+        {
+          "name": "verify_signature",
+          "type": "boolean",
+          "required": false,
+          "default": true,
+          "description": "是否验证签名"
+        },
+        {
+          "name": "rollback_on_error",
+          "type": "boolean",
+          "required": false,
+          "default": true,
+          "description": "错误时是否回滚"
+        }
+      ],
+      "input_sources": {
+        "policy_pack_path": "TRUSTED",
+        "verify_signature": "TRUSTED",
+        "rollback_on_error": "TRUSTED"
+      }
+    },
+    {
+      "name": "sys.camera.prepare_qa",
+      "description": "相机Q&A准备，预加载相机和识别模型",
+      "category": "RESOURCE_PREPARATION",
+      "executor": "internal",
+      "priority": "HIGH",
+      "audit_level": "SYSTEM_ONLY",
+      "parameters": [
+        {
+          "name": "camera_id",
+          "type": "string",
+          "required": false,
+          "default": "0",
+          "description": "相机ID"
+        },
+        {
+          "name": "model_types",
+          "type": "array",
+          "required": true,
+          "description": "要加载的模型类型列表（ocr/object_detection/scene等）"
+        },
+        {
+          "name": "priority",
+          "type": "string",
+          "required": false,
+          "default": "normal",
+          "enum": ["low", "normal", "high"],
+          "description": "准备优先级"
+        }
+      ],
+      "input_sources": {
+        "camera_id": "TRUSTED",
+        "model_types": "TRUSTED",
+        "priority": "TRUSTED"
+      }
+    },
+    {
+      "name": "sys.audio.record_memo",
+      "description": "备忘录录音（姿态触发），启动环境录音",
+      "category": "RESOURCE_PREPARATION",
+      "executor": "internal",
+      "priority": "HIGH",
+      "audit_level": "FULL",
+      "parameters": [
+        {
+          "name": "trigger_gesture",
+          "type": "string",
+          "required": true,
+          "enum": ["flip_face_down", "manual"],
+          "description": "触发手势"
+        },
+        {
+          "name": "max_duration_sec",
+          "type": "integer",
+          "required": false,
+          "default": 180,
+          "description": "最大录音时长（秒）"
+        },
+        {
+          "name": "show_indicator",
+          "type": "boolean",
+          "required": false,
+          "default": true,
+          "description": "是否显示录音指示器"
+        },
+        {
+          "name": "user_confirmed",
+          "type": "boolean",
+          "required": true,
+          "description": "用户是否在3秒窗口内确认"
+        }
+      ],
+      "input_sources": {
+        "trigger_gesture": "TRUSTED",
+        "max_duration_sec": "TRUSTED",
+        "show_indicator": "TRUSTED",
+        "user_confirmed": "USER"
+      }
+    },
+    {
+      "name": "sys.motion.enable_shake_ready",
+      "description": "启用摇一摇就绪模式（S7姿态交互）",
+      "category": "MOTION_INTERACTION",
+      "executor": "internal",
+      "priority": "NORMAL",
+      "audit_level": "SYSTEM_ONLY",
+      "parameters": [
+        {
+          "name": "enable",
+          "type": "boolean",
+          "required": true,
+          "description": "是否启用"
+        },
+        {
+          "name": "intent_types",
+          "type": "array",
+          "required": false,
+          "description": "就绪意图类型列表（camera_qa/quick_note等）"
+        },
+        {
+          "name": "sensitivity",
+          "type": "string",
+          "required": false,
+          "default": "medium",
+          "enum": ["low", "medium", "high"],
+          "description": "检测灵敏度"
+        }
+      ],
+      "input_sources": {
+        "enable": "USER",
+        "intent_types": "USER",
+        "sensitivity": "USER"
+      }
+    },
+    {
+      "name": "sys.motion.start_memo_recording",
+      "description": "开始备忘录录音（内部触发）",
+      "category": "MOTION_INTERACTION",
+      "executor": "internal",
+      "priority": "HIGH",
+      "audit_level": "FULL",
+      "parameters": [
+        {
+          "name": "session_id",
+          "type": "string",
+          "required": true,
+          "description": "会话ID"
+        },
+        {
+          "name": "context",
+          "type": "object",
+          "required": false,
+          "description": "上下文信息（位置/时间等）"
+        }
+      ],
+      "input_sources": {
+        "session_id": "TRUSTED",
+        "context": "TRUSTED"
+      }
+    },
+    {
+      "name": "cmd.run_harness",
+      "description": "运行测试套件（开发/测试用）",
+      "category": "TESTING_DEBUG",
+      "executor": "internal",
+      "priority": "LOW",
+      "audit_level": "SYSTEM_ONLY",
+      "parameters": [
+        {
+          "name": "harness_name",
+          "type": "string",
+          "required": true,
+          "description": "测试套件名称"
+        },
+        {
+          "name": "test_cases",
+          "type": "array",
+          "required": false,
+          "description": "指定测试用例列表（为空则全部）"
+        },
+        {
+          "name": "output_path",
+          "type": "string",
+          "required": false,
+          "description": "测试报告输出路径"
+        }
+      ],
+      "input_sources": {
+        "harness_name": "TRUSTED",
+        "test_cases": "TRUSTED",
+        "output_path": "TRUSTED"
+      }
+    },
+    {
+      "name": "cmd.dump_state",
+      "description": "转储系统状态（调试用）",
+      "category": "TESTING_DEBUG",
+      "executor": "internal",
+      "priority": "LOW",
+      "audit_level": "SYSTEM_ONLY",
+      "parameters": [
+        {
+          "name": "components",
+          "type": "array",
+          "required": true,
+          "description": "要转储的组件列表（acb/policy/memory/audit等）"
+        },
+        {
+          "name": "output_format",
+          "type": "string",
+          "required": false,
+          "default": "json",
+          "enum": ["json", "text", "proto"],
+          "description": "输出格式"
+        },
+        {
+          "name": "include_sensitive",
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "description": "是否包含敏感数据"
+        }
+      ],
+      "input_sources": {
+        "components": "TRUSTED",
+        "output_format": "TRUSTED",
+        "include_sensitive": "TRUSTED"
+      }
+    }
+  ]
+}

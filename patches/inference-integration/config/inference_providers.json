@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "_comment": "AI Native OS 推理提供者配置。apiKey 留空则云端档位自动回退到端侧决策模型。",
+  "cloud": {
+    "provider": "deepseek",
+    "enabled": true,
+    "endpoint": "https://api.deepseek.com/chat/completions",
+    "model": "deepseek-chat",
+    "apiKey": "",
+    "timeoutMs": 60000
+  },
+  "localDecision": {
+    "provider": "neohorse",
+    "enabled": true,
+    "endpoint": "http://127.0.0.1:8080/v1/chat/completions",
+    "model": "NeoHorse-Jev-4B",
+    "apiKey": "",
+    "timeoutMs": 30000
+  }
+}

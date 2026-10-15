@@ -1,0 +1,500 @@
+# ============================================================
+# 策略基线规则集 v1（Baseline Policy Rules）
+# C1.3 交付物：系统安全基线（不可覆盖）
+# 版本: 1.0.0
+# 日期: 2026-09-05
+# ============================================================
+# 说明：
+# - baseline: true 规则由平台签名，不可被用户规则覆盖
+# - 授权轴（action 域）：deny 永远优先于 allow
+# - 路由轴：baseline-deny-protect 压过一切路由规则
+# - 冲突裁决：deny > require_confirmation > allow
+# - 与 E1.1 安全基线规范完全对齐
+# ============================================================
+
+version: "1.0.0"
+baseline_signature: "platform"
+last_updated: "2026-09-05"
+
+# ============================================================
+# 1. 授权轴基线规则（action 域）
+# ============================================================
+
+action_baseline_rules:
+  description: "授权轴系统安全基线（6 条核心 deny 规则）"
+  rules:
+    # 1.1 未注册能力拒绝
+    - id: sys.action.baseline.unregistered-deny
+      baseline: true
+      domain: action
+      effect: deny
+      priority: 1000
+      when:
+        event: action.requested
+        capabilityRegistered: false
+      then:
+        audit: full
+        reason: "未在注册表登记的能力一律拒绝（最小权限原则）"
+      redline_ref: R2.6
+      
+    # 1.2 PII 外发拒绝
+    - id: sys.action.baseline.pii-exfiltration-deny
+      baseline: true
+      domain: action
+      effect: deny
+      priority: 1000
+      when:
+        event: action.requested
+        action: network.request
+        containsPII: true
+        targetDomain: EXTERNAL
+      then:
+        audit: full
+        reason: "禁止向非白名单域外发送 PII（隐私保护）"
+      redline_ref: R7.1
+      
+    # 1.3 审计篡改拒绝
+    - id: sys.action.baseline.audit-tamper-deny
+      baseline: true
+      domain: action
+      effect: deny
+      priority: 1000
+      when:
+        event: action.requested
+        action:
+          - audit.delete
+          - audit.modify
+          - audit.hide
+          - policy.override_baseline
+      then:
+        audit: full
+        reason: "禁止修改/隐藏/清空审计记录，禁止覆盖策略基线"
+      redline_ref: R2.13
+      
+    # 1.4 多租户隔离拒绝
+    - id: sys.action.baseline.tenant-isolation-deny
+      baseline: true
+      domain: action
+      effect: deny
+      priority: 1000
+      when:
+        event: action.requested
+        action:
+          - memory.read
+          - token.read
+          - context.read
+        targetTenant: OTHER
+      then:
+        audit: full
+        reason: "禁止跨租户访问记忆/令牌/上下文（多租户隔离）"
+      redline_ref: R10.1
+      
+    # 1.5 Taint 冲突拒绝
+    - id: sys.action.baseline.taint-conflict-deny
+      baseline: true
+      domain: action
+      effect: deny
+      priority: 1000
+      when:
+        event: action.requested
+        action:
+          - ui.type
+          - ui.input_text
+        taintConflict: true
+      then:
+        audit: full
+        reason: "禁止以 taint 冲突方式调用敏感输入动作（防注入）"
+      redline_ref: R3.4
+      
+    # 1.6 伪造确认拒绝
+    - id: sys.action.baseline.fake-confirmation-deny
+      baseline: true
+      domain: action
+      effect: deny
+      priority: 1000
+      when:
+        event: action.requested
+        action: ui.show_dialog
+        bypassSystemUI: true
+      then:
+        audit: full
+        reason: "禁止绕过 SystemUI 确认宿主自弹 UI（防伪造确认）"
+      redline_ref: R5.6
+
+# ============================================================
+# 2. notification 域基线规则（已在 C1.1 中定义）
+# ============================================================
+
+notification_baseline_rules:
+  description: "通知路由基线规则（2 条 baseline-deny-protect）"
+  note: "这些规则已在 C1.1 规则目录中定义，此处仅索引"
+  
+  rules:
+    - id: sys.notify.baseline.critical-native
+      description: "关键通知（alarm/system_critical/phone_ring_equivalent）不可静默"
+      effect: deny
+      priority: 1000
+      redline_ref: R2.2
+      defined_in: policy_catalog_v1.yaml
+    
+    - id: sys.notify.baseline.p0-pinned
+      description: "用户钉选 P0 永原生，不得降级"
+      effect: deny
+      priority: 1000
+      redline_ref: R2.4
+      defined_in: policy_catalog_v1.yaml
+
+# ============================================================
+# 3. call_gate 域基线规则（已在 C1.1 中定义）
+# ============================================================
+
+call_gate_baseline_rules:
+  description: "通话路由基线规则（2 条 baseline-route）"
+  note: "这些规则已在 C1.1 规则目录中定义，此处仅索引"
+  
+  rules:
+    - id: sys.callgate.baseline.emergency
+      description: "紧急/系统号码永响铃"
+      effect: route_ring_native
+      priority: 1000
+      redline_ref: R2.3
+      defined_in: policy_catalog_v1.yaml
+    
+    - id: sys.callgate.carrier-notice-record
+      description: "运营商通告仅记录（非 baseline 但高优先级）"
+      effect: route_record_only
+      priority: 600
+      note: "非 baseline，但属于系统服务规则"
+      defined_in: policy_catalog_v1.yaml
+
+# ============================================================
+# 4. 基线规则统计与索引
+# ============================================================
+
+baseline_summary:
+  total_baseline_rules: 10
+  
+  by_domain:
+    action: 6  # 新增授权轴基线
+    notification: 2  # C1.1 已定义
+    call_gate: 1  # C1.1 已定义（emergency 为 baseline）
+  
+  by_effect:
+    deny: 8  # action(6) + notification(2)
+    route_ring_native: 1  # call_gate(1)
+  
+  redline_coverage:
+    description: "基线规则覆盖的 E1.1 红线"
+    covered_redlines:
+      - R2.1  # 策略引擎无匹配默认 DENY
+      - R2.2  # 通知路由默认 P0_NATIVE
+      - R2.3  # CallGate 默认 RING_NATIVE
+      - R2.4  # baseline 不可覆盖
+      - R2.6  # 未知能力拒绝
+      - R2.13 # 审计不可篡改
+      - R3.4  # Taint 冲突拒绝
+      - R5.6  # 防伪造确认
+      - R7.1  # PII 外发拒绝
+      - R10.1 # 多租户隔离
+    total_covered: 10
+
+# ============================================================
+# 5. 基线规则语义
+# ============================================================
+
+baseline_semantics:
+  description: "基线规则的语义和强制要求"
+  
+  enforcement:
+    - rule: "baseline deny 永远优先"
+      semantic: "任何 baseline: true + effect: deny 规则压过所有非 baseline 规则"
+      implementation: "编译器在冲突矩阵检测中强制此约束"
+    
+    - rule: "baseline 不可覆盖"
+      semantic: "用户规则、学习规则不得与 baseline 规则冲突"
+      implementation: "PolicyPack 签名验证，冲突即拒绝加载"
+    
+    - rule: "baseline 缺失即 fail-stop"
+      semantic: "策略编译失败或缺少基线规则，拒绝启动 Agent 能力面"
+      implementation: "启动流程检查 baseline 规则完整性"
+  
+  conflict_resolution:
+    - priority: 1
+      rule: "baseline deny"
+      description: "最高优先级，压过一切"
+    
+    - priority: 2
+      rule: "baseline allow/route"
+      description: "基线允许/路由规则"
+    
+    - priority: 3
+      rule: "user explicit deny"
+      description: "用户显式拒绝规则"
+    
+    - priority: 4
+      rule: "user confirmation"
+      description: "用户确认规则"
+    
+    - priority: 5
+      rule: "user allow/route"
+      description: "用户允许/路由规则"
+    
+    - priority: 6
+      rule: "learn suggestion"
+      description: "学习建议规则（最低优先级）"
+
+# ============================================================
+# 6. 基线规则扩展约束
+# ============================================================
+
+baseline_constraints:
+  description: "基线规则的扩展约束和限制"
+  
+  constraints:
+    - constraint: "baseline 规则只能由平台签名"
+      enforcement: "PolicyPack 签名验证，非平台签名不得包含 baseline: true"
+    
+    - constraint: "baseline 规则 ID 必须以 sys. 开头"
+      enforcement: "编译器 C1 检查，baseline: true 必须命名空间为 sys."
+    
+    - constraint: "baseline 规则 priority 必须为 1000 或 600-900"
+      enforcement: "编译器检查，baseline 必须在高优先级带"
+    
+    - constraint: "baseline 规则 audit 不得为 none"
+      enforcement: "编译器 C7 检查，baseline 必须 audit: full 或 summary"
+    
+    - constraint: "baseline deny 不得有例外"
+      enforcement: "基线 deny 无例外条款，编译器拒绝任何试图覆盖的规则"
+
+# ============================================================
+# 7. action 域值域扩展（授权轴）
+# ============================================================
+
+action_domain_values:
+  description: "action 域特有的值域定义（补充 C1.2）"
+  
+  # 7.1 event 枚举
+  event:
+    - value: action.requested
+      description: "动作请求事件"
+    
+    - value: action.executed
+      description: "动作执行完成事件"
+    
+    - value: action.failed
+      description: "动作执行失败事件"
+  
+  # 7.2 action 枚举（示例，完整列表见 D2 动作注册表）
+  action_examples:
+    network:
+      - network.request
+      - network.upload
+      - network.download
+    
+    audit:
+      - audit.delete
+      - audit.modify
+      - audit.hide
+    
+    policy:
+      - policy.override_baseline
+      - policy.reload
+    
+    memory:
+      - memory.read
+      - memory.write
+      - memory.delete
+    
+    token:
+      - token.read
+      - token.issue
+      - token.revoke
+    
+    context:
+      - context.read
+      - context.subscribe
+    
+    ui:
+      - ui.type
+      - ui.input_text
+      - ui.show_dialog
+      - ui.capture_screen
+  
+  # 7.3 subject 字段（调用主体）
+  subject:
+    description: "动作调用主体（仅授权轴必填）"
+    type: enum
+    values:
+      - value: trusted_assistant
+        description: "可信助手（平台签名）"
+      
+      - value: user_agent
+        description: "用户 Agent"
+      
+      - value: skill
+        description: "技能插件"
+      
+      - value: system_service
+        description: "系统服务"
+  
+  # 7.4 resource 字段（资源对象）
+  resource:
+    description: "动作操作的资源对象"
+    examples:
+      - "file://<path>"
+      - "contact://<id>"
+      - "memory://<entity_id>"
+      - "network://<domain>"
+  
+  # 7.5 布尔标志字段
+  boolean_flags:
+    - field: capabilityRegistered
+      description: "能力是否已注册"
+      type: boolean
+    
+    - field: containsPII
+      description: "是否包含 PII"
+      type: boolean
+    
+    - field: taintConflict
+      description: "taint 来源是否冲突"
+      type: boolean
+    
+    - field: bypassSystemUI
+      description: "是否试图绕过 SystemUI"
+      type: boolean
+  
+  # 7.6 枚举字段
+  enum_fields:
+    - field: targetDomain
+      description: "目标域（内部/外部）"
+      values: [INTERNAL, EXTERNAL, WHITELIST]
+    
+    - field: targetTenant
+      description: "目标租户"
+      values: [CURRENT, OTHER]
+
+# ============================================================
+# 8. 基线规则验收测试要求
+# ============================================================
+
+baseline_acceptance_tests:
+  description: "基线规则的验收测试要求（对应 E1.1 红线）"
+  
+  test_cases:
+    # R2.6 未知能力拒绝
+    - test_id: BT-001
+      redline: R2.6
+      baseline_rule: sys.action.baseline.unregistered-deny
+      description: "未注册能力必须拒绝"
+      test_scenario: "请求未在注册表登记的能力"
+      expected_result: "DENY + audit: full"
+    
+    # R7.1 PII 外发拒绝
+    - test_id: BT-002
+      redline: R7.1
+      baseline_rule: sys.action.baseline.pii-exfiltration-deny
+      description: "禁止向非白名单域外发 PII"
+      test_scenario: "向 EXTERNAL 域发送包含 PII 的网络请求"
+      expected_result: "DENY + audit: full"
+    
+    # R2.13 审计篡改拒绝
+    - test_id: BT-003
+      redline: R2.13
+      baseline_rule: sys.action.baseline.audit-tamper-deny
+      description: "审计记录不可篡改"
+      test_scenario: "尝试删除/修改审计日志"
+      expected_result: "DENY + audit: full"
+    
+    # R10.1 多租户隔离
+    - test_id: BT-004
+      redline: R10.1
+      baseline_rule: sys.action.baseline.tenant-isolation-deny
+      description: "禁止跨租户访问"
+      test_scenario: "租户 A 访问租户 B 的记忆"
+      expected_result: "DENY + audit: full"
+    
+    # R3.4 Taint 冲突拒绝
+    - test_id: BT-005
+      redline: R3.4
+      baseline_rule: sys.action.baseline.taint-conflict-deny
+      description: "Taint 冲突必须拒绝"
+      test_scenario: "使用 APP_CONTENT taint 调用 ui.type"
+      expected_result: "DENY + audit: full"
+    
+    # R5.6 防伪造确认
+    - test_id: BT-006
+      redline: R5.6
+      baseline_rule: sys.action.baseline.fake-confirmation-deny
+      description: "禁止绕过 SystemUI"
+      test_scenario: "Agent 自弹确认 UI（bypassSystemUI: true）"
+      expected_result: "DENY + audit: full"
+    
+    # R2.2 通知默认 P0_NATIVE
+    - test_id: BT-007
+      redline: R2.2
+      baseline_rule: sys.notify.baseline.critical-native
+      description: "关键通知不可静默"
+      test_scenario: "alarm 通知尝试降级到 P1"
+      expected_result: "DENY（baseline 压过降级规则）"
+    
+    # R2.3 CallGate 默认 RING_NATIVE
+    - test_id: BT-008
+      redline: R2.3
+      baseline_rule: sys.callgate.baseline.emergency
+      description: "紧急号码必须响铃"
+      test_scenario: "110 来电尝试仅记录"
+      expected_result: "RING_NATIVE（baseline 压过记录规则）"
+    
+    # R2.4 baseline 不可覆盖
+    - test_id: BT-009
+      redline: R2.4
+      baseline_rule: (all baseline rules)
+      description: "基线规则不可被覆盖"
+      test_scenario: "用户规则与 baseline 冲突"
+      expected_result: "编译拒绝（整包拒绝）"
+
+# ============================================================
+# 9. 与既有规则的关系
+# ============================================================
+
+relationship_with_existing_rules:
+  description: "基线规则与 C1.1 规则目录的关系"
+  
+  integration:
+    - relationship: "C1.1 已包含路由轴基线"
+      details: "notification 2 条 + call_gate 1 条基线规则已在 C1.1 中定义"
+      action: "本文档索引 C1.1 规则，不重复定义"
+    
+    - relationship: "本文档新增授权轴基线"
+      details: "6 条 action 域基线规则（C1.1 不含授权轴）"
+      action: "需创建独立的 action_baseline_rules.yaml 文件"
+    
+    - relationship: "完整基线 = C1.1 路由轴 + C1.3 授权轴"
+      details: "总计 10 条基线规则（action 6 + notification 2 + call_gate 1 + 1 非 baseline 系统规则）"
+      action: "编译器加载时合并两个文件"
+
+# ============================================================
+# 10. 版本与兼容性
+# ============================================================
+
+metadata:
+  version: "1.0.0"
+  schema_version: "1.0"
+  
+  compatibility:
+    min_policy_engine_version: "1.0.0"
+    min_compiler_version: "1.0.0"
+    requires:
+      - C1.1 规则目录 v1
+      - C1.2 值域知识库 v1
+      - E1.1 安全基线规范
+  
+  signature:
+    required: true
+    type: "platform"
+    note: "baseline 规则必须由平台签名，OTA 更新"
+  
+  update_policy:
+    baseline_update: "仅通过 OTA 更新，不可动态修改"
+    user_rules_on_baseline_update: "基线升级时清空冲突的用户规则并通知"

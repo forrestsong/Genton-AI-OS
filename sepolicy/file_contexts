@@ -1,0 +1,57 @@
+# AI Native OS - 文件上下文定义
+# 将文件路径映射到 SELinux 类型
+
+# ============================================
+# 系统服务可执行文件
+# ============================================
+/system/bin/ainative_service          u:object_r:ainative_service_exec:s0
+/system/bin/ainative_audit            u:object_r:ainative_audit_exec:s0
+/system/bin/ainative_policy           u:object_r:ainative_policy_exec:s0
+/system/bin/ainative_inference        u:object_r:ainative_inference_exec:s0
+/system/bin/ainative_call             u:object_r:ainative_call_exec:s0
+/system/bin/ainative_motion           u:object_r:ainative_motion_exec:s0
+
+# ============================================
+# 数据目录
+# ============================================
+# 审计日志（哈希链）
+/data/ainative/audit(/.*)?            u:object_r:ainative_audit_data_file:s0
+
+# 策略缓存
+/data/ainative/policy(/.*)?           u:object_r:ainative_policy_data_file:s0
+
+# 大脑 App 数据
+/data/user/0/com.ainative.brain(/.*)?     u:object_r:ainative_brain_app_data_file:s0
+/data/user_de/0/com.ainative.brain(/.*)? u:object_r:ainative_brain_app_data_file:s0
+
+# 记忆服务数据（三层分区）
+/data/ainative/memory(/.*)?           u:object_r:system_data_file:s0
+
+# 上下文热缓存
+/data/ainative/context(/.*)?          u:object_r:system_data_file:s0
+
+# ============================================
+# 配置文件（只读）
+# ============================================
+# DSL 策略包
+/vendor/ainative/policy(/.*)?         u:object_r:system_file:s0
+
+# 动作注册表
+/vendor/ainative/registry(/.*)?       u:object_r:system_file:s0
+
+# AI 模型文件
+/vendor/ainative/models(/.*)?         u:object_r:vendor_file:s0
+
+# Skill/DMI/Macro 资产
+/vendor/ainative/assets(/.*)?         u:object_r:system_file:s0
+
+# ============================================
+# SystemUI 扩展
+# ============================================
+/system/priv-app/SystemUI/ainative(/.*)?  u:object_r:system_file:s0
+
+# ============================================
+# 设备节点
+# ============================================
+# NPU 设备（推理加速）
+/dev/npu                              u:object_r:gpu_device:s0

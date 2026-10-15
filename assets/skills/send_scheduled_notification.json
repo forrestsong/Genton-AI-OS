@@ -1,0 +1,132 @@
+{
+  "skill": {
+    "id": "skill:notification.send_scheduled",
+    "name": "send_scheduled_notification",
+    "version": "1.0.0",
+    "category": "notification",
+    "description": "查询指定时间范围的日程，如有安排则发送系统通知",
+    "publisher": "android.system"
+  },
+  "metadata": {
+    "capability": "agent:action:notify",
+    "riskLevel": 1,
+    "confirmation": "default",
+    "executionMode": "semantic_direct",
+    "semanticTriggers": [
+      "提醒我今天的日程",
+      "有会议就通知我",
+      "日程提醒"
+    ],
+    "requiredCapabilities": [
+      "agent:action:notify",
+      "agent:action:calendar_read"
+    ],
+    "labels": ["notification", "calendar", "reminder"]
+  },
+  "execution": {
+    "mode": "sequential",
+    "timeout": 10000,
+    "steps": [
+      {
+        "id": "query_calendar",
+        "type": "dmi",
+        "config": {
+          "dmiId": "dmi:calendar.query",
+          "operation": "query",
+          "parameters": {
+            "startTime": "$.input.startTime",
+            "endTime": "$.input.endTime",
+            "limit": 10
+          },
+          "timeout": 5000
+        },
+        "outputMapping": {
+          "events": "$.data.events",
+          "count": "$.data.count"
+        }
+      },
+      {
+        "id": "check_events",
+        "type": "condition",
+        "config": {
+          "condition": {
+            "type": "greater_than",
+            "left": "$.step.query_calendar.data.events.length",
+            "right": 0
+          },
+          "then": [
+            {
+              "id": "notify_has_events",
+              "type": "system",
+              "config": {
+                "service": "notification",
+                "method": "notify",
+                "parameters": {
+                  "title": "日程提醒",
+                  "body": "您有 {{$.step.query_calendar.data.events.length}} 个即将到来的日程",
+                  "priority": "high"
+                }
+              }
+            }
+          ],
+          "else": [
+            {
+              "id": "notify_empty",
+              "type": "system",
+              "config": {
+                "service": "notification",
+                "method": "notify",
+                "parameters": {
+                  "title": "日程提醒",
+                  "body": "暂无日程安排",
+                  "priority": "normal"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "errorHandling": {
+      "onStepFailure": "retry",
+      "maxRetries": 1,
+      "retryDelayMs": 1000
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "startTime": {
+        "type": "integer",
+        "description": "查询起始时间（Unix 时间戳，毫秒）",
+        "required": true
+      },
+      "endTime": {
+        "type": "integer",
+        "description": "查询结束时间（Unix 时间戳，毫秒）",
+        "required": true
+      }
+    },
+    "required": ["startTime", "endTime"]
+  },
+  "returns": {
+    "type": "object",
+    "properties": {
+      "success": {
+        "type": "boolean",
+        "description": "执行是否成功"
+      },
+      "events": {
+        "type": "array",
+        "description": "查询到的日程列表"
+      },
+      "count": {
+        "type": "integer",
+        "description": "日程数量"
+      }
+    }
+  },
+  "fallbackChain": [
+    "skill:notification.batch_remind"
+  ]
+}

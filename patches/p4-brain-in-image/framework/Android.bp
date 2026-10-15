@@ -1,0 +1,25 @@
+// AI Native OS - PII 掩码服务（Kotlin）
+//
+// [P4 修复] 本目录原有 3 个 Kotlin 源文件但缺少 Android.bp，
+// 导致 Soong 从未编译它们，大脑应用引用 PiiMaskService/PiiMaskRules 时报未解析。
+java_library {
+    name: "ainative.privacy",
+    srcs: [
+        "PiiMaskRules.kt",
+        "PiiMaskService.kt",
+        "PiiMaskModelInference.kt",
+    ],
+    platform_apis: true,
+    libs: [
+        "framework",
+        // PiiMaskModelInference 使用 org.tensorflow.lite.Interpreter
+        "tensorflowlite_java",
+    ],
+    static_libs: [
+        "kotlin-stdlib",
+    ],
+    visibility: [
+        "//frameworks/base/services:__subpackages__",
+        "//packages/apps:__subpackages__",
+    ],
+}

@@ -1,0 +1,47 @@
+// AI Native OS - Action AIDL Interface Module
+// 动作执行接口：动作提交、状态查询、执行回调
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.action",
+    
+    srcs: [
+        "com/ainative/action/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    // 依赖其他 AIDL 模块
+    imports: [
+        "com.ainative.policy",  // PolicyDecision
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//frameworks/base/core/java",
+        "//packages/apps/AINativeBrain",
+    ],
+}

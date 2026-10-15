@@ -1,0 +1,47 @@
+// AI Native OS - Assets AIDL Interface Module
+// 资产目录接口：Skill/DMI/Macro 安装、签名校验、权限管理
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+aidl_interface {
+    name: "com.ainative.assets",
+    
+    srcs: [
+        "com/ainative/assets/*.aidl",
+    ],
+    
+    stability: "vintf",
+    
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+    
+    imports: [
+        "com.ainative.action",  // 动作注册表
+        "com.ainative.policy",  // 权限校验
+    ],
+    
+    visibility: [
+        "//frameworks/base/services/core",
+        "//packages/apps/AINativeBrain",
+        "//packages/apps/Settings",  // 资产管理
+    ],
+}

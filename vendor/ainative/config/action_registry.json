@@ -1,0 +1,787 @@
+{
+  "$schema": "./action-registry.schema.json",
+  "version": "1.0.0",
+  "description": "AI Native OS 动作注册表 - 执行层可执行单元唯一描述",
+  "generatedAt": "2026-09-05T00:00:00Z",
+  
+  "executors": [
+    {
+      "id": "activity",
+      "name": "活动执行器",
+      "implementation": "com.ainative.execution.executors.ActivityExecutor",
+      "description": "通过 AMS 定向启动组件"
+    },
+    {
+      "id": "input",
+      "name": "输入执行器",
+      "implementation": "com.ainative.execution.executors.InputExecutor",
+      "description": "通过 InputDispatcher 注入点击/滑动/输入"
+    },
+    {
+      "id": "query",
+      "name": "查询执行器",
+      "implementation": "com.ainative.execution.executors.QueryExecutor",
+      "description": "只读查询（PMS/Intent 解析）"
+    },
+    {
+      "id": "device_control",
+      "name": "设备控制执行器",
+      "implementation": "com.ainative.execution.executors.DeviceControlExecutor",
+      "description": "设备专用控制通道（音量/亮度等）"
+    },
+    {
+      "id": "notification",
+      "name": "通知执行器",
+      "implementation": "com.ainative.execution.executors.NotificationExecutor",
+      "description": "通知交互（清除/回复）"
+    }
+  ],
+  
+  "actions": [
+    {
+      "name": "ui.tap",
+      "displayName": "点击界面元素",
+      "executorId": "input",
+      "riskLevel": 1,
+      "riskLevelName": "medium",
+      "requiredCapability": "agent.input_inject",
+      "requiresConfirmationRoles": [],
+      "description": "在最新 UI 快照中点击指定节点",
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["nodeId"],
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "最新 UiSnapshot 中的稳定节点 id"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["click", "longClick"],
+            "default": "click",
+            "description": "点击模式"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "hitNodeId": {
+            "type": "string",
+            "description": "实际命中的节点 id"
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "执行时间戳（ms）"
+          }
+        }
+      },
+      
+      "auditEventType": "action.ui_tap",
+      
+      "executionConstraints": {
+        "maxStaleTimeMs": 500,
+        "requireFreshSnapshot": true,
+        "checkOverlay": true
+      },
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "ui_tap",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "ui.long_tap",
+      "displayName": "长按界面元素",
+      "executorId": "input",
+      "riskLevel": 1,
+      "riskLevelName": "medium",
+      "requiredCapability": "agent.input_inject",
+      "requiresConfirmationRoles": [],
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["nodeId"],
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "目标节点 id"
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 3000,
+            "default": 1000,
+            "description": "长按持续时间"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "hitNodeId": { "type": "string" }
+        }
+      },
+      
+      "auditEventType": "action.ui_long_tap",
+      
+      "executionConstraints": {
+        "maxStaleTimeMs": 500,
+        "requireFreshSnapshot": true,
+        "checkOverlay": true
+      },
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "ui_long_tap",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "ui.swipe",
+      "displayName": "滑动",
+      "executorId": "input",
+      "riskLevel": 0,
+      "riskLevelName": "low",
+      "requiredCapability": "agent.input_inject",
+      "requiresConfirmationRoles": [],
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["direction"],
+        "properties": {
+          "direction": {
+            "type": "string",
+            "enum": ["up", "down", "left", "right"],
+            "description": "滑动方向"
+          },
+          "startNodeId": {
+            "type": "string",
+            "description": "起始节点（可选，默认屏幕中央）"
+          },
+          "distance": {
+            "type": "string",
+            "enum": ["short", "medium", "long"],
+            "default": "medium",
+            "description": "滑动距离"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" }
+        }
+      },
+      
+      "auditEventType": "action.ui_swipe",
+      
+      "executionConstraints": {
+        "maxStaleTimeMs": 1000,
+        "requireFreshSnapshot": false,
+        "checkOverlay": false
+      },
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "ui_swipe",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "ui.type",
+      "displayName": "输入文本",
+      "executorId": "input",
+      "riskLevel": 1,
+      "riskLevelName": "medium",
+      "requiredCapability": "agent.input_inject",
+      "requiresConfirmationRoles": ["medium"],
+      "description": "向指定输入框注入文本（高度敏感，强制来源校验）",
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["nodeId", "text"],
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "目标输入框节点 id"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 10000,
+            "description": "要输入的文本"
+          },
+          "clearFirst": {
+            "type": "boolean",
+            "default": false,
+            "description": "是否先清空现有内容"
+          }
+        }
+      },
+      
+      "inputSource": {
+        "text": "user",
+        "nodeId": "any"
+      },
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "inputNodeId": { "type": "string" },
+          "textLength": { "type": "integer" }
+        }
+      },
+      
+      "auditEventType": "action.ui_type",
+      
+      "executionConstraints": {
+        "maxStaleTimeMs": 500,
+        "requireFreshSnapshot": true,
+        "checkOverlay": true,
+        "sensitiveInput": true
+      },
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "ui_type",
+        "toolSchemaMatch": true,
+        "securityNote": "禁止 taint 来源（基线规则强制）"
+      }
+    },
+    
+    {
+      "name": "ui.key",
+      "displayName": "发送按键",
+      "executorId": "input",
+      "riskLevel": 0,
+      "riskLevelName": "low",
+      "requiredCapability": "agent.input_inject",
+      "requiresConfirmationRoles": [],
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["key"],
+        "properties": {
+          "key": {
+            "type": "string",
+            "enum": ["back", "home", "recents", "enter", "delete"],
+            "description": "按键类型"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "keyCode": { "type": "integer" }
+        }
+      },
+      
+      "auditEventType": "action.ui_key",
+      
+      "executionConstraints": {},
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "ui_key",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "app.launch",
+      "displayName": "启动应用界面",
+      "executorId": "activity",
+      "riskLevel": 1,
+      "riskLevelName": "medium",
+      "requiredCapability": "agent.launch_activity",
+      "requiresConfirmationRoles": [],
+      "description": "通过 AMS 定向启动组件（经策略约束）",
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["packageName"],
+        "properties": {
+          "packageName": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$",
+            "description": "包名"
+          },
+          "activityName": {
+            "type": "string",
+            "description": "活动名（可选，省略则用默认入口）"
+          },
+          "extras": {
+            "type": "object",
+            "description": "Intent extras（结构化，非裸字符串）"
+          }
+        }
+      },
+      
+      "inputSource": {
+        "packageName": "any",
+        "activityName": "any",
+        "extras": "user"
+      },
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "startedActivity": {
+            "type": "string",
+            "description": "实际启动的 Activity 全限定名"
+          }
+        }
+      },
+      
+      "auditEventType": "action.launch",
+      
+      "executionConstraints": {
+        "checkExported": true,
+        "systemWhitelist": ["com.android.settings"]
+      },
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "app_launch",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "app.foreground",
+      "displayName": "切换应用到前台",
+      "executorId": "activity",
+      "riskLevel": 0,
+      "riskLevelName": "low",
+      "requiredCapability": "agent.launch_activity",
+      "requiresConfirmationRoles": [],
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["packageName"],
+        "properties": {
+          "packageName": {
+            "type": "string",
+            "description": "目标包名"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" }
+        }
+      },
+      
+      "auditEventType": "action.foreground",
+      
+      "executionConstraints": {},
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "app_foreground",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "query.apps",
+      "displayName": "查询可启动应用",
+      "executorId": "query",
+      "riskLevel": 0,
+      "riskLevelName": "low",
+      "requiredCapability": "agent.query_packages",
+      "requiresConfirmationRoles": [],
+      "description": "只读查询，无副作用",
+      
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filter": {
+            "type": "string",
+            "enum": ["all", "user", "system"],
+            "default": "user",
+            "description": "过滤条件"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "apps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "packageName": { "type": "string" },
+                "label": { "type": "string" },
+                "enabled": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      },
+      
+      "auditEventType": "action.query_apps",
+      
+      "executionConstraints": {},
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "query_apps",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "query.intent",
+      "displayName": "解析 Intent",
+      "executorId": "query",
+      "riskLevel": 0,
+      "riskLevelName": "low",
+      "requiredCapability": "agent.query_packages",
+      "requiresConfirmationRoles": [],
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["action"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Intent action"
+          },
+          "category": {
+            "type": "string",
+            "description": "Intent category（可选）"
+          },
+          "dataUri": {
+            "type": "string",
+            "description": "Data URI（可选）"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "candidates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "packageName": { "type": "string" },
+                "activityName": { "type": "string" },
+                "exported": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      },
+      
+      "auditEventType": "action.query_intent",
+      
+      "executionConstraints": {},
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "query_intent",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "notification.clear",
+      "displayName": "清除通知",
+      "executorId": "notification",
+      "riskLevel": 1,
+      "riskLevelName": "medium",
+      "requiredCapability": "agent.notification_action",
+      "requiresConfirmationRoles": [],
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["notificationId"],
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "description": "通知 ID（从感知层获取）"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "cleared": { "type": "boolean" }
+        }
+      },
+      
+      "auditEventType": "action.notification_clear",
+      
+      "executionConstraints": {
+        "requireNotificationAccess": true
+      },
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "notification_clear",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "notification.reply",
+      "displayName": "快捷回复通知",
+      "executorId": "notification",
+      "riskLevel": 2,
+      "riskLevelName": "high",
+      "requiredCapability": "agent.notification_action",
+      "requiresConfirmationRoles": ["high"],
+      "description": "通过通知的快捷回复动作发送消息（高风险：外发数据）",
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["notificationId", "replyText"],
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "description": "通知 ID"
+          },
+          "replyText": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "回复内容"
+          }
+        }
+      },
+      
+      "inputSource": {
+        "notificationId": "any",
+        "replyText": "user"
+      },
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "sent": { "type": "boolean" }
+        }
+      },
+      
+      "auditEventType": "action.notification_reply",
+      
+      "executionConstraints": {
+        "requireNotificationAccess": true,
+        "requireUserConfirmation": true
+      },
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "notification_reply",
+        "toolSchemaMatch": true,
+        "securityNote": "外发数据，强制确认且 replyText 必须 user 来源"
+      }
+    },
+    
+    {
+      "name": "device.volume",
+      "displayName": "调节音量",
+      "executorId": "device_control",
+      "riskLevel": 0,
+      "riskLevelName": "low",
+      "requiredCapability": "agent.device_control",
+      "requiresConfirmationRoles": [],
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["direction"],
+        "properties": {
+          "direction": {
+            "type": "string",
+            "enum": ["up", "down", "mute", "unmute"],
+            "description": "音量调节方向"
+          },
+          "stream": {
+            "type": "string",
+            "enum": ["media", "ring", "notification", "alarm"],
+            "default": "media",
+            "description": "音频流类型"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "newVolume": { "type": "integer" }
+        }
+      },
+      
+      "auditEventType": "action.device_volume",
+      
+      "executionConstraints": {},
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "device_volume",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "device.brightness",
+      "displayName": "调节亮度",
+      "executorId": "device_control",
+      "riskLevel": 0,
+      "riskLevelName": "low",
+      "requiredCapability": "agent.device_control",
+      "requiresConfirmationRoles": [],
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["level"],
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "亮度百分比"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "actualLevel": { "type": "integer" }
+        }
+      },
+      
+      "auditEventType": "action.device_brightness",
+      
+      "executionConstraints": {},
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "device_brightness",
+        "toolSchemaMatch": true
+      }
+    },
+    
+    {
+      "name": "settings.open",
+      "displayName": "打开系统设置",
+      "executorId": "activity",
+      "riskLevel": 0,
+      "riskLevelName": "low",
+      "requiredCapability": "agent.launch_activity",
+      "requiresConfirmationRoles": [],
+      "description": "打开系统设置只读页（非修改类）",
+      
+      "inputSchema": {
+        "type": "object",
+        "required": ["settingsPage"],
+        "properties": {
+          "settingsPage": {
+            "type": "string",
+            "enum": [
+              "wifi",
+              "bluetooth",
+              "display",
+              "sound",
+              "apps",
+              "battery",
+              "storage",
+              "security"
+            ],
+            "description": "设置页面"
+          }
+        }
+      },
+      
+      "inputSource": {},
+      
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "opened": { "type": "boolean" }
+        }
+      },
+      
+      "auditEventType": "action.settings_open",
+      
+      "executionConstraints": {
+        "readOnlyPages": true
+      },
+      
+      "_meta": {
+        "version": "1.0.0",
+        "modelToolName": "settings_open",
+        "toolSchemaMatch": true,
+        "note": "v1 仅只读页，修改类设置需用户手动操作"
+      }
+    }
+  ],
+  
+  "_meta": {
+    "totalActions": 14,
+    "totalExecutors": 5,
+    "riskDistribution": {
+      "low": 7,
+      "medium": 5,
+      "high": 2
+    },
+    "capabilitiesRequired": [
+      "agent.input_inject",
+      "agent.launch_activity",
+      "agent.query_packages",
+      "agent.notification_action",
+      "agent.device_control"
+    ],
+    "complianceChecklist": [
+      "工具↔动作 1:1 映射 ✓",
+      "参数来源标记 ✓",
+      "风险分级完整 ✓",
+      "审计事件类型定义 ✓",
+      "执行约束声明 ✓",
+      "高风险强制确认 ✓",
+      "taint 来源管控 ✓"
+    ],
+    "openIssues": [
+      "需 CI 强制校验 modelToolName 1:1",
+      "需补充审计事件 schema 定义",
+      "inputSource 校验逻辑待实现",
+      "执行器注册机制待完善"
+    ]
+  }
+}

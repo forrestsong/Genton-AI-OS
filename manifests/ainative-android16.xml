@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AI Native OS - Android 16 Manifest
+  基于 AOSP android-16 分支的深度定制系统
+  
+  使用方法:
+    repo init -u https://android.googlesource.com/platform/manifest -b android-16
+    cp manifests/ainative-android16.xml .repo/local_manifests/ainative.xml
+    repo sync
+-->
+<manifest>
+  
+  <!-- ============================================= -->
+  <!-- 1. AI Native OS 核心框架扩展 -->
+  <!-- ============================================= -->
+  
+  <!-- AIDL 接口定义 (14个模块) -->
+  <project path="frameworks/aidl/ainative/perception" 
+           name="ainative/perception-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/perception/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/action" 
+           name="ainative/action-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/action/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/agent" 
+           name="ainative/agent-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/agent/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/memory" 
+           name="ainative/memory-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/memory/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/audit" 
+           name="ainative/audit-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/audit/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/semantics" 
+           name="ainative/semantics-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/semantics/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/events" 
+           name="ainative/events-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/events/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/context" 
+           name="ainative/context-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/context/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/policy" 
+           name="ainative/policy-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/policy/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/assets" 
+           name="ainative/assets-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/assets/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/ui" 
+           name="ainative/ui-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/ui/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/inference" 
+           name="ainative/inference-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/inference/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/sandbox" 
+           name="ainative/sandbox-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/sandbox/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/call" 
+           name="ainative/call-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/call/Android.bp"/>
+  </project>
+  
+  <project path="frameworks/aidl/ainative/motion" 
+           name="ainative/motion-aidl"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/core/java/com/ainative/motion/Android.bp"/>
+  </project>
+  
+  <!-- ============================================= -->
+  <!-- 2. 系统服务实现 -->
+  <!-- ============================================= -->
+  
+  <!-- System Server 服务扩展 -->
+  <project path="frameworks/base/services/ainative" 
+           name="ainative/system-services"
+           remote="ainative"
+           revision="main">
+    <linkfile src="Android.bp" dest="frameworks/base/services/ainative/Android.bp"/>
+  </project>
+  
+  <!-- ============================================= -->
+  <!-- 3. SystemUI 深度定制 -->
+  <!-- ============================================= -->
+  
+  <project path="frameworks/base/packages/SystemUI/ainative" 
+           name="ainative/systemui-extensions"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 4. 大脑特权 App -->
+  <!-- ============================================= -->
+  
+  <project path="packages/apps/AINativeBrain" 
+           name="ainative/brain-app"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 5. 配置与策略 -->
+  <!-- ============================================= -->
+  
+  <!-- SELinux 策略扩展 -->
+  <project path="system/sepolicy/ainative" 
+           name="ainative/sepolicy-extensions"
+           remote="ainative"
+           revision="main">
+    <linkfile src="ainative.te" dest="system/sepolicy/private/ainative.te"/>
+    <linkfile src="ainative_brain.te" dest="system/sepolicy/private/ainative_brain.te"/>
+    <linkfile src="ainative_service.te" dest="system/sepolicy/private/ainative_service.te"/>
+  </project>
+  
+  <!-- 权限与配置文件 -->
+  <project path="vendor/ainative/config" 
+           name="ainative/system-config"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- 策略包与 DSL 规则 -->
+  <project path="vendor/ainative/policy" 
+           name="ainative/policy-packs"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- 动作注册表 -->
+  <project path="vendor/ainative/registry" 
+           name="ainative/action-registry"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 6. 资产生态 -->
+  <!-- ============================================= -->
+  
+  <project path="vendor/ainative/assets/skills" 
+           name="ainative/skill-assets"
+           remote="ainative"
+           revision="main"/>
+  
+  <project path="vendor/ainative/assets/dmi" 
+           name="ainative/dmi-assets"
+           remote="ainative"
+           revision="main"/>
+  
+  <project path="vendor/ainative/assets/macros" 
+           name="ainative/macro-assets"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 7. AI Runtime -->
+  <!-- ============================================= -->
+  
+  <!-- 本地推理运行时 -->
+  <project path="vendor/ainative/ai-runtime" 
+           name="ainative/ai-runtime"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- 预置小模型 -->
+  <project path="vendor/ainative/models" 
+           name="ainative/prebuilt-models"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 8. 密钥与签名 -->
+  <!-- ============================================= -->
+  
+  <project path="vendor/ainative/keys" 
+           name="ainative/signing-keys"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 9. 构建脚本与工具 -->
+  <!-- ============================================= -->
+  
+  <project path="vendor/ainative/build" 
+           name="ainative/build-tools"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- CI 工具链 -->
+  <project path="vendor/ainative/ci" 
+           name="ainative/ci-tools"
+           remote="ainative"
+           revision="main"/>
+  
+  <!-- ============================================= -->
+  <!-- 10. 远程定义（占位，待替换为实际仓库地址） -->
+  <!-- ============================================= -->
+  
+  <remote name="ainative"
+          fetch="https://github.com/ainative-os"
+          review="https://github.com/ainative-os"/>
+  
+  <remote name="aosp"
+          fetch="https://android.googlesource.com"
+          review="https://android-review.googlesource.com"/>
+  
+  <!-- ============================================= -->
+  <!-- 11. 默认配置 -->
+  <!-- ============================================= -->
+  
+  <default remote="aosp"
+           revision="refs/heads/android-16"
+           sync-j="4"
+           sync-c="true"/>
+  
+</manifest>

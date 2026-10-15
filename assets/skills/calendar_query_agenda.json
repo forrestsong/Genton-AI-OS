@@ -1,0 +1,88 @@
+{
+  "skill": {
+    "id": "skill:calendar.query_agenda",
+    "name": "calendar_query_agenda",
+    "version": "1.0.0",
+    "category": "calendar",
+    "description": "查询指定时间范围的日程并返回结构化清单（无副作用）",
+    "publisher": "android.system"
+  },
+  "metadata": {
+    "capability": "agent:action:calendar_read",
+    "riskLevel": 0,
+    "confirmation": "never",
+    "executionMode": "semantic_direct",
+    "semanticTriggers": [
+      "我今天有什么安排",
+      "查一下我的日程",
+      "看看我的日历"
+    ],
+    "requiredCapabilities": [
+      "agent:action:calendar_read"
+    ],
+    "labels": ["calendar", "query", "read_only"]
+  },
+  "execution": {
+    "mode": "sequential",
+    "timeout": 8000,
+    "steps": [
+      {
+        "id": "query",
+        "type": "dmi",
+        "config": {
+          "dmiId": "dmi:calendar.query",
+          "operation": "query",
+          "parameters": {
+            "startTime": "$.input.startTime",
+            "endTime": "$.input.endTime",
+            "limit": "$.input.limit"
+          },
+          "timeout": 5000
+        },
+        "outputMapping": {
+          "events": "$.data.events",
+          "count": "$.data.count"
+        }
+      }
+    ],
+    "errorHandling": {
+      "onStepFailure": "abort",
+      "maxRetries": 0
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "startTime": {
+        "type": "integer",
+        "description": "查询起始时间（Unix 时间戳，毫秒）",
+        "required": true
+      },
+      "endTime": {
+        "type": "integer",
+        "description": "查询结束时间（Unix 时间戳，毫秒）",
+        "required": true
+      },
+      "limit": {
+        "type": "integer",
+        "description": "返回数量上限（默认 10）",
+        "required": false,
+        "default": 10
+      }
+    },
+    "required": ["startTime", "endTime"]
+  },
+  "returns": {
+    "type": "object",
+    "properties": {
+      "events": {
+        "type": "array",
+        "description": "日程列表"
+      },
+      "count": {
+        "type": "integer",
+        "description": "日程数量"
+      }
+    }
+  }
+}

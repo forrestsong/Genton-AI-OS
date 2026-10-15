@@ -1,0 +1,107 @@
+{
+  "skill": {
+    "id": "skill:notification.batch_remind",
+    "name": "notification_batch_remind",
+    "version": "1.0.0",
+    "category": "notification",
+    "description": "查询日程并逐条发送提醒通知（循环编排示例）",
+    "publisher": "android.system"
+  },
+  "metadata": {
+    "capability": "agent:action:notify",
+    "riskLevel": 1,
+    "confirmation": "default",
+    "executionMode": "semantic_direct",
+    "semanticTriggers": [
+      "逐条提醒我的日程",
+      "今天的每个会议都提醒我",
+      "把日程一条条念给我"
+    ],
+    "requiredCapabilities": [
+      "agent:action:notify",
+      "agent:action:calendar_read"
+    ],
+    "labels": ["notification", "calendar", "loop"]
+  },
+  "execution": {
+    "mode": "sequential",
+    "timeout": 15000,
+    "steps": [
+      {
+        "id": "query_calendar",
+        "type": "dmi",
+        "config": {
+          "dmiId": "dmi:calendar.query",
+          "operation": "query",
+          "parameters": {
+            "startTime": "$.input.startTime",
+            "endTime": "$.input.endTime",
+            "limit": 5
+          },
+          "timeout": 5000
+        },
+        "outputMapping": {
+          "events": "$.data.events"
+        }
+      },
+      {
+        "id": "remind_each",
+        "type": "loop",
+        "config": {
+          "iterateOver": "$.step.query_calendar.data.events",
+          "itemVariable": "event",
+          "indexVariable": "index",
+          "maxIterations": 5,
+          "steps": [
+            {
+              "id": "notify_one",
+              "type": "system",
+              "config": {
+                "service": "notification",
+                "method": "notify",
+                "parameters": {
+                  "title": "日程提醒",
+                  "body": "{{$.event.title}}",
+                  "priority": "normal"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "errorHandling": {
+      "onStepFailure": "continue",
+      "maxRetries": 0
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "startTime": {
+        "type": "integer",
+        "description": "查询起始时间（Unix 时间戳，毫秒）",
+        "required": true
+      },
+      "endTime": {
+        "type": "integer",
+        "description": "查询结束时间（Unix 时间戳，毫秒）",
+        "required": true
+      }
+    },
+    "required": ["startTime", "endTime"]
+  },
+  "returns": {
+    "type": "object",
+    "properties": {
+      "iterations": {
+        "type": "integer",
+        "description": "实际提醒条数"
+      },
+      "results": {
+        "type": "array",
+        "description": "每条提醒的执行结果"
+      }
+    }
+  }
+}

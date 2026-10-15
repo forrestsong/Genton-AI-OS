@@ -1,0 +1,14 @@
+# AI Native OS SELinux 应用签名和包名映射
+#
+# 将应用包名映射到 SELinux 域
+#
+# 版本: v1.0
+# 日期: 2026-09-05
+# 依据: WBS A1.4 权限清单落地
+
+# ========================================
+# AI Native 大脑应用
+# ========================================
+
+# 大脑特权应用 -> ainative_brain 域
+isSystemServer=false domain=ainative_brain name=com.ainative.brain
